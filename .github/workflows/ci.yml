@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dev dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests
+        run: python -m pytest -q
+      - name: Validate every eval.json
+        run: |
+          found=0
+          for f in industries/*/eval.json; do
+            [ -e "$f" ] || continue
+            found=1
+            python scripts/validate_eval.py "$f"
+          done
+          [ "$found" = 1 ] || echo "No eval.json files yet"
+      - name: Check the README progress table is current
+        run: python scripts/status.py --check
