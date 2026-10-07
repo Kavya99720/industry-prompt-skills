@@ -19,7 +19,7 @@
      - Tell the caller why the details are needed.
    - **Industry boundaries (out of scope):** Medicine orders and refills (pharmacy). Insurance claims and payments. Prescription and medication questions (route to nurse/doctor). Lab report contents (agent may say a report is ready, never interpret it). Medical loans and EMI questions (finance).
    - **Unspecified:** Insurance/payer handling beyond collecting the insurer name; telehealth-specific behaviour; business-type differences beyond the list above.
-   - **Note (2026-10-07):** 108 was changed to 108/112, and the immediate-danger order was added, to match R-09 and R-10 in docs/industries/healthcare.md.
+   - **Note (2026-10-07):** 108 was changed to 108/112, and the immediate-danger order was added, to match R-09 and R-10 in industries/healthcare/brief.md.
 
 2. **Healthcare brainstorm amendments** (2026-10-07)
    - **Age:** age is NOT collected. This supersedes entry 1, which allowed age for new patients.
@@ -28,3 +28,11 @@
    - **Telehealth:** the video consultation link is sent through the caller's chosen confirmation channel, with the same safety and verification rules as in-person.
    - **Business config:** fees, timings and the list of accepted insurers/TPAs come only from business config. If not provided, the agent says staff will confirm. The agent never confirms coverage, claims or amounts.
    - **Call recording:** out of scope for now.
+
+3. **Industry scope boundaries** (2026-10-07)
+   - **Healthcare:** hospital and clinic appointments, doctors, emergencies. Medicine orders, refills and prescriptions are out of scope and go to pharmacy.
+   - **Pharmacy:** medicine orders, refills, prescriptions, delivery. No dosage advice.
+   - **Banking:** accounts, cards, KYC, transactions, fraud.
+   - **Finance:** loans/EMIs, NBFC, insurance, investments, collections.
+   - **Not yet decided:** boundaries for retail, education, logistics, hr, real-estate and travel (set in each industry's grill-me).
+   - **Repository layout:** industries/<slug>/ holds brief.md, eval.json and results/. Shared rules are in docs/shared/baseline-rules.md and the eval format is in docs/shared/eval-schema.md. The industry skill folder is .claude/skills/<slug>-prompt-writer/.

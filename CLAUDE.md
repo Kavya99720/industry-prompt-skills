@@ -2,13 +2,14 @@
 Prompt-writing skills for 10 industries (pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate, travel). Each skill generates system prompts for voice/chat agents. Each industry has an eval.json of 20-30 compliance checks. Generated prompts are validated against the evals; failures are fixed in the skill until all evals pass. This folder is separate from the platform codebase.
 
 ## Layout
-- .claude/skills/<industry>-prompt/SKILL.md — industry prompt-writing skills (deliverable)
+- industries/<industry>/brief.md — industry brief (scenarios S-xx, rules R-xx)
+- industries/<industry>/eval.json — compliance checks
+- industries/<industry>/results/ — recorded eval runs
+- .claude/skills/<industry>-prompt-writer/ — industry prompt-writing skills (deliverable: SKILL.md + references/)
 - .claude/skills/ — workflow skills (grill-me, brainstorm, spec-first, write-evals, run-evals, release-check)
 - .claude/agents/<industry>-expert.md — per-industry expert subagents; eval-judge.md — shared neutral grader
-- docs/industries/<industry>.md — industry brief (scenarios S-xx, rules R-xx)
+- docs/shared/baseline-rules.md — rules common to all voice agents; docs/shared/eval-schema.md — the one eval.json format
 - docs/DECISIONS.md — decisions log
-- evals/<industry>/eval.json — compliance checks
-- results/<industry>/ — recorded eval runs
 
 ## Workflow per industry
 grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> expert researches rules -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run until all pass -> release-check.

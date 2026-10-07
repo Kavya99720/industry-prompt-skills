@@ -36,7 +36,7 @@ def validate(path):
     industry = data.get("industry")
     brief_text = None
     if isinstance(industry, str) and industry:
-        brief = Path(__file__).resolve().parent.parent / "docs" / "industries" / f"{industry}.md"
+        brief = Path(__file__).resolve().parent.parent / "industries" / industry / "brief.md"
         if brief.exists():
             brief_text = brief.read_text(encoding="utf-8")
 
@@ -87,10 +87,10 @@ def validate(path):
                 scenario_ids = []
             for rid in rule_ids:
                 if rid not in brief_text:
-                    errors.append(f"{label}: rule_id {rid} not found in docs/industries/{industry}.md")
+                    errors.append(f"{label}: rule_id {rid} not found in industries/{industry}/brief.md")
             for sid in scenario_ids:
                 if sid not in brief_text:
-                    errors.append(f"{label}: scenario_id {sid} not found in docs/industries/{industry}.md")
+                    errors.append(f"{label}: scenario_id {sid} not found in industries/{industry}/brief.md")
     return errors
 
 

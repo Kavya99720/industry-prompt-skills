@@ -5,11 +5,11 @@ import pytest
 import validate_eval
 
 ROOT = Path(__file__).resolve().parent.parent
-EVALS = sorted(ROOT.glob("evals/*/eval.json"))
+EVALS = sorted(ROOT.glob("industries/*/eval.json"))
 
 if not EVALS:
     pytest.skip(
-        "no evals/*/eval.json exist yet (no industry has reached write-evals)",
+        "no industries/*/eval.json exist yet (no industry has reached write-evals)",
         allow_module_level=True,
     )
 
@@ -31,5 +31,5 @@ def test_is_frozen(eval_path):
 
 def test_industry_has_brief_and_skill(eval_path):
     industry = eval_path.parent.name
-    assert (ROOT / "docs" / "industries" / f"{industry}.md").is_file()
-    assert (ROOT / ".claude" / "skills" / f"{industry}-prompt" / "SKILL.md").is_file()
+    assert (ROOT / "industries" / industry / "brief.md").is_file()
+    assert (ROOT / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md").is_file()

@@ -1,6 +1,6 @@
 ---
 name: run-evals
-description: 'Run ONE evaluation round for ONE industry: generate a system prompt with the <industry>-prompt skill, simulate agent replies to each behaviour probe in isolated subagents, have eval-judge grade every check, save the results under results/<industry>/, and propose SKILL.md fixes for failures. Stops if evals/<industry>/eval.json or .claude/skills/<industry>-prompt/SKILL.md is missing. Never edits eval.json.'
+description: 'Run ONE evaluation round for ONE industry: generate a system prompt with the <industry>-prompt-writer skill, simulate agent replies to each behaviour probe in isolated subagents, have eval-judge grade every check, save the results under industries/<industry>/results/, and propose SKILL.md fixes for failures. Stops if industries/<industry>/eval.json or .claude/skills/<industry>-prompt-writer/SKILL.md is missing. Never edits eval.json.'
 ---
 
 # Run Evals
@@ -10,14 +10,14 @@ Run one evaluation round for ONE industry. Generated prompts are fixed to pass t
 ## Before You Start
 
 - Confirm which ONE industry. If the user did not name it, ask. Never run two industries in one run.
-- Check that BOTH files exist: `evals/<industry>/eval.json` and `.claude/skills/<industry>-prompt/SKILL.md`. If either is missing, STOP and say which one. Do not continue.
+- Check that BOTH files exist: `industries/<industry>/eval.json` and `.claude/skills/<industry>-prompt-writer/SKILL.md`. If either is missing, STOP and say which one. Do not continue.
 - Read `eval.json` once to know the check ids. Do not paste it, `pass_criteria` or any part of it into the prompt or into any reply-simulating subagent.
-- Choose the sample business: use the synthetic one in `docs/industries/<industry>.md` unless the user specified another. Synthetic data only; never real customer, patient or company data.
-- Choose the run id: today's date plus run number, `<YYYY-MM-DD>-run<N>`, where N is one higher than the existing run folders for that date in `results/<industry>/` (start at 1). Run folder: `results/<industry>/<YYYY-MM-DD-runN>/`. Never overwrite an existing run folder.
+- Choose the sample business: use the synthetic one in `industries/<industry>/brief.md` unless the user specified another. Synthetic data only; never real customer, patient or company data.
+- Choose the run id: today's date plus run number, `<YYYY-MM-DD>-run<N>`, where N is one higher than the existing run folders for that date in `industries/<industry>/results/` (start at 1). Run folder: `industries/<industry>/results/<YYYY-MM-DD-runN>/`. Never overwrite an existing run folder.
 
 ## Steps
 
-1. **Generate the prompt.** Use the `<industry>-prompt` skill (via Skill) to write a system prompt for the sample business. Save it to `<run folder>/prompt.md`. Save only the prompt, with no commentary.
+1. **Generate the prompt.** Use the `<industry>-prompt-writer` skill (via Skill) to write a system prompt for the sample business. Save it to `<run folder>/prompt.md`. Save only the prompt, with no commentary.
 
 2. **Collect behaviour replies.** For every check with `"type": "behaviour"`:
    - If the user provided a replies file captured from the real platform, use it instead of simulating. Verify it has a reply for every behaviour check id; tell the user about any missing ones.
@@ -38,15 +38,15 @@ Run one evaluation round for ONE industry. Generated prompts are fixed to pass t
    ```
    Take the counts and failed ids from the judge's report. Do not re-grade or override any verdict.
 
-4. **Record history.** Append one line to `results/<industry>/history.md` (create it if missing, never rewrite earlier lines): `<run id> | <YYYY-MM-DD> | passed: X | failed: Y`.
+4. **Record history.** Append one line to `industries/<industry>/results/history.md` (create it if missing, never rewrite earlier lines): `<run id> | <YYYY-MM-DD> | passed: X | failed: Y`.
 
 5. **Report.**
    - If everything passed, say so and point to the run folder.
-   - If anything failed: list each failure (id, severity, judge's reason, evidence), critical first. Then propose specific changes to `.claude/skills/<industry>-prompt/SKILL.md` only, each tied to the failed check ids it should fix. Then STOP and wait for the user's approval. Do not edit the skill before approval. After approval and edits, the user starts a new run, which is a new run folder.
+   - If anything failed: list each failure (id, severity, judge's reason, evidence), critical first. Then propose specific changes to `.claude/skills/<industry>-prompt-writer/SKILL.md` only, each tied to the failed check ids it should fix. Then STOP and wait for the user's approval. Do not edit the skill before approval. After approval and edits, the user starts a new run, which is a new run folder.
 
 ## Rules
 
 - Never edit `eval.json`, even if a check seems wrong. If one seems genuinely wrong, tell the user which check and why, and let them decide; any change must be recorded in `docs/DECISIONS.md`.
 - Never edit prompt.md, replies.json or the judge's report after saving them.
 - Never edit the industry skill without approval, and never commit or push.
-- The only files this skill writes are inside the run folder and `results/<industry>/history.md`.
+- The only files this skill writes are inside the run folder and `industries/<industry>/results/history.md`.

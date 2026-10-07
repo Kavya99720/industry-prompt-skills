@@ -99,9 +99,9 @@ def test_unknown_rule_id_fails_when_brief_exists(tmp_path):
     # The validator finds briefs relative to its own location, so run a copy
     # of it inside a temporary repo layout with a synthetic brief.
     (tmp_path / "scripts").mkdir()
-    (tmp_path / "docs" / "industries").mkdir(parents=True)
+    (tmp_path / "industries" / "synthetic").mkdir(parents=True)
     shutil.copy(ROOT / "scripts" / "validate_eval.py", tmp_path / "scripts")
-    (tmp_path / "docs" / "industries" / "synthetic.md").write_text(
+    (tmp_path / "industries" / "synthetic" / "brief.md").write_text(
         "# Synthetic\nR-01 a rule\n", encoding="utf-8"
     )
     spec = importlib.util.spec_from_file_location(

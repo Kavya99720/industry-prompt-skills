@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-"""PostToolUse hook (Edit|Write|MultiEdit): validate an edited evals/<industry>/eval.json."""
+"""PostToolUse hook (Edit|Write|MultiEdit): validate an edited industries/<industry>/eval.json."""
 import json
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-EVAL_RE = re.compile(r"(^|/)evals/[^/]+/eval\.json$")
+EVAL_RE = re.compile(r"(^|/)industries/[^/]+/eval\.json$")
 VALIDATOR = Path(__file__).resolve().parent.parent.parent / "scripts" / "validate_eval.py"
 
 

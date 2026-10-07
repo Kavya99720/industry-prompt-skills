@@ -19,7 +19,7 @@ def run_hook(file_path):
 
 
 def write_eval(tmp_path, frozen):
-    p = tmp_path / "evals" / "synthetic" / "eval.json"
+    p = tmp_path / "industries" / "synthetic" / "eval.json"
     p.parent.mkdir(parents=True)
     p.write_text(json.dumps({"frozen": frozen}), encoding="utf-8")
     return p

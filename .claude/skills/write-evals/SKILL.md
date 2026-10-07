@@ -1,6 +1,6 @@
 ---
 name: write-evals
-description: 'Turn one industry''s approved brief (docs/industries/<industry>.md) into evals/<industry>/eval.json with 20-30 objective compliance checks (prompt and behaviour types), show them for approval, then save and freeze. Stops if the brief is missing. Never modifies a frozen eval.json. Never writes the industry skill.'
+description: 'Turn one industry''s approved brief (industries/<industry>/brief.md) into industries/<industry>/eval.json with 20-30 objective compliance checks (prompt and behaviour types), show them for approval, then save and freeze. Stops if the brief is missing. Never modifies a frozen eval.json. Never writes the industry skill.'
 ---
 
 # Write Evals
@@ -10,8 +10,8 @@ Write the compliance checks for ONE industry from its approved brief. After appr
 ## Before You Start
 
 - Confirm which ONE industry. If the user did not name it, ask. Never write evals for two industries in one run.
-- Read `docs/industries/<industry>.md`. If it is missing, STOP and tell the user to run spec-first first. Do not write checks from memory or from the grill-me or brainstorm files alone.
-- Check `evals/<industry>/eval.json`. If it exists and has `"frozen": true`, STOP: do not modify it. Tell the user it is frozen. If it exists and is not frozen, ask before replacing it.
+- Read `industries/<industry>/brief.md`. If it is missing, STOP and tell the user to run spec-first first. Do not write checks from memory or from the grill-me or brainstorm files alone.
+- Check `industries/<industry>/eval.json`. If it exists and has `"frozen": true`, STOP: do not modify it. Tell the user it is frozen. If it exists and is not frozen, ask before replacing it.
 - Use the brief's S-xx and R-xx IDs exactly as written. Do not invent IDs. Use synthetic data only; never real customer, patient or company data.
 - The brief's open questions are not settled. Do not write checks that depend on an unresolved item; mention it to the user instead.
 
@@ -70,7 +70,7 @@ Write the compliance checks for ONE industry from its approved brief. After appr
 - Show the checks as a table with columns: ID, type, severity, rule IDs, scenario IDs, description, pass criteria, probe (for behaviour). Add a short coverage summary: total count, count by type and severity, critical rules covered, rules not covered.
 - Ask for approval with `AskUserQuestion` (for example: approve and freeze, request changes). Take specific edits from a freeform answer.
 - Apply changes, re-check the rules above (count, unique IDs, critical coverage, probe presence), and show the revised table if the changes were significant.
-- Only after explicit approval, write `evals/<industry>/eval.json` with `"frozen": true`. Create the folder if needed. Save as valid JSON and parse it back to confirm it is valid.
+- Only after explicit approval, write `industries/<industry>/eval.json` with `"frozen": true`. Create the folder if needed. Save as valid JSON and parse it back to confirm it is valid.
 
 ## Frozen Files
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""PreToolUse hook (Edit|Write|MultiEdit): block changes to a frozen evals/<industry>/eval.json."""
+"""PreToolUse hook (Edit|Write|MultiEdit): block changes to a frozen industries/<industry>/eval.json."""
 import json
 import re
 import sys
@@ -9,7 +9,7 @@ MESSAGE = (
     "eval.json is frozen. Fix the industry skill instead. "
     "If the eval is genuinely wrong, ask the user and record it in docs/DECISIONS.md."
 )
-EVAL_RE = re.compile(r"(^|/)evals/[^/]+/eval\.json$")
+EVAL_RE = re.compile(r"(^|/)industries/[^/]+/eval\.json$")
 
 
 def is_frozen(path):

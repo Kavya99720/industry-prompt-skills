@@ -1,6 +1,6 @@
 ---
 name: spec-first
-description: 'Turn one industry''s grill-me entry and confirmed brainstorm into an industry brief (scope, scenarios S-xx, rules R-xx, vocabulary, escalation, data handling) at docs/industries/<industry>.md, before any eval or skill is written. Show the brief and get approval before saving. Stops if grill-me or brainstorm input is missing. Never write evals or the skill.'
+description: 'Turn one industry''s grill-me entry and confirmed brainstorm into an industry brief (scope, scenarios S-xx, rules R-xx, vocabulary, escalation, data handling) at industries/<industry>/brief.md, before any eval or skill is written. Show the brief and get approval before saving. Stops if grill-me or brainstorm input is missing. Never write evals or the skill.'
 ---
 
 # Spec First
@@ -12,7 +12,7 @@ Write the industry brief for ONE industry. The brief is the contract that later 
 - Confirm which ONE industry. If the user did not name it, ask. Never brief two industries in one run.
 - Read both inputs:
   - the `<Industry> grill-me` entry in `docs/DECISIONS.md`
-  - `docs/industries/<industry>-brainstorm.md`
+  - `industries/<industry>/brainstorm.md`
 - If `docs/DECISIONS.md`, the grill-me entry, or the brainstorm file is missing, STOP. Tell the user which input is missing and which skill to run first (grill-me or brainstorm). Do not infer the missing input and do not continue.
 - Treat the grill-me entry and the confirmed brainstorm as the only sources of scope. Anything marked unspecified stays unspecified: list it as an open question in the brief, do not invent an answer.
 - Use synthetic examples only. Never use real customer, patient or company data.
@@ -62,6 +62,6 @@ Write the brief with these sections, in this order.
 - Show the full brief to the user in the conversation. Do not save yet.
 - Ask for approval with `AskUserQuestion` (for example: approve as is, request changes). Take specific edits from a freeform answer.
 - Apply requested changes, re-check traceability, and show the revised brief if the changes were significant.
-- Save only after explicit approval, to `docs/industries/<industry>.md` (industry slug: pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate or travel). Create the folder if needed. If the file already exists, ask before overwriting.
+- Save only after explicit approval, to `industries/<industry>/brief.md` (industry slug: pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate or travel). Create the folder if needed. If the file already exists, ask before overwriting.
 
 Never write evals or the industry skill, and never edit any other file. The brief is the only output beyond the conversation.
