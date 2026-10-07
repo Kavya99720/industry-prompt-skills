@@ -1,6 +1,6 @@
 # Banking industry brief
 
-Status: stub. Not started. Run grill-me, brainstorm and spec-first for this industry (see README.md).
+Status: Todo
 
 ## 1. Scope
 
