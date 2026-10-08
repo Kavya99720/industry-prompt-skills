@@ -16,7 +16,7 @@ CORE = """# core
 
 def build(tmp_path, checks, core=CORE):
     ind = tmp_path / "industries" / "demo"
-    (ind / "workflows").mkdir(parents=True)
+    (ind / "workflows").mkdir(parents=True, exist_ok=True)
     (ind / "brief.md").write_text("# index R-01 R-02 R-03 R-04 S-01\n", encoding="utf-8")
     (ind / "core.md").write_text(core, encoding="utf-8")
     path = ind / "eval.json"
@@ -76,3 +76,41 @@ def test_rules_in_workflow_files_are_found(tmp_path):
     )
     errors = validate_eval.validate(path, root=tmp_path)
     assert "critical rule R-09 has no check" in errors
+
+
+def _with(tmp_path, **fields):
+    cs = checks(2)
+    cs[0].update(fields)
+    return validate_eval.validate(build(tmp_path, cs), root=tmp_path)
+
+
+@pytest.mark.parametrize("target", ["instructions", "draft_notes", ["draft_notes", "instructions"]])
+def test_prompt_check_targets_accepted(tmp_path, target):
+    assert _with(tmp_path, target=target) == []
+
+
+def test_behaviour_check_targets_reply_only(tmp_path):
+    ok = _with(tmp_path, type="behaviour", probe="hi", target="reply")
+    assert ok == []
+    bad = _with(tmp_path, type="behaviour", probe="hi", target="draft_notes")
+    assert any("behaviour check can only target reply" in e for e in bad)
+
+
+def test_prompt_check_cannot_target_reply(tmp_path):
+    assert any("cannot target reply" in e for e in _with(tmp_path, target="reply"))
+
+
+def test_unknown_target_and_method_fail(tmp_path):
+    assert any("target must be" in e for e in _with(tmp_path, target="notes"))
+    assert any("method must be" in e for e in _with(tmp_path, method="vibes"))
+
+
+def test_profile_must_exist_when_profiles_folder_exists(tmp_path):
+    path = build(tmp_path, checks(2))
+    (path.parent / "test-profiles").mkdir()
+    (path.parent / "test-profiles" / "01-a.md").write_text("x", encoding="utf-8")
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["checks"][0]["profiles"] = ["01", "07"]
+    path.write_text(json.dumps(data), encoding="utf-8")
+    errors = validate_eval.validate(path, root=tmp_path)
+    assert any("profile 07 not found" in e for e in errors) and not any("profile 01 not found" in e for e in errors)

@@ -15,6 +15,8 @@ BASELINE_RE = re.compile(r"^\*\*Baseline B-\d+")
 REQUIRED_TOP = ("industry", "version", "frozen", "checks")
 SEVERITIES = ("critical", "major", "minor")
 TYPES = ("prompt", "behaviour")
+METHODS = ("deterministic", "llm-judge")
+TARGETS = ("instructions", "draft_notes", "reply")
 
 
 def industry_files(industry_dir):
@@ -70,6 +72,12 @@ def validate(path, root=None):
             brief_text = chr(10).join(parts)
             rules = parse_rules(parts)
 
+    profile_ids = None
+    if isinstance(industry, str) and industry:
+        pdir = root / "industries" / industry / "test-profiles"
+        if pdir.is_dir():
+            profile_ids = {f.name.split("-")[0] for f in pdir.glob("*.md") if f.name.lower() != "readme.md"}
+
     if checks is None:
         return errors
     if not 20 <= len(checks) <= 30:
@@ -102,6 +110,26 @@ def validate(path, root=None):
             v = c.get(field)
             if not isinstance(v, str) or not v.strip():
                 errors.append(f"{label}: missing or empty {field}")
+
+        if "method" in c and c["method"] not in METHODS:
+            errors.append(f"{label}: method must be one of {', '.join(METHODS)}")
+        if "target" in c:
+            tg = c["target"]
+            tgs = [tg] if isinstance(tg, str) else tg
+            if not isinstance(tgs, list) or not tgs or not all(x in TARGETS for x in tgs):
+                errors.append(f"{label}: target must be one or a list of {', '.join(TARGETS)}")
+            elif ctype == "behaviour" and tgs != ["reply"]:
+                errors.append(f"{label}: a behaviour check can only target reply")
+            elif ctype == "prompt" and "reply" in tgs:
+                errors.append(f"{label}: a prompt check cannot target reply")
+        if "profiles" in c:
+            profs = c["profiles"]
+            if not isinstance(profs, list) or not profs or not all(isinstance(x, str) for x in profs):
+                errors.append(f"{label}: profiles must be a non-empty list of strings")
+            elif profile_ids is not None:
+                for pid in profs:
+                    if pid not in profile_ids:
+                        errors.append(f"{label}: profile {pid} not found in industries/{industry}/test-profiles/")
 
         if ctype == "behaviour":
             p = c.get("probe")

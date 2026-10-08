@@ -50,6 +50,9 @@ One format for every industry. File: `industries/<slug>/eval.json`. Validated by
 - `description`: what is checked.
 - `pass_criteria`: the exact condition for PASS.
 - `probe`: required when `type` is `behaviour`, and must be absent for `prompt`.
+- `profiles` (optional): list of test-profile ids (the number before the first dash in the file name under `industries/<slug>/test-profiles/`, for example `"01"`). The check runs only on those profiles. Absent means all profiles.
+- `target` (optional): what the check is graded on: `"instructions"` (the generated Instructions: welcome note, sections 1 to 6), `"draft_notes"` (the skill's draft notes: assumptions, defaults, refused client requests, open items), `"reply"` (the agent's reply to the probe), or a list of these when the criterion needs more than one (every named target is checked). Default: `instructions` for a `prompt` check, `reply` for a `behaviour` check. A `behaviour` check may only target `reply`; a `prompt` check targets `instructions`, `draft_notes` or both.
+- `method` (optional): `deterministic` when `pass_criteria` can be decided by literal text tests (contains, does not contain, count), or `llm-judge` when it needs a rubric. Absent means `llm-judge`.
 
 ## Rules for a valid file
 - Valid JSON: double quotes, no comments, no trailing commas.

@@ -49,4 +49,4 @@ Legend: ● normally used, ○ optional or depends on the business, – not used
 | S-75 to S-90 | New 2026-10-08, from live calls and the test profiles |
 | R-01 to R-40 | Original brief, now split by workflow |
 | R-41 to R-47 | Approved 2026-10-08 (R-41 = callback for On leave or On call) |
-| R-48 to R-79 | New 2026-10-08, from live calls, decisions and the test profiles |
+| R-48 to R-81 | New 2026-10-08, from live calls, decisions and the test profiles |

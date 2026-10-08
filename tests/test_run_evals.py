@@ -23,7 +23,9 @@ class FakeLlm:
             results = [{"id": c["id"], "result": "FAIL" if c["id"] in self.fail_ids else "PASS",
                         "reason": "because"} for c in CHECKS]
             return "table...\n```json\n" + json.dumps({"results": results}) + "\n```"
-        return "generated text"
+        if system is None:
+            return "generated text" + chr(10) + "=== DRAFT NOTES ===" + chr(10) + "the notes"
+        return "a reply"
 
 
 @pytest.fixture
@@ -103,3 +105,45 @@ def test_dry_run_calls_nothing(repo):
     llm = FakeLlm()
     code, out = run(repo, ["--industry", "healthcare", "--dry-run"], llm)
     assert code == 0 and llm.calls == [] and "ready" in out
+
+
+def test_checks_with_profiles_run_only_on_those_profiles(repo):
+    path = repo / "industries/healthcare/eval.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    data["checks"][0]["profiles"] = ["02"]  # DEM-E01 is a behaviour check
+    data["checks"][1]["profiles"] = ["01"]  # DEM-E02 is a prompt check
+    path.write_text(json.dumps(data), encoding="utf-8")
+    llm = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    judge_prompts = [c[2] for c in llm.calls if c[0] == "eval-judge"]
+    asked = [p.split("ONLY these checks from the industry's eval.json: ")[1].split(". After")[0] for p in judge_prompts]
+    assert "DEM-E01" not in asked[0] and "DEM-E02" in asked[0]   # profile 01
+    assert "DEM-E01" in asked[1] and "DEM-E02" not in asked[1]   # profile 02
+    probes = [c[2] for c in llm.calls if c[1] == "generated text"]
+    assert probes.count("probe 1") == 1 and probes.count("probe 3") == 2
+
+
+def test_full_output_is_split_into_instructions_and_draft_notes(repo):
+    llm = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    work = repo / "industries/healthcare/results/2026-10-08"
+    assert (work / "01-a-instructions.md").read_text(encoding="utf-8").strip() == "generated text"
+    assert (work / "01-a-draft-notes.md").read_text(encoding="utf-8").strip() == "the notes"
+    judge_prompts = [c[2] for c in llm.calls if c[0] == "eval-judge"]
+    assert all("draft_notes_file:" in p and "-draft-notes.md" in p for p in judge_prompts)
+    generator = [c[2] for c in llm.calls if c[0] is None and c[1] is None]
+    assert all("=== DRAFT NOTES ===" in p for p in generator)
+
+
+def test_missing_draft_notes_marker_is_recorded(repo):
+    class NoNotes(FakeLlm):
+        def run(self, prompt, system=None, agent=None):
+            return "only instructions" if system is None and agent is None else super().run(prompt, system, agent)
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], NoNotes())
+    notes = repo / "industries/healthcare/results/2026-10-08/01-a-draft-notes.md"
+    assert "no draft notes supplied" in notes.read_text(encoding="utf-8")
+
+
+def test_split_output():
+    assert run_evals.split_output("a" + chr(10) + "=== DRAFT NOTES ===" + chr(10) + "b") == ("a", "b")
+    assert run_evals.split_output("only") == ("only", "")

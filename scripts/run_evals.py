@@ -7,9 +7,12 @@ Usage:
   python scripts/run_evals.py --industry healthcare --dry-run     check inputs, call nothing
 
 For every test profile in industries/<x>/test-profiles/ the runner:
-  1. generates Instructions with the <x>-prompt-writer skill (the profile's expected results are NOT shown),
+  1. generates the skill's FULL output with the <x>-prompt-writer skill (the profile's expected results are
+     NOT shown): the Instructions (welcome note, sections 1 to 6, variables) and the draft notes
+     (assumptions, refused client requests, open items), split at a "=== DRAFT NOTES ===" line,
   2. simulates the agent's reply to every behaviour probe in eval.json (fresh call, Instructions only),
-  3. asks the eval-judge agent to grade every check in eval.json against those Instructions and replies,
+  3. asks the eval-judge agent to grade every check in eval.json against the Instructions, the draft notes
+     and the replies (each check's `target` says which one it is graded on),
   4. saves everything to industries/<x>/results/<date>.json (case id, profile, pass/fail, reason),
   5. prints a pass-rate summary per industry and lists the failing cases to feed back into the SKILL.
 
@@ -34,6 +37,7 @@ INDUSTRIES = (
     "healthcare", "pharmacy", "retail", "finance", "banking",
     "education", "logistics", "hr", "real-estate", "travel",
 )
+NOTES_MARKER = "=== DRAFT NOTES ==="
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
 
@@ -70,6 +74,12 @@ def visible_profile(text):
         if i != -1:
             cut = min(cut, i)
     return text[:cut].rstrip() + "\n"
+
+
+def split_output(text):
+    """Split the skill's full output into (instructions, draft_notes) at the marker line."""
+    head, sep, tail = text.partition(NOTES_MARKER)
+    return head.strip(), (tail.strip() if sep else "")
 
 
 def check_inputs(industry, root):
@@ -113,19 +123,30 @@ def run_industry(industry, llm, root=ROOT, date=None):
     rows = []
     for pf in profile_files(d):
         name = pf.stem
-        instructions = llm.run(
-            f"Use the {industry}-prompt-writer skill. Write the Instructions (welcome note, sections 1 to 6) "
-            f"for this test business. Output only the Instructions.\n\n"
+        pid = name.split("-")[0]
+        applicable = [c for c in checks if not c.get("profiles") or pid in c["profiles"]]
+        full = llm.run(
+            f"Use the {industry}-prompt-writer skill for this test business. Output exactly two parts. "
+            f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax). "
+            f"Then a line containing only {NOTES_MARKER} . "
+            f"Part 2: the draft notes (assumptions and defaults used, refused or changed client requests "
+            f"with a one-line reason each, open items, the section 6 word count). Output nothing else.\n\n"
             + visible_profile(pf.read_text(encoding="utf-8")))
+        instructions, notes = split_output(full)
         inst_path = work / f"{name}-instructions.md"
         inst_path.write_text(instructions + "\n", encoding="utf-8")
+        notes_path = work / f"{name}-draft-notes.md"
+        notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
         replies = {c["id"]: llm.run(c["probe"], system=instructions)
-                   for c in checks if c.get("type") == "behaviour"}
+                   for c in applicable if c.get("type") == "behaviour"}
         replies_path = work / f"{name}-replies.json"
         replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")
         verdict = llm.run(
-            f"Industry: {industry}\nprompt_file: {inst_path.as_posix()}\nreplies: {replies_path.as_posix()}\n"
-            "Grade every check in the industry's eval.json. After your table, end with one ```json block: "
+            f"Industry: {industry}\nprofile: {name}\nprompt_file: {inst_path.as_posix()}\n"
+            f"draft_notes_file: {notes_path.as_posix()}\n"
+            f"replies: {replies_path.as_posix()}\n"
+            f"Grade ONLY these checks from the industry's eval.json: {', '.join(c['id'] for c in applicable)}. "
+            "After your table, end with one ```json block: "
             '{"results":[{"id":"...","result":"PASS or FAIL","reason":"one line"}]}',
             agent="eval-judge")
         for r in parse_judge(verdict):

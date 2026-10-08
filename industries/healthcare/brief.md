@@ -15,7 +15,7 @@ Principle (2026-10-08): safety rules from our brief win; platform reality (tools
 | [workflows/03-reschedule-cancel.md](workflows/03-reschedule-cancel.md) | Phase 1: reschedule and cancel |
 | [workflows/04-reminder-outbound.md](workflows/04-reminder-outbound.md) | Phase 1: appointment reminder (outbound) |
 | workflows/05 to 12 | Phase 2 and 3 stubs (one-line purpose, parked scenarios) |
-| [test-profiles/](test-profiles/README.md) | Four test profiles with tricky callers, MUST and MUST NOT, and the word-budget table |
+| [test-profiles/](test-profiles/README.md) | Five test profiles with tricky callers, MUST and MUST NOT, and the word-budget table |
 | brief.md (this file) | Scope, boundaries, registers of every S-xx and R-xx, vocabulary, escalation, data handling, open questions, traceability |
 
 Every S-xx and R-xx ID from the original brief is kept and lives in exactly one file. Section placement (which of the six platform sections a rule goes in) is a column in every rule and scenario table; the key is in core.md.
@@ -246,6 +246,8 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 | R-77 | If someone says the patient has died: offer condolences in one... | [04-reminder-outbound.md](workflows/04-reminder-outbound.md) | critical | S6 |
 | R-78 | If the intake booking style is tokens or walk-in, the agent never... | [02-booking.md](workflows/02-booking.md) | critical | S6 |
 | R-79 | In-patient, ward, room and admitted-person questions are out of Phase... | [core.md](core.md) | major | S6 |
+| R-80 | Word budget: section 6 (Main prompt) stays within about 615 words... | [core.md](core.md) | major | Skill; Notes |
+| R-81 | Intake defaults (decision 2026-10-08) | [core.md](core.md) | critical | Skill; Notes |
 
 ## 6. Vocabulary
 - **OPD** (outpatient department): visits where the patient is not admitted. Avoid calling it "admission".
@@ -296,10 +298,10 @@ Resolved 2026-10-08: "both directions" means two separate Instructions sets (R-7
 5. **Legal or lead decision:** must outbound calls say "an AI assistant" up front? Default if confirmed: add it to the outbound welcome.
 6. **Outbound call data:** does the platform pass the patient's name and appointment (`{{var.patient_name}}`, `{{var.appointment_details}}`, both unconfirmed)?
 7. **Outbound closing wording** (R-68) is a proposal.
-8. **Token and walk-in clinics:** is there a token tool? Until confirmed, R-78 applies and the agent never books a timed slot.
-9. **Emergency signs list** needs review by the client's clinical team before release.
-10. **DPDP provisions** (notice, purpose, minimisation) to be confirmed by the industry expert.
-11. **Platform items still open:** Lookups (0 entries), the "How these compose" tooltip, whether the 616-word warning is a hard limit, multiple shifts per day in the roster format (docs/shared/platform-contract.md).
+9. **Token and walk-in clinics:** is there a token tool? Until confirmed, R-78 applies and the agent never books a timed slot.
+11. **Emergency signs list** needs review by the client's clinical team before release.
+12. **DPDP provisions** (notice, purpose, minimisation) to be confirmed by the industry expert.
+13. **Platform items still open:** Lookups (0 entries), the "How these compose" tooltip, whether the 616-word warning is a hard limit, multiple shifts per day in the roster format (docs/shared/platform-contract.md).
 
 ## Traceability
 
