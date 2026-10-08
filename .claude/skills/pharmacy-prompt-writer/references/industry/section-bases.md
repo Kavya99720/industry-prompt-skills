@@ -11,7 +11,7 @@ How a skill uses this file:
 
 ## Welcome message
 
-The platform sets the welcome from a template the business picks (Standard, Warm or Brief for inbound). The skill writes the default as the FIRST line of the Instructions, always, word for word (say exactly, R-71), and says in the draft notes that the client may change the template.
+The platform sets the welcome from a template the business picks (Standard, Warm or Brief for inbound). The skill writes the default as the FIRST line of the output, with nothing before it (no code fence, no preface), always word for word (say exactly, R-71), and says in the draft notes that the client may change the template.
 
 - Inbound: "Thank you for calling `{{var.company_name}}`. This is `{{var.agent_name}}`. How can I help you?"
 - Outbound: "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?"
@@ -26,6 +26,7 @@ You are {{var.agent_name}}, the warm and efficient AI [pharmacy assistant | call
 Work out which from what they say. If it is not clear, ask one short, open question. Never guess, and never make them pick from a menu.
 Handle each need fully, including anything new they bring up. If it is something you cannot handle, say so honestly and offer to connect them to the right person. If they ask two things, answer both. If they change their mind, follow the new request without starting over.
 Talk warmly and naturally, like a friendly pharmacy counter assistant, never like a form or a recorded message.
+Priority when rules meet: (1) emergency, (2) privacy and verification, (3) "say exactly" lines, (4) one question at a time, (5) the task. A "say exactly" line wins over the generic pharmacist handoff.
 <Safety and honesty lines: every rule whose placement is S1, in short spoken sentences.>
 <Business facts: only what {{var.business_info}} holds. Directions: {{var.store_address}}, only when asked.>
 ```
@@ -87,7 +88,7 @@ When the caller is done at any point, say the closing line in the caller's langu
 
 Built from the selected workflows' Main-prompt lines. Style:
 - Short labelled steps in capitals: UNDERSTAND, HANDOFF, STOCK, OUT OF STOCK, STORE, ORDER, PRESCRIPTION, PAYMENT, REFILL, OUTBOUND REFILL, STATUS, DELIVERY, RETURNS.
-- Quoted lines give the meaning and the exact words to say; the agent says them in the caller's language. A quoted line marked "say exactly" is said word for word, never paraphrased (R-71).
+- Quoted lines give the meaning and the exact words to say; the agent says them in the caller's language. A quoted line marked "say exactly" is said word for word, never paraphrased, and is followed in the same reply by its action (transfer, callback offer or end_call) (R-71).
 - Pharmacy has no roster and no last block. The whole 615 words are for our text.
 - Anything already said in sections 1 to 5, in the welcome, or in the closing is not repeated here.
 

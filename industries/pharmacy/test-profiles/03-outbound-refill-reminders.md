@@ -40,3 +40,12 @@ Synthetic business. Rules: industries/pharmacy/core.md and workflows 03 (outboun
 ## Expected word budget
 
 See test-profiles/README.md: within budget (outbound set).
+
+## Test values
+
+Filled into the eval probes by the runner (placeholders in angle brackets). Hidden from the skill.
+
+- <customer_name> = Anita Kulkarni
+- <order_number> = 48213
+- <address> = 12 Test Street, Sample Town
+- <refill_details> = Medicine G, blood pressure tablets, 30 count, due for refill

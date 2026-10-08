@@ -67,7 +67,7 @@ TOOLS_NOTE_TEMPLATE = (
 def tools_note(industry):
     return TOOLS_NOTE_TEMPLATE.format(tools=", ".join(INDUSTRY_TOOLS.get(industry, COMMON_TOOLS)))
 
-HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
+HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget", "## Test values")
 
 
 def find_claude(home=None):
@@ -133,6 +133,147 @@ def split_output(text):
     return head.strip(), (tail.strip() if sep else "")
 
 
+SAY_EXACTLY = re.compile(r'say exactly(?: and only)?\s+"([^"]+)"', re.I)
+WELCOME_LINE = re.compile(r'^- (Inbound|Outbound): "([^"]+)"', re.M)
+
+
+def _norm(text):
+    """Compare text without markdown ticks, curly quotes or line breaks."""
+    text = text.replace("`", "").replace("’", "'").replace("‘", "'")
+    text = text.replace("“", '"').replace("”", '"')
+    return " ".join(text.split())
+
+
+def profile_facts(profile_text):
+    """Direction, selected workflow numbers and prescription upload method read from a test profile."""
+    d = re.search(r"\|\s*Direction\s*\|\s*(\w+)", profile_text)
+    direction = d.group(1).lower() if d else "inbound"
+    sel = re.search(r"## Selected workflows\s+(.*?)(?=\n## |\Z)", profile_text, re.S)
+    chosen = re.sub(r"[^.]*not selected[^.]*\.", "", sel.group(1)) if sel else ""
+    numbers = sorted(set(re.findall(r"\b0[1-8]\b", chosen)))
+    u = re.search(r"\|\s*Prescription upload\s*\|\s*(\w+)", profile_text)
+    method = u.group(1).lower() if u and u.group(1).lower() in ("whatsapp", "email", "in_store") else "not set"
+    return {"direction": direction, "workflows": numbers, "upload": method}
+
+
+VARIABLE_LABELS = {
+    "prescription upload": "prescription_upload_method", "hours": "business_hours", "payment modes": "payment_modes",
+    "delivery info": "delivery_info", "return policy": "return_policy", "store address": "store_address",
+}
+CALL_CONTEXT = ("customer_name", "refill_details")
+VAR_TOKEN = re.compile(r"\{\{var\.(\w+)\}\}")
+# Industries whose simulated agent is told the profile's variable values, as the platform fills {{var.x}} on a real call.
+VARIABLE_VALUE_INDUSTRIES = ("pharmacy",)
+
+
+def test_values(profile_text):
+    """Placeholder values from the profile's '## Test values' section: lines like '- <order_number> = 48213'."""
+    sec = re.search(r"## Test values\s+(.*?)(?=\n## |\Z)", profile_text, re.S)
+    found = re.findall(r"^- <(\w+)>\s*=\s*(.+?)\s*$", sec.group(1), re.M) if sec else []
+    return dict(found)
+
+
+def profile_variable_values(profile_text):
+    """Variable values given in a test profile's config table, plus call context from its test values.
+    A value the profile says is not provided becomes '(empty)'."""
+    values = {}
+    for label, cell in re.findall(r"^\|\s*([^|]+?)\s*\|\s*(.+?)\s*\|\s*$", profile_text, re.M):
+        cell = cell.replace("`", "")
+        token = VAR_TOKEN.search(cell)
+        name = token.group(1) if token else VARIABLE_LABELS.get(label.lower())
+        if not name or name in CALL_CONTEXT:
+            continue
+        if token and "=" in cell:
+            value = cell.split("=", 1)[1].strip()
+        elif token:
+            value = cell.split("(", 1)[0].strip()
+        else:
+            value = cell
+        if re.match(r"(not provided|not given)", value, re.I):
+            value = "(empty)"
+        elif value.lower() == "given":
+            continue
+        values[name] = value
+    for name, value in test_values(profile_text).items():
+        if name in CALL_CONTEXT:
+            values[name] = value
+    return values
+
+
+def values_note(values):
+    if not values:
+        return ""
+    lines = "\n".join(f"{name} = {value}" for name, value in sorted(values.items()))
+    return ("\n\n---\nVariable values for this test (the platform has already filled in the {{var.x}} variables "
+            "before the call, so use these values; a value of (empty) means the business gave none):\n" + lines)
+
+
+def fill_placeholders(probe, values):
+    """Replace <customer_name>, <order_number>, <address> and the like in a probe with the profile's test values."""
+    return re.sub(r"<(\w+)>", lambda m: values.get(m.group(1), m.group(0)), probe)
+
+
+def strip_before_welcome(instructions, welcome, window=6):
+    """Drop stray lines (code fences, chatter) before the welcome line when the welcome is within the first lines.
+    Returns (clean text, removed lines). If the welcome is not found, nothing is removed."""
+    lines = instructions.splitlines()
+    for i, line in enumerate(lines[:window]):
+        if line.strip() and _norm(line) == _norm(welcome):
+            removed = [l for l in lines[:i] if l.strip()]
+            return "\n".join(lines[i:]).strip(), removed
+    return instructions, []
+
+
+def fixed_lines(industry, facts, root=ROOT):
+    """The quoted lines the sources mark 'say exactly' for this profile, plus the welcome for its direction.
+    Workflow 03 holds only outbound fixed lines (stop-calling, voicemail), so it counts for outbound profiles only."""
+    d = Path(root) / "industries" / industry
+    files = [d / "core.md"]
+    for n in facts["workflows"]:
+        if n == "03" and facts["direction"] != "outbound":
+            continue
+        files += sorted((d / "workflows").glob(f"{n}-*.md"))
+    lines = []
+    for f in files:
+        if not f.is_file():
+            continue
+        for q in SAY_EXACTLY.findall(f.read_text(encoding="utf-8")):
+            if _norm(q) not in [_norm(x[1]) for x in lines]:
+                lines.append((f.name, q))
+    bases = d / "section-bases.md"
+    if bases.is_file():
+        for kind, q in WELCOME_LINE.findall(bases.read_text(encoding="utf-8")):
+            if kind.lower() == facts["direction"]:
+                lines.append(("welcome", q))
+    return lines
+
+
+def lint_fixed_and_config(industry, instructions, profile_text, root=ROOT):
+    """Deterministic checks that need no model: every fixed line is in the Instructions word for word, the welcome is
+    the first line, and a prescription route the profile does not enable is not offered. Returns a list of problems."""
+    facts = profile_facts(profile_text)
+    body = _norm(instructions)
+    problems = []
+    for source, q in fixed_lines(industry, facts, root):
+        if source == "welcome":
+            first = next((l for l in instructions.splitlines() if l.strip()), "")
+            if _norm(first) != _norm(q):
+                problems.append(f'welcome is not the first line, word for word: expected "{_norm(q)}", first line is "{first.strip()[:80]}"')
+        elif _norm(q) not in body:
+            problems.append(f'fixed line from {source} missing word for word: "{_norm(q)}"')
+    allowed = {facts["upload"]} & {"whatsapp", "email"}
+    for n, line in enumerate(instructions.splitlines(), 1):
+        low = line.lower()
+        if "prescription" not in low and "upload" not in low:
+            continue
+        for word in ("whatsapp", "email"):
+            if word in low and word not in allowed:
+                problems.append(f"line {n}: prescription route offers {word} but the profile upload method is {facts['upload']}")
+        if not allowed and ("send tool" in low or "send_confirmation" in low):
+            problems.append(f"line {n}: send tool used for prescriptions but the profile upload method is {facts['upload']}")
+    return problems
+
+
 def lint_instructions(path, root):
     """Run the variable, client-value and example-name checks on generated Instructions. Informational only."""
     vars_path = Path(root) / "docs" / "shared" / "variables.json"
@@ -176,7 +317,8 @@ def parse_judge(text):
     return out
 
 
-def run_industry(industry, llm, root=ROOT, date=None, profiles=None):
+def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None):
+    out = out or sys.stdout
     date = date or datetime.date.today().isoformat()
     d = root / "industries" / industry
     checks = json.loads((d / "eval.json").read_text(encoding="utf-8"))["checks"]
@@ -199,14 +341,28 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None):
             f"Do not open eval.json files or results folders.\n\n"
             + visible_profile(pf.read_text(encoding="utf-8")))
         instructions, notes = split_output(full)
+        profile_text = pf.read_text(encoding="utf-8")
+        welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text), root) if source == "welcome"), None)
+        stray = []
+        if welcome:
+            instructions, removed = strip_before_welcome(instructions, welcome)
+            if removed:
+                stray = ["fixed-line/config: stray text before the welcome (removed for judging): "
+                         + " / ".join(r.strip()[:60] for r in removed)]
         inst_path = work / f"{name}-instructions.md"
         inst_path.write_text(instructions + "\n", encoding="utf-8")
-        lint[name] = lint_instructions(inst_path, root)
+        lint[name] = lint_instructions(inst_path, root) + stray + [
+            "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
+        for problem in lint[name]:
+            print(f"lint {name}: {problem}", file=out)
         notes_path = work / f"{name}-draft-notes.md"
         notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
         probes = [c for c in applicable if c.get("type") == "behaviour"]
+        filled = test_values(profile_text)
+        note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
+        system = instructions + tools_note(industry) + note
         with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions + tools_note(industry), tools=""), probes))
+            answers = list(pool.map(lambda c: llm.run(fill_placeholders(c["probe"], filled), system=system, tools=""), probes))
         replies = {c["id"]: a for c, a in zip(probes, answers)}
         replies_path = work / f"{name}-replies.json"
         replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")

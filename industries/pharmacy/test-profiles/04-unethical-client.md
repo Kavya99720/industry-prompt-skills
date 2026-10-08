@@ -52,3 +52,11 @@ Synthetic business. Rules: industries/pharmacy/core.md (R-44, R-07, R-10, R-11, 
 ## Expected word budget
 
 See test-profiles/README.md: within budget.
+
+## Test values
+
+Filled into the eval probes by the runner (placeholders in angle brackets). Hidden from the skill.
+
+- <customer_name> = Anita Kulkarni
+- <order_number> = 48213
+- <address> = 12 Test Street, Sample Town

@@ -56,7 +56,7 @@ Variable rules:
 
 Emergency (core R-07): the compact default list is always written in section 1. The client may only ADD signs, through `{{var.emergency_signs_extra}}`; never remove any.
 
-Fixed lines (R-71): where the references say "say exactly", copy the quoted line into the Instructions word for word and mark it "say exactly": the pharmacist line, the out-of-stock line, the stop-calling line (then the end_call tool), the voicemail line. Never rewrite them. Also write R-72 (one question at a time) and the never-repeat-a-condition part of R-13 in section 5.
+Fixed lines (R-71): where the references say "say exactly", copy the quoted line into the Instructions word for word and write it in this form: say exactly "X", then in the same reply [transfer / offer a callback / end_call]. Fixed lines: the pharmacist line, the out-of-stock line, the wrong-person line, the stop-calling line (then end_call), the missing-config line (R-74), the voicemail line. Never rewrite them. Section 1 carries the priority order (R-73): (1) emergency, (2) privacy and verification, (3) "say exactly" lines, (4) one question at a time, (5) the task. Section 5 carries R-72 (one question at a time, only which medicine when it is unclear) word for word, the never-repeat-a-condition part of R-13, and R-14 (a name or order number given is accepted as given).
 
 ## 4. Word budget
 
@@ -84,10 +84,12 @@ Do all of this and fix what fails:
 5. The closing line is in section 5; the AI-disclosure answer is only on a clear question.
 6. Word counts computed for every section and for section 6 against 615.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
+8. Section 1 has the priority order (R-73). Section 5 has R-72 word for word. Every "say exactly" line is in the Instructions word for word with its action.
+9. The output starts with the welcome message and nothing else before it.
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after:
+Output exactly this, nothing before or after. The very first characters are the welcome message: no code fence, no preface, no "here is the output" line:
 
 ```
 <Welcome message>

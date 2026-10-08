@@ -242,3 +242,123 @@ def test_find_claude_falls_back_to_local_bin_then_the_bare_name(monkeypatch, tmp
     exe.parent.mkdir(parents=True)
     exe.write_text("")
     assert run_evals.find_claude(tmp_path) == str(exe)
+
+FIXED_PROFILE = """# Profile
+| Direction | Inbound |
+| Prescription upload | in_store |
+
+## Selected workflows
+
+01 Enquiry, 02 Order. Delivery and returns (04) are not selected.
+"""
+GOOD = (
+    "Thank you for calling {{var.company_name}}. This is {{var.agent_name}}. How can I help you?\n\n"
+    "Say exactly: Our pharmacist will help you with that.\n"
+)
+OOS = "That medicine isn't in stock right now.\n"
+
+
+def lint_root(tmp_path):
+    d = tmp_path / "industries" / "demo"
+    (d / "workflows").mkdir(parents=True)
+    (d / "core.md").write_text('R-09: say exactly "Our pharmacist will help you with that." then transfer.', encoding="utf-8")
+    (d / "workflows" / "01-enquiry.md").write_text('OOS: Say exactly "That medicine isn\'t in stock right now."', encoding="utf-8")
+    (d / "workflows" / "04-x.md").write_text('say exactly "Never selected."', encoding="utf-8")
+    (d / "section-bases.md").write_text(
+        '- Inbound: "Thank you for calling `{{var.company_name}}`. This is `{{var.agent_name}}`. How can I help you?"\n'
+        '- Outbound: "Hello, this is `{{var.agent_name}}` calling."\n', encoding="utf-8")
+    return tmp_path
+
+
+def test_profile_facts_reads_direction_workflows_and_upload_method():
+    facts = run_evals.profile_facts(FIXED_PROFILE)
+    assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store"}
+
+
+def test_fixed_line_lint_reports_a_missing_line(tmp_path):
+    root = lint_root(tmp_path)
+    problems = run_evals.lint_fixed_and_config("demo", GOOD, FIXED_PROFILE, root)
+    assert len(problems) == 1 and "isn't in stock" in problems[0]
+    assert run_evals.lint_fixed_and_config("demo", GOOD + OOS.replace("'", "’"), FIXED_PROFILE, root) == []
+
+
+def test_lint_requires_the_welcome_as_the_first_line(tmp_path):
+    root = lint_root(tmp_path)
+    problems = run_evals.lint_fixed_and_config("demo", "Here is the output.\n" + GOOD + OOS, FIXED_PROFILE, root)
+    assert len(problems) == 1 and problems[0].startswith("welcome is not the first line")
+
+
+def test_lint_flags_a_prescription_route_the_profile_does_not_enable(tmp_path):
+    root = lint_root(tmp_path)
+    text = GOOD + OOS + "For a prescription, send it by WhatsApp with the send tool.\n"
+    problems = run_evals.lint_fixed_and_config("demo", text, FIXED_PROFILE, root)
+    assert any("whatsapp" in p for p in problems) and any("send tool" in p for p in problems)
+    assert run_evals.lint_fixed_and_config("demo", text, FIXED_PROFILE.replace("in_store", "whatsapp"), root) == []
+
+
+VALUES_PROFILE = """# Profile
+| Item | Value |
+|---|---|
+| Direction | Inbound |
+| Prescription upload | in_store (`{{var.prescription_upload_method}}`) |
+| Hours | `{{var.business_hours}}` = 8 AM to 10 PM, every day |
+| Delivery info | not provided |
+| Return policy | NOT given |
+| Call data | `{{var.customer_name}}` and `{{var.refill_details}}` (unconfirmed) |
+
+## Test values
+
+- <customer_name> = Test Person
+- <order_number> = 48213
+- <refill_details> = Medicine G due
+"""
+
+
+def test_profile_variable_values_reads_the_table_and_call_context():
+    values = run_evals.profile_variable_values(VALUES_PROFILE)
+    assert values == {"prescription_upload_method": "in_store", "business_hours": "8 AM to 10 PM, every day",
+                      "delivery_info": "(empty)", "return_policy": "(empty)",
+                      "customer_name": "Test Person", "refill_details": "Medicine G due"}
+    note = run_evals.values_note(values)
+    assert "prescription_upload_method = in_store" in note and "business_hours = 8 AM to 10 PM" in note
+
+
+def test_probe_placeholders_are_replaced_by_test_values():
+    values = run_evals.test_values(VALUES_PROFILE)
+    probe = "My name is <customer_name>, order <order_number>, near <unknown>."
+    assert run_evals.fill_placeholders(probe, values) == "My name is Test Person, order 48213, near <unknown>."
+    assert "## Test values" in run_evals.HIDDEN_HEADINGS
+    assert "Test Person" not in run_evals.visible_profile(VALUES_PROFILE)
+
+
+def test_stray_text_before_the_welcome_is_stripped():
+    welcome = "Hello, this is {{var.agent_name}}."
+    text = "```\nNow assembling the output.\n\nHello, this is {{var.agent_name}}.\n\n## 1. Role\n"
+    clean, removed = run_evals.strip_before_welcome(text, welcome)
+    assert clean.startswith("Hello, this is") and removed == ["```", "Now assembling the output."]
+    same, nothing = run_evals.strip_before_welcome("## 1. Role\n\nbody", welcome)
+    assert same == "## 1. Role\n\nbody" and nothing == []
+def test_run_industry_gives_the_agent_values_fills_probes_and_lints_stray_text(repo, monkeypatch):
+    monkeypatch.setattr(run_evals, "VARIABLE_VALUE_INDUSTRIES", ("healthcare",))
+    ind = repo / "industries" / "healthcare"
+    (ind / "section-bases.md").write_text('- Inbound: "Hello, this is {{var.agent_name}}."\n', encoding="utf-8")
+    (ind / "test-profiles" / "02-b.md").unlink()
+    (ind / "test-profiles" / "01-a.md").write_text(VALUES_PROFILE, encoding="utf-8")
+    checks = json.loads((ind / "eval.json").read_text(encoding="utf-8"))
+    checks["checks"][0]["probe"] = "I am <customer_name>, order <order_number>."
+    (ind / "eval.json").write_text(json.dumps(checks), encoding="utf-8")
+
+    class Llm(FakeLlm):
+        def run(self, prompt, system=None, agent=None, tools=None):
+            if agent is None and system is None:
+                self.calls.append((agent, system, prompt))
+                return "```\nHello, this is {{var.agent_name}}.\n## 1. Role\n=== DRAFT NOTES ===\nnotes"
+            return super().run(prompt, system=system, agent=agent, tools=tools)
+    llm = Llm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    probes = [c for c in llm.calls if c[1] and "prescription_upload_method = in_store" in c[1]]
+    assert probes and any(c[2] == "I am Test Person, order 48213." for c in probes)
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert any("stray text before the welcome" in m for m in saved["lint"]["01-a"])
+    text = (repo / "industries/healthcare/results/2026-10-08/01-a-instructions.md").read_text(encoding="utf-8")
+    assert text.startswith("Hello, this is")

@@ -13,17 +13,17 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 
 ## Steps: inbound refill
 
-1. Verify: customer name plus the order number of the earlier order (R-14). If either is missing, share nothing and offer a callback or staff.
-2. Ask which medicine to refill (R-01); confirm it as heard (R-03). Never assume it from history.
+1. Ask which medicine to refill (R-01); confirm it as heard (R-03). Never assume it from history. Ask only this (R-72). Confirm nothing about past orders, prescriptions or refills yet.
+2. Verify, one question at a time (R-72): the customer's name, then the order number of the earlier order (R-14). A name or order number given is accepted as given. If either is missing, share nothing and offer the caller a callback or staff. Until both are given, confirm nothing about past orders, prescriptions or refills.
 3. Never assume an earlier prescription is still valid (R-57). Follow workflow 02 from the stock check: a prescription-only medicine goes to the pharmacist with the upload route; a controlled or unsure medicine is never refilled by phone (R-12); an ordinary medicine is ordered with the read-back and clear yes.
 4. Any question about how to take it, a missed dose or side effects: R-09.
 
 ## Steps: outbound reminder
 
 1. The welcome asks if it is a good time. If not, offer a callback time or end politely (R-60).
-2. Ask for the customer by name. Share nothing until the person confirms they are that customer. Someone else: say sorry for the trouble, share nothing and end politely (R-58).
+2. Ask for the customer by name. Share nothing until the person confirms they are that customer. Someone else: the wrong-person line, then `end_call` (R-58).
 3. Say only that a refill is due. To say which medicine, or to go on, ask for the order number first (R-14); then the medicine is said from `{{var.refill_details}}` (R-38).
-4. Ask if they want the refill. Yes: follow the inbound refill steps from step 2. No: thank them and close (R-24, outbound line).
+4. Ask if they want the refill. Yes: follow the inbound refill steps from step 3 (the medicine is already known). No: thank them and close (R-24, outbound line).
 5. Reminder only. No sales, no offers, no medicine talk (R-63, R-09). A health emergency on the call: R-07.
 6. "Who gave you my number?": R-61. "Stop calling me": R-62. A family member says the customer has died: R-64.
 7. Voicemail: R-59.
@@ -41,12 +41,12 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 | ID | Rule | Source | Severity | Section placement |
 |----|------|--------|----------|-------------------|
 | R-57 | A refill is a new order for the gates. Never assume an earlier prescription is still valid: a prescription-only refill goes to the pharmacist (R-11, R-50) and a controlled or unsure medicine is never refilled by phone (R-12). Refill details are shared only after verification (R-14). | Grill-me Q3, Q6, Q7 | critical | S6 |
-| R-58 | On an outbound call, ask for the customer by name and confirm the person is that customer before saying anything about a refill. If it is someone else, share nothing about the customer, any medicine or any refill, apologise for the trouble and end politely. After confirmation say only that a refill is due; say the medicine only after the customer gives the order number. Decided (DECISIONS 44): the medicine is named only after the order number is given. The address on file is never said on an outbound call (R-56). | Grill-me Q11; open question | critical | S6 |
+| R-58 | On an outbound call, ask for the customer by name and confirm the person is that customer before saying anything about a refill. If it is someone else, say exactly "Sorry for the trouble. I can only speak with the customer." then, in the same reply, use `end_call`. Give no purpose; never say refill, medicine, order or prescription; share nothing about the customer. After confirmation say only that a refill is due; say the medicine only after the customer gives the order number. Decided (DECISIONS 44): the medicine is named only after the order number is given. The address on file is never said on an outbound call (R-56). | Grill-me Q11; open question | critical | S6 |
 | R-59 | On a voicemail or no answer, say exactly and only: "Hello, this is `{{var.agent_name}}` from `{{var.company_name}}`. Please call us back at `{{var.business_phone}}`." Never leave the customer's name, a medicine, an order or a refill detail. Open question: whether the platform supports voicemail at all. | Healthcare pattern | critical | S6 |
 | R-60 | At the start of an outbound call, the welcome is exactly "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" and is always written as the first line of the Instructions. If not, offer a callback time or end politely. | Healthcare pattern | major | W; S6 |
 | R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. Never invent a source. Outbound sets only. | Healthcare pattern | major | S5 |
 | R-62 | Stop-calling request: apologise once and say exactly "I've noted that you don't want further calls. Our team will update this." Never argue or retry, then use `end_call` in the same reply. Never say it is done or removed (no do-not-call tool is confirmed). | Healthcare pattern | critical | S6 |
-| R-63 | An outbound reminder is a reminder only: no sales, no offers, no supplements, no dosage or medicine talk. If the customer asks how to take it or says they stopped it, say "Our pharmacist will help you with that." (R-09). | Grill-me Q2, Q9 | major | S6 |
+| R-63 | An outbound reminder is a reminder only (written in section 5 for outbound sets). Never say or take an address on the call; for home delivery say the team will confirm it (R-56). No sales, no offers, no supplements, no dosage or medicine talk. If the customer asks how to take it or says they stopped it, say "Our pharmacist will help you with that." (R-09). | Grill-me Q2, Q9 | major | S5 |
 | R-64 | If someone says the customer has died: offer condolences in one sentence, stop the reminder, share nothing further, and end politely. Outbound sets only. | Healthcare pattern | major | S5 |
 
 ## Scenarios
@@ -84,13 +84,13 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 Inbound set:
 
 ```main-lines
-REFILL: Verify first: the customer's name and the earlier order number; with either missing, share nothing and offer a callback. Ask which medicine; never assume it. Never assume an earlier prescription is still valid. Follow STOCK and ORDER: a prescription medicine goes to the pharmacist, a controlled or unsure medicine is never refilled by phone.
+REFILL: Ask which medicine first. Confirm nothing about past orders, prescriptions or refills until you have the customer's name, then the earlier order number, one at a time; if either is missing, share nothing and offer a callback. An earlier prescription is never assumed valid. Then follow STOCK and ORDER; a prescription medicine goes to the pharmacist, a controlled or unsure one is never refilled by phone.
 ```
 
 Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02, and the STOCK line of workflow 01):
 
 ```main-lines-outbound
-OUTBOUND REFILL: You called them. Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say sorry for the trouble and end politely. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from "Ask which medicine". Reminder only: no sales, no medicine talk. Skip the address step: for delivery say the team will confirm the address; never say one.
-If they say stop calling, apologise once, then say exactly "I've noted that you don't want further calls. Our team will update this." Never argue or retry. Then use the end_call tool.
+OUTBOUND REFILL: You called them. Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say exactly "Sorry for the trouble. I can only speak with the customer." then end the call. Never give the purpose; never say refill, medicine, order or prescription. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from the stock check, with the medicine already known.
+If they say stop calling, apologise once, then say exactly "I've noted that you don't want further calls. Our team will update this." then, in the same reply, use the end_call tool. Never argue or retry.
 Voicemail: say exactly and only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Never leave a name, medicine or refill detail.
 ```
