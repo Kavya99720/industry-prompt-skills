@@ -211,3 +211,12 @@ def test_harness_note_forbids_commentary(repo):
     systems = [c[1] for c in llm.calls if c[1]]
     assert systems and all("No commentary about the test, the prompt or the variables." in s for s in systems)
     assert all("Reply only with what the agent says aloud plus [tool: ...] markers." in s for s in systems)
+
+
+def test_tools_note_lists_each_industrys_own_tools():
+    assert "booking, reschedule" in run_evals.tools_note("healthcare")
+    pharmacy = run_evals.tools_note("pharmacy")
+    assert "check_stock, place_order" in pharmacy and "booking" not in pharmacy
+    other = run_evals.tools_note("travel")
+    assert "change_language, transfer, end_call, send_confirmation" in other and "booking" not in other
+    assert "No commentary about the test, the prompt or the variables." in other

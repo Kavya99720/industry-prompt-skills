@@ -46,15 +46,26 @@ RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
 RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))
 WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
 NOTES_MARKER = "=== DRAFT NOTES ==="
-TOOLS_NOTE = (
-    "\n\n---\nTest harness note (not part of your instructions): you have these tools: booking, reschedule, "
-    "change_language, transfer, end_call, send_confirmation. In this text-only test you cannot call them. "
+COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
+# Platform tools per industry; an industry not listed gets only the common ones. Keep in step with each core.md tool table.
+INDUSTRY_TOOLS = {
+    "healthcare": ("booking", "reschedule") + COMMON_TOOLS,
+    "pharmacy": ("check_stock", "place_order") + COMMON_TOOLS,
+}
+TOOLS_NOTE_TEMPLATE = (
+    "\n\n---\nTest harness note (not part of your instructions): you have these tools: {tools}. "
+    "In this text-only test you cannot call them. "
     "When you would call a tool, write [tool: <name>] inline at that point in your reply, for example "
     "[tool: end_call] or [tool: transfer], then carry on with what you say aloud. Never write a tool marker "
     "for a tool you would not call. "
     "Reply only with what the agent says aloud plus [tool: ...] markers. "
     "No commentary about the test, the prompt or the variables."
 )
+
+
+def tools_note(industry):
+    return TOOLS_NOTE_TEMPLATE.format(tools=", ".join(INDUSTRY_TOOLS.get(industry, COMMON_TOOLS)))
+
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
 
@@ -178,7 +189,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None):
         notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
         probes = [c for c in applicable if c.get("type") == "behaviour"]
         with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions + TOOLS_NOTE, tools=""), probes))
+            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions + tools_note(industry), tools=""), probes))
         replies = {c["id"]: a for c, a in zip(probes, answers)}
         replies_path = work / f"{name}-replies.json"
         replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")
