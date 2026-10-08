@@ -7,12 +7,14 @@ Prompt-writing skills for 10 industries (pharmacy, healthcare, retail, finance, 
 - industries/<industry>/results/ — recorded eval runs
 - .claude/skills/<industry>-prompt-writer/ — industry prompt-writing skills (deliverable: SKILL.md + references/)
 - .claude/skills/ — workflow skills (grill-me, brainstorm, spec-first, write-evals, run-evals, release-check)
-- .claude/agents/<industry>-expert.md — per-industry expert subagents; eval-judge.md — shared neutral grader
+- .claude/agents/<industry>-agent.md — one domain subagent per industry (writes only inside its own industries/<industry>/ and its skill folder); eval-judge.md — shared neutral grader
+- industries/<industry>/ also holds core.md, workflows/ and test-profiles/ (healthcare is the template); docs/shared/ also holds platform-contract.md, variables.json and reference/
+- scripts/ — check_variables.py (variables and client-name check), validate_eval.py, run_evals.py (--industry <x> or --all), status.py
 - docs/shared/baseline-rules.md — rules common to all voice agents; docs/shared/eval-schema.md — the one eval.json format
 - docs/DECISIONS.md — decisions log
 
 ## Workflow per industry
-grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> expert researches rules -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run until all pass -> release-check.
+grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> industry agent builds brief, test profiles -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run until all pass -> release-check.
 
 ## Rules
 - Never edit a frozen eval.json to make a prompt pass. Fix the skill instead. Only change an eval if it is genuinely wrong, and record why in docs/DECISIONS.md.

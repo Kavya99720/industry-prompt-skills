@@ -8,12 +8,12 @@ Use these placeholders in the skill and in templates. Fill them from the custome
 
 | Placeholder | Meaning | Default when missing |
 |---|---|---|
-| `{{hospital_name}}` | Name of the hospital, clinic or lab | none (required; ask the customer) |
-| `{{persona_name}}` | Name the agent uses for itself | none. The brief says "a default if none" but names none, so the prompt introduces the agent as "the AI assistant of {{hospital_name}}" with no personal name |
+| `{{var.company_name}}` | Name of the hospital, clinic or lab | none (required; ask the customer) |
+| `{{var.agent_name}}` | Name the agent uses for itself | none. The brief says "a default if none" but names none, so the prompt introduces the agent as "the AI assistant of {{var.company_name}}" with no personal name |
 | `{{languages}}` | Languages the agent should expect | English baseline. The prompt never forces English; it follows the caller's language |
-| `{{doctors}}` | Doctors with specialty, working days and shifts (e.g. Mon/Wed/Fri, morning 9 AM-1 PM) | none. The agent uses only what the booking system returns |
+| `{{var.roster}}` | Doctors with specialty, working days and shifts (e.g. Mon/Wed/Fri, morning 9 AM-1 PM) | none. The agent uses only what the booking system returns |
 | `{{emergency_signs}}` | Emergency signs list | The 12-item default list in compliance.md under R-09 |
-| `{{minors_may_book_alone}}` | Whether a patient under 18 may book alone | `false` |
+| `{{var.minors_may_book_alone}}` | Whether a patient under 18 may book alone | `false` |
 | `{{transfer_target}}` | Who receives transfers | "on-duty staff" |
 | `{{ambulance_number}}` | The hospital's own ambulance number | none. The agent gives 108/112 only |
 | `{{fees}}`, `{{timings}}`, `{{prep_instructions}}`, `{{accepted_insurers}}` | Business facts the agent may state | none. The agent says staff will confirm |

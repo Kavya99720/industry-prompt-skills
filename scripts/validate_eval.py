@@ -4,15 +4,43 @@
 Exits 0 if valid, 1 with one message per problem otherwise. Standard library only.
 """
 import json
+import re
 import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+MAX_BASELINE_ONLY = 5
+BASELINE_RE = re.compile(r"^\*\*Baseline B-\d+")
 
 REQUIRED_TOP = ("industry", "version", "frozen", "checks")
 SEVERITIES = ("critical", "major", "minor")
 TYPES = ("prompt", "behaviour")
 
 
-def validate(path):
+def industry_files(industry_dir):
+    """brief.md plus core.md and workflows/*.md, where an industry has split its brief."""
+    files = [industry_dir / "brief.md", industry_dir / "core.md"]
+    files += sorted((industry_dir / "workflows").glob("*.md"))
+    return [f for f in files if f.is_file()]
+
+
+def parse_rules(texts):
+    """Return {rule_id: {"severity": str, "baseline_only": bool}} from table rows `| R-xx | ... |`."""
+    rules = {}
+    for text in texts:
+        for line in text.splitlines():
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            if len(cells) < 3 or not re.match(r"R-\d+$", cells[0]):
+                continue
+            severity = next((c for c in cells[2:] if c in SEVERITIES), None)
+            if severity is None:
+                continue
+            rules[cells[0]] = {"severity": severity, "baseline_only": bool(BASELINE_RE.match(cells[1]))}
+    return rules
+
+
+def validate(path, root=None):
+    root = Path(root) if root else ROOT
     errors = []
     try:
         text = Path(path).read_text(encoding="utf-8")
@@ -35,10 +63,12 @@ def validate(path):
 
     industry = data.get("industry")
     brief_text = None
+    rules = {}
     if isinstance(industry, str) and industry:
-        brief = Path(__file__).resolve().parent.parent / "industries" / industry / "brief.md"
-        if brief.exists():
-            brief_text = brief.read_text(encoding="utf-8")
+        parts = [f.read_text(encoding="utf-8") for f in industry_files(root / "industries" / industry)]
+        if parts:
+            brief_text = chr(10).join(parts)
+            rules = parse_rules(parts)
 
     if checks is None:
         return errors
@@ -91,6 +121,22 @@ def validate(path):
             for sid in scenario_ids:
                 if sid not in brief_text:
                     errors.append(f"{label}: scenario_id {sid} not found in industries/{industry}/brief.md")
+
+    if brief_text is not None and rules:
+        covered = {r for c in checks if isinstance(c, dict) and isinstance(c.get("rule_ids"), list) for r in c["rule_ids"]}
+        for rid, info in sorted(rules.items()):
+            if info["severity"] == "critical" and rid not in covered:
+                errors.append(f"critical rule {rid} has no check")
+        baseline_only = [
+            c.get("id", f"checks[{i}]") for i, c in enumerate(checks)
+            if isinstance(c, dict) and isinstance(c.get("rule_ids"), list) and c["rule_ids"]
+            and all(rules.get(r, {}).get("baseline_only") for r in c["rule_ids"])
+        ]
+        if len(baseline_only) > MAX_BASELINE_ONLY:
+            errors.append(
+                f"{len(baseline_only)} checks map only to baseline rules (max {MAX_BASELINE_ONLY}): "
+                + ", ".join(baseline_only)
+            )
     return errors
 
 

@@ -45,7 +45,7 @@ Source: Healthcare grill-me, entry 1 in docs/DECISIONS.md (2026-10-07), plus two
 38. [NICE] Caller asks for a past date or a holiday or closed day.
 
 ## 3. Compliance and safety risks
-39. [MUST] AI disclosure. The agent may use a persona name (e.g. Ritu) but must never claim to be human; if asked, it says it is an AI assistant (T).
+39. [MUST] AI disclosure. The agent may use a persona name (e.g. <agent_name>) but must never claim to be human; if asked, it says it is an AI assistant (T).
 40. [MUST] Emergency symptoms (chest pain, breathing difficulty, severe bleeding, stroke signs). The agent immediately gives 108 and alerts on-duty staff, and drops the booking flow.
 41. [MUST] Self-harm statement. The agent shares Tele-MANAS 14416 and connects to staff.
 42. [MUST] No diagnosis, treatment, dosage or "is this serious?" advice. Clinical questions go to a nurse or doctor.

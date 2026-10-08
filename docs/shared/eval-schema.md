@@ -59,3 +59,10 @@ One format for every industry. File: `industries/<slug>/eval.json`. Validated by
 
 ## Results
 Runs are recorded under `industries/<slug>/results/<YYYY-MM-DD-runN>/`, with a `summary.json` containing `"failed": <n>`, and a one-line `history.md` in `industries/<slug>/results/`.
+
+`scripts/run_evals.py --industry <slug>` (or `--all`) also saves `industries/<slug>/results/<YYYY-MM-DD>.json` with one row per case and test profile: `case_id`, `profile`, `result` (pass or fail) and `reason`, plus a summary. The generated Instructions and simulated replies are saved in `results/<YYYY-MM-DD>/`.
+
+## Per-industry coverage rules
+- At most 5 checks may map only to baseline rules (rules marked `**Baseline B-xx**` in the brief). The rest test the industry's own critical risks.
+- Every rule marked `critical` in the industry's brief (brief.md, core.md or workflows/*.md) must be covered by at least one check.
+- `scripts/validate_eval.py` fails on either violation.

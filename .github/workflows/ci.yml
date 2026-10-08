@@ -25,5 +25,7 @@ jobs:
             python scripts/validate_eval.py "$f"
           done
           [ "$found" = 1 ] || echo "No eval.json files yet"
+      - name: Check variables in skills, industries and outputs
+        run: python scripts/check_variables.py
       - name: Check the README progress table is current
         run: python scripts/status.py --check

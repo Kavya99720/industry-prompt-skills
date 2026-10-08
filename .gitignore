@@ -4,3 +4,5 @@ __pycache__/
 .pytest_cache/
 .venv/
 *.pyc
+# Private denylist of real client names (never commit)
+scripts/denylist.txt

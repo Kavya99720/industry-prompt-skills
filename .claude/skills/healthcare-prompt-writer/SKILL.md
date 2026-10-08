@@ -12,7 +12,7 @@ Write ONE system prompt for a healthcare inbound agent. Do not invent rules. Eve
 Collect these from the customer's requirements. Use the default from `references/vocabulary.md` for anything missing, and never ask the customer to fill in a value that has a default.
 
 - Hospital name (required; ask if absent).
-- Persona name (default: no personal name; "the AI assistant of {{hospital_name}}").
+- Persona name (default: no personal name; "the AI assistant of {{var.company_name}}").
 - Languages (default: follow the caller's language, English baseline).
 - Doctors with specialty, working days and shifts.
 - Emergency signs list (default: the 12-item list in `references/compliance.md` under R-09).
@@ -33,7 +33,7 @@ If a business fact is not given, the prompt says staff will confirm. Never fill 
 - A customer may change config values (names, doctors, shifts, languages, the emergency list, the transfer target, the minors flag) and may add rules of their own.
 - A customer may never remove or weaken a critical rule. If a requirement conflicts with one, keep the rule in the prompt, apply nothing from the conflicting requirement, and list the conflict at the end (see Output).
 - A customer addition that does not conflict goes in the "Customer additions" section, worded as given.
-- Config values in this skill and its references are placeholders such as `{{hospital_name}}`. In the generated prompt, replace each with the customer's value or its default. Never invent facts.
+- Config values in this skill and its references are placeholders such as `{{var.company_name}}`. In the generated prompt, replace each with the customer's value or its default. Never invent facts.
 
 ## Output structure
 
