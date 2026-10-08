@@ -17,7 +17,7 @@ class FakeLlm:
     def __init__(self, fail_ids=()):
         self.calls, self.fail_ids = [], set(fail_ids)
 
-    def run(self, prompt, system=None, agent=None):
+    def run(self, prompt, system=None, agent=None, tools=None):
         self.calls.append((agent, system, prompt))
         if agent == "eval-judge":
             results = [{"id": c["id"], "result": "FAIL" if c["id"] in self.fail_ids else "PASS",
@@ -137,8 +137,8 @@ def test_full_output_is_split_into_instructions_and_draft_notes(repo):
 
 def test_missing_draft_notes_marker_is_recorded(repo):
     class NoNotes(FakeLlm):
-        def run(self, prompt, system=None, agent=None):
-            return "only instructions" if system is None and agent is None else super().run(prompt, system, agent)
+        def run(self, prompt, system=None, agent=None, tools=None):
+            return "only instructions" if system is None and agent is None else super().run(prompt, system, agent, tools)
     run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], NoNotes())
     notes = repo / "industries/healthcare/results/2026-10-08/01-a-draft-notes.md"
     assert "no draft notes supplied" in notes.read_text(encoding="utf-8")

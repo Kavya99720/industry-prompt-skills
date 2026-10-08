@@ -1,6 +1,6 @@
 {
   "syntax": "{{var.<name>}}",
-  "note": "Single source of truth for every variable a generated prompt may use. scripts/check_variables.py fails on any {{var.x}} not listed here. Example values are neutral placeholders; never use a real customer's values. Sources: Voice settings, Fixed, Built in and Custom detail are the platform groups (docs/shared/platform-contract.md). 'status: unconfirmed' means the platform has not confirmed the variable exists (see the open questions).",
+  "note": "Single source of truth for every variable a generated prompt may use. scripts/check_variables.py fails on any variable in the var syntax that is not listed here. Example values are neutral placeholders; never use a real customer's values. Sources: Voice settings, Fixed, Built in and Custom detail are the platform groups (docs/shared/platform-contract.md). 'status: unconfirmed' means the platform has not confirmed the variable exists (see the open questions).",
   "variables": [
     {
       "name": "agent_name",

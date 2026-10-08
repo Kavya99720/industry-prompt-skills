@@ -21,6 +21,7 @@ It never edits eval.json or the skill. Language-model calls go through the Claud
 Exit code: 0 all passed, 1 some failed, 2 an industry was missing inputs.
 """
 import argparse
+import concurrent.futures
 import datetime
 import json
 import os
@@ -37,6 +38,7 @@ INDUSTRIES = (
     "healthcare", "pharmacy", "retail", "finance", "banking",
     "education", "logistics", "hr", "real-estate", "travel",
 )
+WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
 NOTES_MARKER = "=== DRAFT NOTES ==="
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
@@ -48,8 +50,10 @@ class ClaudeCli:
         self.binary = binary or os.environ.get("CLAUDE_BIN", "claude")
         self.cwd = cwd
 
-    def run(self, prompt, system=None, agent=None):
+    def run(self, prompt, system=None, agent=None, tools=None):
         cmd = [self.binary, "-p"]
+        if tools is not None:
+            cmd += ["--tools", tools]
         if agent:
             cmd += ["--agent", agent]
         if system:
@@ -130,15 +134,18 @@ def run_industry(industry, llm, root=ROOT, date=None):
             f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax). "
             f"Then a line containing only {NOTES_MARKER} . "
             f"Part 2: the draft notes (assumptions and defaults used, refused or changed client requests "
-            f"with a one-line reason each, open items, the section 6 word count). Output nothing else.\n\n"
+            f"with a one-line reason each, open items, the section 6 word count). Output nothing else. "
+            f"Do not open eval.json files or results folders.\n\n"
             + visible_profile(pf.read_text(encoding="utf-8")))
         instructions, notes = split_output(full)
         inst_path = work / f"{name}-instructions.md"
         inst_path.write_text(instructions + "\n", encoding="utf-8")
         notes_path = work / f"{name}-draft-notes.md"
         notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
-        replies = {c["id"]: llm.run(c["probe"], system=instructions)
-                   for c in applicable if c.get("type") == "behaviour"}
+        probes = [c for c in applicable if c.get("type") == "behaviour"]
+        with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
+            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions, tools=""), probes))
+        replies = {c["id"]: a for c, a in zip(probes, answers)}
         replies_path = work / f"{name}-replies.json"
         replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")
         verdict = llm.run(

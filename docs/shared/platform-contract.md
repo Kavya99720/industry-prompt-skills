@@ -27,7 +27,7 @@ An agent's instructions are made of these parts, in this order:
 
 **Lookups.** The platform has a Lookups feature. It currently has 0 entries. See open questions.
 
-**Section content.** The real reference Starter texts show that sections 1 to 5 contain industry-specific lines as well as shared text (see docs/shared/platform-gap-analysis.md, part 1). A skill therefore writes all six sections, not only the Main prompt. In the platform UI, `@name` stands for `{{var.name}}`, and `@roster` inserts the doctor list automatically.
+**Section content.** The real reference Starter texts show that sections 1 to 5 contain industry-specific lines as well as shared text (see docs/shared/platform-gap-analysis.md, part 1). A skill therefore writes all six sections, not only the Main prompt. In the platform UI, an @ prefix in front of a variable name stands for the full variable syntax, and the roster variable inserts the doctor list automatically. Generated text always uses the full syntax.
 
 ## 2. Variables
 

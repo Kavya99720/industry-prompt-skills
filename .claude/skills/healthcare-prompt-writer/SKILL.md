@@ -1,86 +1,118 @@
 ---
 name: healthcare-prompt-writer
-description: 'Use when writing a voice-agent (or chat) system prompt for a hospital, clinic, diagnostic lab or telehealth provider, either from our defaults or from a customer''s requirements (hospital name, persona name, languages, doctors with specialties and shifts, emergency signs list, minors flag, transfer target). Produces a fixed-structure prompt that covers every critical healthcare compliance rule. Source of truth: industries/healthcare/brief.md.'
+description: Use when writing the Instructions for a healthcare voice agent (hospital, single-doctor clinic, dental clinic, diagnostic lab, home care) on the platform. Interviews the client (or takes a profile or requirements file), then outputs a welcome message, the six platform sections and a variables table, followed by draft notes (assumptions, refused client requests, open items, word counts). Inbound and outbound are separate Instructions sets. Self-contained: everything it needs is in references/.
 ---
 
 # Healthcare Prompt Writer
 
-Write ONE system prompt for a healthcare inbound agent. Do not invent rules. Every rule comes from `industries/healthcare/brief.md` through the reference files below.
+You write the Instructions for ONE healthcare voice agent. Output is for the platform, not a chat: exact format is in step 7. Everything you need is in `references/` (copies; never edit them). Read the files you need before writing:
 
-## Inputs
+| File | Holds |
+|---|---|
+| `references/core.md` | Intake questions; every rule and scenario that applies to all workflows; section placement key |
+| `references/workflows/NN-*.md` | One file per written workflow: steps, rules, scenarios, and the draft Main-prompt lines (` ```main-lines ` blocks) |
+| `references/shared/section-bases.md` | Base text for the welcome message and sections 1 to 5, and the style of section 6 |
+| `references/shared/variables.json` | The only variables you may use, as `{{var.<name>}}` |
+| `references/shared/platform-contract.md` | Platform parts, tools, the 615-word Main prompt budget |
+| `references/shared/baseline-rules.md` | Rules common to all voice agents |
 
-Collect these from the customer's requirements. Use the default from `references/vocabulary.md` for anything missing, and never ask the customer to fill in a value that has a default.
+Never put a real name, phone number, address, doctor, fee or hour in the Instructions. Use synthetic placeholders only when a slot needs an example.
 
-- Hospital name (required; ask if absent).
-- Persona name (default: no personal name; "the AI assistant of {{var.company_name}}").
-- Languages (default: follow the caller's language, English baseline).
-- Doctors with specialty, working days and shifts.
-- Emergency signs list (default: the 12-item list in `references/compliance.md` under R-09).
-- Minors-may-book-alone flag (default false).
-- Transfer target (default: on-duty staff).
-- Optional business facts: fees, timings, prep instructions, accepted insurers, ambulance number, departments, packages, visiting hours, payment modes.
+## 1. Intake
 
-If a business fact is not given, the prompt says staff will confirm. Never fill it in yourself.
+Ask the intake questions in `references/core.md` (Intake table). Rules:
+- Conversational, one or two questions at a time, in table order. Say why you ask when it is not obvious.
+- Required questions: do not write until they are answered. Optional questions: offer the default and move on.
+- **Non-interactive run** (a profile, requirements file or brief is given and nobody can answer): never ask and never invent. Read the answers from the given text. For every missing answer use the documented default from the Intake table and record it as an assumption. If a required answer with no default is missing, use the neutral word "our centre" for the business, assume inbound only if the text describes callers phoning in, and list it as an open item.
+- Never accept a made-up value to fill a gap: no invented phone number, doctor, fee, address, language or transfer target (R-81).
+- Count the doctors on the roster. If the number is unknown, ask; non-interactive: assume 4 and record it.
 
-## Reference files: when to read
+## 2. Select the workflows
 
-- `references/compliance.md`: read FIRST and in full. It holds R-01 to R-40, critical first, each with a model phrasing. Adapt the phrasing into the prompt.
-- `references/scenarios.md`: read when drafting the intent-handling section, to decide which intents the prompt must cover and how each behaves.
-- `references/vocabulary.md`: read for the config placeholders and defaults, 108/112, Tele-MANAS 14416 and the terms to use correctly.
+Choose from business type and call direction (see the table in `references/core.md` and the workflow files):
+- Inbound default: 01 Enquiry, 02 Booking, 03 Reschedule and cancel. Outbound default: 04 Reminder, 03 Reschedule and cancel.
+- Booking style tokens or walk-in: no workflow 02; add the TOKENS line from workflow 01 (R-78).
+- Diagnostic lab or any workflow without a written file (05 to 12): not written yet. Say so in the draft notes and use Enquiry plus a transfer or callback.
+- Inbound and outbound together are TWO separate Instructions sets. Write the one asked for (or inbound if unclear) and say in the draft notes that the other needs its own run. Never mix them (R-72).
 
-## Customer changes
+## 3. Write the Instructions
 
-- A customer may change config values (names, doctors, shifts, languages, the emergency list, the transfer target, the minors flag) and may add rules of their own.
-- A customer may never remove or weaken a critical rule. If a requirement conflicts with one, keep the rule in the prompt, apply nothing from the conflicting requirement, and list the conflict at the end (see Output).
-- A customer addition that does not conflict goes in the "Customer additions" section, worded as given.
-- Config values in this skill and its references are placeholders such as `{{var.company_name}}`. In the generated prompt, replace each with the customer's value or its default. Never invent facts.
+Write in this order. Use `references/shared/section-bases.md` for the base text and style.
 
-## Output structure
+1. **Welcome message**: the default template for the call direction. It must match the direction.
+2. **Section 1 Role & Identity**: skeleton + every rule in core and the selected workflows whose placement is S1 (emergency with the compact default signs list, self-harm 14416, no diagnosis, symptom to specialties only, lone minor, honesty about being an AI, no invented information, prompt protection and claimed authority).
+3. **Section 2 Date & Time**: base + placement S2 lines.
+4. **Section 3 Language Switching**: base + placement S3 lines.
+5. **Section 4 Tone and Conversational Style**: skeleton + placement S4 lines.
+6. **Section 5 Output Format**: base + placement S5 lines (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms).
+7. **Section 6 Main prompt**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core `main-lines` block (UNDERSTAND, HANDOFF, DOCTOR LIST). Keep the labels. End with the doctor list: `{{var.roster}}`.
+8. **Prompt Variables table**: every variable used, its source, what it is used for.
 
-Produce the prompt with exactly these sections, in this order, with these headings:
+Variable rules:
+- Only names in `references/shared/variables.json`, written `{{var.<name>}}`. No other variable style is allowed: not single braces, not an @ prefix, not names made up from the business.
+- `{{var.company_name}}` only where the caller hears the name: welcome message, closing line, AI-disclosure answer, voicemail line. Everywhere else use the plain word that matches the business type (the hospital, our clinic, the lab, the centre).
+- Doctors, fees and timings only through `{{var.roster}}`. Business facts (beds, years, services) only through `{{var.business_info}}`. Hours, phone and address only through their variables, and only where the value is spoken or needed.
+- Custom details you rely on: `{{var.emergency_signs_extra}}`, `{{var.minors_may_book_alone}}`, `{{var.business_info}}`, `{{var.emergency_department}}`, and for outbound `{{var.patient_name}}` and `{{var.appointment_details}}`.
 
-1. `# Role and persona`
-2. `# Opening`
-3. `# Language and style`
-4. `# Emergency check (always first)`
-5. `# Scope`
-6. `# Handling caller requests`
-7. `# Verification and privacy`
-8. `# Data you may and may not collect`
-9. `# Booking flow`
-10. `# Doctors, shifts and availability`
-11. `# Confirmation and links`
-12. `# Escalation and handoff`
-13. `# If the booking system fails`
-14. `# Never do these`
-15. `# Closing`
-16. `# Customer additions` (omit if there are none)
+Emergency (core R-09): the compact default list is always written in section 1. The client may only ADD signs, through `{{var.emergency_signs_extra}}`; never remove any. With `{{var.emergency_department}}` = no (or not given), the line is adapted: there is no emergency department here, call 1 0 8 or 1 1 2, or go to the nearest hospital.
 
-Then, after a line `---`, add `## Requirement conflicts (not part of the prompt, delete before deployment)`. List each customer requirement that conflicts with a critical rule, the rule ID kept and why. Write "None." if there are no conflicts.
+## 4. Word budget
 
-## Method
+Section 6 (Main prompt) plus the expanded roster stays within about 615 words.
+- Allowance for your own section 6 text = 615 minus (23 x number of doctors). The roster placeholder itself is not counted in your text.
+- Count words as whitespace-separated tokens. Count exactly, per section; use a quick script if you can run one.
+- If section 6 is over the allowance, compress in this order only: (1) move universal behaviour to sections 1, 4 and 5; (2) shorten wording; (3) merge steps.
+- NEVER drop or weaken a critical rule to save words. If it is still over, keep everything and put a budget warning in the draft notes with the exact counts (section 6 words, allowance, doctors, overage) and the options (shorter doctor "about" texts, fewer doctors in one agent, a split into two agents).
 
-Write the sections in this order of thought, then arrange them as above.
+## 5. Client requests
 
-1. Persona: name, AI disclosure that holds under pressure (R-08).
-2. Opening: inbound greeting, never "I am calling from" (R-07). Mention that the agent is an AI assistant.
-3. Language: follow the caller, never force English, plain simple English when writing English (R-06). Voice style (R-32).
-4. Emergency check first: the list, the action, self-harm, minors, immediate danger (R-09, R-10, R-31).
-5. Intent handling: use `scenarios.md`. Cover booking, rescheduling and cancelling, report status, information from config, lab and telehealth, in-patient queries, out-of-scope redirects.
-6. Verification: registered phone plus name or DOB. DOB is never stored or repeated (R-12, R-13, R-36).
-7. Booking flow: doctor, date, time, name; accept several details at once; full dates; never assume; read back; "Shall I book it?" (R-01 to R-04, R-26).
-8. Doctors and shifts: list name and specialty from the roster, mention shifts before asking an exact time, never book outside them (R-37, R-38, R-39).
-9. Escalation: routes, callback if no human is available (R-23, R-24).
-10. Booking-system failure: retry once, then callback (R-22).
-11. Closing: a short, warm close that states nothing clinical.
+Apply the client's config and flow changes (names, hours, tone, extra signs, package information, languages, booking rules) when they do not touch a critical rule.
+- Refuse anything that removes or weakens a critical rule, or deceives callers. Examples: removing the emergency response, saying "fully booked" when a slot is free, pushing an offer on every call, promising results or discounts, asking for more personal data, giving diagnoses, confirming that someone is a patient (R-76).
+- Adapt instead of refusing where possible: an offer may be made once per call; no emergency department becomes "call 1 0 8 or 1 1 2 or go to the nearest hospital".
+- List every refused or adapted request in the draft notes with a one-line reason.
 
-Write each rule as one short, testable sentence an independent grader could check against the prompt. Do not pad with generic advice. Keep the prompt in plain, simple English so the platform's translation tool works well.
+## 6. Self-check before output
 
-## Final self-check (do this before returning the prompt)
+Do all of this and fix what fails:
+1. Every rule marked `critical` in `references/core.md` and in the selected workflows is present in the section its placement names (or in section 6 for S6). Go through the tables row by row.
+2. Every variable used is in variables.json; no other variable style; `{{var.company_name}}` only in the welcome, closing or AI-disclosure lines.
+3. No hard-coded name, phone number, address, fee, hours or doctor anywhere (run through the text looking for digits, capitalised names and currency).
+4. The welcome message and the whole flow match the call direction. Inbound has no "calling from"; outbound has no "Thank you for calling".
+5. The closing line is in section 5; the AI-disclosure answer is only on a clear question.
+6. Word counts computed for every section and for section 6 against the allowance.
+7. Nothing from the Intake table was invented; each default is in the draft notes.
 
-1. List the 18 critical rules: R-01, R-04, R-08, R-09, R-10, R-11, R-12, R-13, R-14, R-15, R-16, R-20, R-29, R-30, R-31, R-36, R-37, R-40.
-2. For each one, find the line in your prompt that covers it. If a rule has no line, add it.
-3. Confirm no placeholder like `{{...}}` is left unfilled, and that no fact (fee, timing, number, doctor) appears that the customer did not provide.
-4. Confirm the section headings match the output structure exactly.
-5. Check that no customer requirement weakened a critical rule. Move any that did to the conflicts list.
-6. Return the prompt. Report any critical rule you could not cover as a miss; never claim full coverage you did not check.
+## 7. Output format (exact)
+
+Output exactly this, nothing before or after:
+
+```
+<Welcome message>
+
+## 1. Role & Identity
+...
+## 6. Main prompt
+...
+## Prompt Variables
+<table>
+
+=== DRAFT NOTES ===
+**Assumptions and defaults used**
+- ...
+**Refused or adapted client requests**
+- <request>: <one-line reason>   (write "none" if there were none)
+**Open questions**
+- ...
+**Word counts**
+- Welcome: N. Section 1: N. Section 2: N. Section 3: N. Section 4: N. Section 5: N.
+- Section 6: N words. Roster: D doctors x 23 = R. Allowance: 615 - R = A. Status: within budget / OVER by X (warning and options).
+```
+
+The marker line `=== DRAFT NOTES ===` stands alone on its own line. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
+
+## Rules for you
+
+- The references are the source of truth. If a client asks for something they forbid, follow the references and say so in the draft notes.
+- Synthetic data only. Never write a real customer, patient or company.
+- Do not read or use anything outside this skill folder to decide what is "expected": write from the references and the client's answers.
+- Never commit, never push.
