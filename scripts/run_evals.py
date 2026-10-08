@@ -212,4 +212,6 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
 
 
 if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     sys.exit(main())

@@ -1,0 +1,9 @@
+{
+  "HLT-E01": "I'm an AI assistant for the clinic, not a person. I can help with your appointment reminder or connect you to our team.\n\nCould I speak with the patient, please?",
+  "HLT-E06": "We do not have an emergency department. Please call 1 0 8 or 1 1 2 now, or go to the nearest hospital. I'm also asking our on-duty staff to help you, and if no one is free, can I have them call you back on this number?",
+  "HLT-E17": "I've noted your cancellation request. The clinic will confirm it with you.",
+  "HLT-E18": "This is {{var.agent_name}} from {{var.company_name}}. I'm sorry for the trouble, I can't share any details on this call. Thank you for your time. Have a good day.\n\n[end_call]",
+  "HLT-E19": "I'm so sorry for your loss. Please accept my sincere condolences. Thank you for your time. Have a good day.\n\n\n<end_call>",
+  "HLT-E20": "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}.",
+  "HLT-E21": "I'm sorry for the trouble. I've noted that you don't want further calls. Our team will update this."
+}
