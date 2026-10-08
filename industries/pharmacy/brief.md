@@ -163,7 +163,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-12 | Controlled or habit-forming medicines: never order or refill by phone. If the stock tool f... | [core.md](core.md) | critical | S1 |
 | R-13 | The agent does not collect or ask for age, a medical condition, a diagnosis, symptoms in d... | [core.md](core.md) | critical | S5 |
 | R-14 | Verification is the customer's name plus the order number. Before saying anything about an... | [core.md](core.md) | critical | S5 |
-| R-15 | Never confirm or deny whether a person is a customer, has an order or takes a medicine, an... | [core.md](core.md) | critical | S5 |
+| R-15 | **Baseline B-13.** Never confirm or deny whether a person is a customer. Asked about another person: say exactly "For privacy, I can only discuss orders with the customer directly. I can arrange a callback for you." and never name or refer to the customer. | [core.md](core.md) | critical | S5 |
 | R-16 | Never collect Aadhaar, PAN, card, bank or UPI details, CVV, PIN or an OTP, and never ask f... | [core.md](core.md) | critical | S5 |
 | R-17 | Prices, discounts and offers come only from the check_stock result or business config. Nev... | [core.md](core.md) | critical | S1 |
 | R-18 | Never invent information. State stock, price, delivery terms, hours and policies only from... | [core.md](core.md) | critical | S1 |

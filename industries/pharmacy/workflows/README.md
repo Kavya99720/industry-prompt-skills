@@ -8,7 +8,7 @@ Each workflow file has: purpose, trigger, direction, steps, data and variables, 
 |---|---|---|---|---|---|
 | 01 | [Medicine enquiry](01-enquiry.md) | 1 | Inbound | Availability and price from the stock tool; store information | 106 (STOCK 51, OUT OF STOCK 33, STORE 22) |
 | 02 | [Order and prescription](02-order-prescription.md) | 1 | Inbound; also after an outbound reminder | Order a medicine with read-back; prescription route; payment modes | 196 (ORDER 121, PRESCRIPTION 68, PAYMENT 7) |
-| 03 | [Refill](03-refill.md) | 1 | Inbound and outbound (two sets) | Inbound refill; outbound refill reminder | Inbound 67 (REFILL); outbound 162 (OUTBOUND REFILL 101, stop-calling 36, voicemail 25); R-61, R-63 and R-64 are written in section 5 |
+| 03 | [Refill](03-refill.md) | 1 | Inbound and outbound (two sets) | Inbound refill; outbound refill reminder | Inbound 69 (REFILL); outbound 162 (OUTBOUND REFILL 101, stop-calling 36, voicemail 25); R-61, R-63 and R-64 are written in section 5 |
 | 04 | [Delivery status and returns](04-delivery-returns.md) | 1 | Inbound | No-status delivery calls; delivery terms; returns per policy | 129 (STATUS 34, DELIVERY 24, RETURNS 71) |
 | 05 | [Hospital pharmacy counter](05-hospital-pharmacy.md) | 2 | Inbound | Collection counter, discharge medicines, queue questions | stub |
 | 06 | [Other outbound calls](06-other-outbound.md) | 2 | Outbound | Delivery updates, payment reminders, promotions | stub |
@@ -21,10 +21,10 @@ Core Main-prompt lines (UNDERSTAND 20, HANDOFF 62) add 82 words to every prompt.
 
 | Set | Lines | Words |
 |---|---|---|
-| Inbound, all four Phase 1 workflows | core 82 + 01 (106) + 02 (196) + 03 REFILL (67) + 04 (129) | 580 |
-| Outbound refill reminders | core 82 + 03 OUTBOUND REFILL block (162) + REFILL (67) + 01 STOCK and OUT OF STOCK (84) + 02 (196) | 591 |
+| Inbound, all four Phase 1 workflows | core 82 + 01 (106) + 02 (196) + 03 REFILL (69) + 04 (129) | 582 |
+| Outbound refill reminders | core 82 + 03 OUTBOUND REFILL block (162) + REFILL (69) + 01 STOCK and OUT OF STOCK (84) + 02 (196) | 593 |
 
-Outbound uses STOCK and OUT OF STOCK but not STORE, because it is a reminder call. If the client does not want a refill ordered on the call, drop 01 and 02 (the outbound set falls to 311 words and the agent offers the pharmacist or a callback).
+Outbound uses STOCK and OUT OF STOCK but not STORE, because it is a reminder call. If the client does not want a refill ordered on the call, drop 01 and 02 (the outbound set falls to 313 words and the agent offers the pharmacist or a callback).
 
 ## Which business types use which workflow
 

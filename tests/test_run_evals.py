@@ -362,3 +362,11 @@ def test_run_industry_gives_the_agent_values_fills_probes_and_lints_stray_text(r
     assert any("stray text before the welcome" in m for m in saved["lint"]["01-a"])
     text = (repo / "industries/healthcare/results/2026-10-08/01-a-instructions.md").read_text(encoding="utf-8")
     assert text.startswith("Hello, this is")
+
+
+def test_lint_ignores_the_format_example_and_variable_routes(tmp_path):
+    root = lint_root(tmp_path)
+    core = root / "industries" / "demo" / "core.md"
+    core.write_text(core.read_text(encoding="utf-8") + '\nFormat: say exactly "X", then in the same reply transfer.', encoding="utf-8")
+    text = GOOD + OOS + "If {{var.prescription_upload_method}} is whatsapp or email, send the upload instructions.\n"
+    assert run_evals.lint_fixed_and_config("demo", text, FIXED_PROFILE, root) == []

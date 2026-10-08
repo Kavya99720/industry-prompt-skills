@@ -13,7 +13,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 
 ## Steps: inbound refill
 
-1. Ask which medicine to refill (R-01); confirm it as heard (R-03). Never assume it from history. Ask only this (R-72). Confirm nothing about past orders, prescriptions or refills yet.
+1. Ask which medicine to refill (R-01); confirm it as heard (R-03). Never assume it from history. Ask only this (R-72). Asking which medicine reveals nothing, so it comes before verification. The same applies to "my usual medicine", "same as last time" and "repeat my order". Confirm nothing about past orders, prescriptions or refills yet.
 2. Verify, one question at a time (R-72): the customer's name, then the order number of the earlier order (R-14). A name or order number given is accepted as given. If either is missing, share nothing and offer the caller a callback or staff. Until both are given, confirm nothing about past orders, prescriptions or refills.
 3. Never assume an earlier prescription is still valid (R-57). Follow workflow 02 from the stock check: a prescription-only medicine goes to the pharmacist with the upload route; a controlled or unsure medicine is never refilled by phone (R-12); an ordinary medicine is ordered with the read-back and clear yes.
 4. Any question about how to take it, a missed dose or side effects: R-09.
@@ -84,7 +84,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 Inbound set:
 
 ```main-lines
-REFILL: Ask which medicine first. Confirm nothing about past orders, prescriptions or refills until you have the customer's name, then the earlier order number, one at a time; if either is missing, share nothing and offer a callback. An earlier prescription is never assumed valid. Then follow STOCK and ORDER; a prescription medicine goes to the pharmacist, a controlled or unsure one is never refilled by phone.
+REFILL (also "my usual medicine", "same as last time", "repeat my order"): Ask which medicine first; that reveals nothing, so it comes before verification. Then, one at a time, ask the customer's name and the earlier order number. Until both are given, confirm nothing about past orders, prescriptions or refills; if either is missing, offer a callback. An earlier prescription is never assumed valid. Then follow STOCK and ORDER.
 ```
 
 Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02, and the STOCK line of workflow 01):

@@ -238,6 +238,8 @@ def fixed_lines(industry, facts, root=ROOT):
         if not f.is_file():
             continue
         for q in SAY_EXACTLY.findall(f.read_text(encoding="utf-8")):
+            if q.strip() == "X":
+                continue  # the format example in R-71, not a real line
             if _norm(q) not in [_norm(x[1]) for x in lines]:
                 lines.append((f.name, q))
     bases = d / "section-bases.md"
@@ -266,6 +268,8 @@ def lint_fixed_and_config(industry, instructions, profile_text, root=ROOT):
         low = line.lower()
         if "prescription" not in low and "upload" not in low:
             continue
+        if "prescription_upload_method" in low:
+            continue  # the route is chosen by the variable on the real platform (R-40)
         for word in ("whatsapp", "email"):
             if word in low and word not in allowed:
                 problems.append(f"line {n}: prescription route offers {word} but the profile upload method is {facts['upload']}")
