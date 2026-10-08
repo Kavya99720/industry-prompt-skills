@@ -1,0 +1,78 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Pharmacy custom details and call context. Same format as docs/shared/variables.json; valid only in pharmacy files. The shared variables (agent_name, agent_gender, default_language, business_hours, business_phone, company_name, now_local) are used as defined there. The healthcare-only variables roster and clinic_address are NOT used by pharmacy. Example values are neutral placeholders. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "variables": [
+    {
+      "name": "store_address",
+      "source": "Custom detail",
+      "description": "The street address of the store or collection point. Used only when the caller asks for directions or location. Online pharmacies may leave it empty.",
+      "example": "<store_address>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "business_info",
+      "source": "Custom detail",
+      "description": "Free text about the business that is safe to say aloud: services offered, branches, pickup counter, home delivery yes or no. Never typed into the prompt itself. If empty, the agent says the team will confirm.",
+      "example": "<services_list>, <branches>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "prescription_upload_method",
+      "source": "Custom detail",
+      "description": "How a customer sends a prescription: whatsapp, email or in_store. For whatsapp or email the agent uses the platform send tool to share the upload instructions. For in_store, or when not set, the agent asks the customer to bring the prescription to the store, or offers a staff callback. The agent never takes a prescription by voice.",
+      "example": "whatsapp",
+      "industries": ["pharmacy"],
+      "default": "not set (bring it to the store, or a staff callback)"
+    },
+    {
+      "name": "return_policy",
+      "source": "Custom detail",
+      "description": "The client's return policy, said only as written: window, conditions, who handles it. If empty, the agent says the team will confirm. The agent never says a return or refund is approved.",
+      "example": "<return_window_and_conditions>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "delivery_info",
+      "source": "Custom detail",
+      "description": "Delivery areas, charges and the usual delivery timing, said only as written. If empty, the agent says the team will confirm. The agent never promises a delivery time.",
+      "example": "<delivery_areas>, <delivery_charges>, <usual_timing>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "payment_modes",
+      "source": "Custom detail",
+      "description": "The payment modes the business accepts, said only as written (for example cash on delivery, UPI at the counter). The agent never takes card, bank or UPI details or an OTP on the call. If empty, the agent says the team will confirm.",
+      "example": "<payment_modes>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "emergency_signs_extra",
+      "source": "Custom detail",
+      "description": "Extra emergency signs the client ADDS to the default list in core rules. The default list is always in the prompt; this detail can add to it and never remove from it. Open question: whether a custom detail can hold a list.",
+      "example": "<extra_sign_1>, <extra_sign_2>",
+      "industries": ["pharmacy"],
+      "default": "empty"
+    },
+    {
+      "name": "customer_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound refill reminder calls: the name of the customer being called. Used only to ask for the person; never said to anyone who is not confirmed as that customer, and never left on a voicemail. Whether the platform passes this is an open question.",
+      "example": "<customer_name>",
+      "industries": ["pharmacy"]
+    },
+    {
+      "name": "refill_details",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound refill reminder calls: the medicine due for refill. Said only after the person is confirmed as the customer and has given the order number. Whether the platform passes this is an open question.",
+      "example": "<medicine_due_for_refill>",
+      "industries": ["pharmacy"]
+    }
+  ]
+}
