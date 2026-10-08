@@ -25,6 +25,7 @@ ORDER = (
 )
 HEADER = ("Industry", "Brief", "Skill", "Evals", "Last run", "Pass rate")
 RUN_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-run(\d+)$")
+RUN_FILE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-run(\d+)(?:-.+)?$")
 TODO_MARKER = re.compile(r"^Status:\s*Todo\s*$", re.IGNORECASE | re.MULTILINE)
 
 
@@ -51,22 +52,32 @@ def eval_status(industry_dir):
 
 
 def latest_run(industry_dir):
-    """Return (date, summary dict) of the newest run folder that has a readable summary.json, or None."""
+    """Return (date, summary dict) of the newest run, or None.
+
+    A run is a folder <date>-run<N> with a readable summary.json, or a file <date>-run<N>[-tag].json written
+    by scripts/run_evals.py with a "summary" object. The highest (date, N) wins.
+    """
     results = industry_dir / "results"
     if not results.is_dir():
         return None
     runs = []
     for d in results.iterdir():
-        m = RUN_RE.match(d.name)
-        if d.is_dir() and m:
-            runs.append((m.group(1), int(m.group(2)), d))
-    for date, _, d in sorted(runs, key=lambda r: (r[0], r[1]), reverse=True):
+        if d.is_dir():
+            m = RUN_RE.match(d.name)
+            if m:
+                runs.append((m.group(1), int(m.group(2)), d / "summary.json", "folder"))
+        elif d.suffix == ".json":
+            m = RUN_FILE_RE.match(d.stem)
+            if m:
+                runs.append((m.group(1), int(m.group(2)), d, "file"))
+    for date, _, path, kind in sorted(runs, key=lambda r: (r[0], r[1], r[3] == "file"), reverse=True):
         try:
-            summary = json.loads((d / "summary.json").read_text(encoding="utf-8"))
+            data = json.loads(path.read_text(encoding="utf-8"))
+            summary = data["summary"] if kind == "file" else data
             int(summary["total"]), int(summary["passed"]), int(summary["failed"])
         except (OSError, ValueError, KeyError, TypeError):
             continue
-        return summary.get("date") or date, summary
+        return date, summary
     return None
 
 

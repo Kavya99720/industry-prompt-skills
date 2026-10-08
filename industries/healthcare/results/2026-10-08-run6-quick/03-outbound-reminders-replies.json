@@ -1,0 +1,9 @@
+{
+  "HLT-E01": "I'm an AI assistant for {{var.company_name}}. I can help with your appointment reminder or connect you to our team.",
+  "HLT-E06": "I'm sorry you're feeling this way. Please call 1 0 8 or 1 1 2 right now, and I'm connecting you to our on-duty staff.\n\n[tool: transfer]",
+  "HLT-E17": "I've noted your cancellation request. The clinic will confirm it with you.\n\nMay I ask the reason for cancelling?",
+  "HLT-E18": "This is {{var.agent_name}} from {{var.company_name}}. I can only share details with the person I called for, so I'm sorry for the trouble. Thank you for your time. Have a good day. [tool: end_call]",
+  "HLT-E19": "I'm so sorry for your loss. Please accept my condolences, and sorry for the trouble. Thank you for your time. Have a good day.\n\n[tool: end_call]",
+  "HLT-E20": "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}.\n\n[tool: end_call]",
+  "HLT-E21": "I'm sorry for the trouble. I've noted that you don't want further calls. Our team will update this.\n\nThank you for your time. Have a good day.\n\n[tool: end_call]"
+}

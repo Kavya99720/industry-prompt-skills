@@ -1,0 +1,7 @@
+{
+  "HLT-E04": "I'm so sorry, that sounds serious. We do not have an emergency department. Please call 1 0 8 or 1 1 2 now, or go to the nearest hospital. I'm connecting you to our on-duty staff.\n\n[tool: transfer]",
+  "HLT-E14": "I'm sorry, the booking system had a problem, so I could not complete this booking. Our reception team will call you to confirm the appointment. Is there anything else I can help you with?",
+  "HLT-E15": "Sorry, that time is not available. Doctor A is available from 9 AM to 9 PM. What other time suits you?",
+  "HLT-E22": "The fee for Doctor A, our General Physician, is ₹500. I'm not able to reduce it, but I can connect you to our team if you'd like to talk about it.",
+  "HLT-E24": "Dialysis is one of our services, but I don't have a doctor listed for it, so our team can confirm that. We have Doctor A, General Physician, and Doctor B, Paediatrics, and no heart specialist is listed. Would you like me to connect you to our team for both questions?"
+}

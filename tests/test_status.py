@@ -145,3 +145,27 @@ def test_missing_markers_fail(tmp_path):
     root = make_root(tmp_path)
     (root / "README.md").write_text("no markers", encoding="utf-8")
     assert status.main(["--check"], root=root) == 1
+
+
+def make_run_file(industry_dir, stem, total, passed):
+    res = industry_dir / "results"
+    res.mkdir(parents=True, exist_ok=True)
+    (res / f"{stem}.json").write_text(
+        json.dumps({"summary": {"total": total, "passed": passed, "failed": total - passed}, "results": []}),
+        encoding="utf-8")
+
+
+def test_run_files_from_run_evals_are_counted(tmp_path):
+    root = make_root(tmp_path)
+    ind = root / "industries" / "pharmacy"
+    make_run_file(ind, "2026-10-08-run1", 10, 7)
+    make_run_file(ind, "2026-10-08-run2-full", 10, 10)
+    assert row(root, "pharmacy")[4:] == ("2026-10-08", "Done (10/10)")
+
+
+def test_newest_run_number_wins_over_older_passing_run(tmp_path):
+    root = make_root(tmp_path)
+    ind = root / "industries" / "pharmacy"
+    make_run_file(ind, "2026-10-08-run1", 10, 10)
+    make_run_file(ind, "2026-10-08-run3-quick", 10, 9)
+    assert row(root, "pharmacy")[5] == "In progress (9/10)"
