@@ -1,12 +1,12 @@
-# Smoke-test input: Sunrise Multispeciality Clinic (fictional, synthetic)
+# Smoke-test input: <business_name> (fictional, synthetic)
 
-- Hospital name: Sunrise Multispeciality Clinic
-- Persona name: Asha
+- Business name: <business_name>
+- Persona name: <agent_name>
 - Languages: English, Hindi, Kannada
-- Doctors (synthetic):
-  - Dr. Meera Rao, General Medicine, Mon/Wed/Fri, morning 9 AM-1 PM
-  - Dr. Arjun Nair, ENT, Tue/Thu/Sat, evening 5 PM-8 PM
-  - Dr. Kavita Shah, Paediatrics, Mon-Sat, morning 10 AM-1 PM and evening 5 PM-7 PM
+- Doctors (placeholders; a real run gets them from the platform roster):
+  - Doctor <doctor_1>, General Medicine, Mon/Wed/Fri, morning 9 AM-1 PM
+  - Doctor <doctor_2>, ENT, Tue/Thu/Sat, evening 5 PM-8 PM
+  - Doctor <doctor_3>, Paediatrics, Mon-Sat, morning 10 AM-1 PM and evening 5 PM-7 PM
 - Emergency signs list: not given (use default)
 - Minors flag: not given (use default)
 - Transfer target: not given (use default)

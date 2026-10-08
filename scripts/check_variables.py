@@ -28,6 +28,12 @@ DEFAULT_SCOPE = (".claude/skills", "industries", "outputs")
 DOCS_SCOPE = ("docs", "README.md", "CLAUDE.md")
 SUFFIXES = {".md", ".json", ".txt"}
 SKIP_DIRS = {"__pycache__", ".git", "node_modules"}
+
+
+def is_results(path):
+    """industries/<x>/results/ holds generated run output, not authored files."""
+    parts = path.parts
+    return "industries" in parts and "results" in parts[parts.index("industries"):]
 IGNORE_MARK = "check_variables: ignore"
 
 # Old or wrong names and the variable that replaces them. Only these are auto-fixed.
@@ -115,7 +121,7 @@ def collect_files(targets, root):
             files.append(p)
         elif p.is_dir():
             for f in sorted(p.rglob("*")):
-                if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)):
+                if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and not is_results(f):
                     files.append(f)
     return files
 

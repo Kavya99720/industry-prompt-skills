@@ -140,3 +140,15 @@ def test_real_repo_variables_json_is_well_formed():
                      "clinic_address", "company_name", "now_local", "roster",
                      "emergency_signs_extra", "minors_may_book_alone"):
         assert required in known
+
+
+def test_results_folders_are_skipped(repo):
+    res = repo / "industries" / "demo" / "results" / "2026-10-08"
+    res.mkdir(parents=True)
+    (res / "x.md").write_text("bad {{doctors}} 9876543210" + chr(10), encoding="utf-8")
+    kept = repo / "industries" / "demo" / "brief.md"
+    kept.write_text("bad {{doctors}}" + chr(10), encoding="utf-8")
+    out = io.StringIO()
+    errors, _, _, issues = cv.run(repo, ["industries"], repo / "docs/shared/variables.json",
+                                  repo / "scripts/denylist.txt", out=out)
+    assert errors == 1 and all("results" not in i.path for i in issues)

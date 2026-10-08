@@ -46,7 +46,7 @@ Write in this order. Use `references/shared/section-bases.md` for the base text 
 5. **Section 4 Tone and Conversational Style**: skeleton + placement S4 lines.
 6. **Section 5 Output Format**: base + placement S5 lines (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms).
 7. **Section 6 Main prompt**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core `main-lines` block (UNDERSTAND, HANDOFF, DOCTOR LIST). Keep the labels. End with the doctor list: `{{var.roster}}`.
-8. **Prompt Variables table**: every variable used, its source, what it is used for.
+8. **Prompt Variables table**: every variable used, with its name and source only. Never a value: no fee, hours, phone number, address or doctor name anywhere in the Instructions, and examples use placeholders such as `₹<amount>`.
 
 Variable rules:
 - Only names in `references/shared/variables.json`, written `{{var.<name>}}`. No other variable style is allowed: not single braces, not an @ prefix, not names made up from the business.

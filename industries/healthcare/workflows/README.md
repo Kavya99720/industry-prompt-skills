@@ -7,8 +7,8 @@ Each workflow file has: trigger, direction, steps, data and variables, tools, ru
 | # | Workflow | Phase | Direction | Purpose | Main-prompt words (draft) |
 |---|---|---|---|---|---|
 | 01 | [Enquiry](01-enquiry.md) | 1 | Inbound | Doctors, timings, fees, services, directions, reports | 85 (+25 for token or walk-in clinics) |
-| 02 | [Booking](02-booking.md) | 1 | Inbound | Book a new appointment with a named doctor | 240 |
-| 03 | [Reschedule and cancel](03-reschedule-cancel.md) | 1 | Inbound, outbound | Change an appointment; note a cancellation (no cancel tool) | 77 (+54 when Booking is not selected) |
+| 02 | [Booking](02-booking.md) | 1 | Inbound | Book a new appointment with a named doctor | 229 |
+| 03 | [Reschedule and cancel](03-reschedule-cancel.md) | 1 | Inbound, outbound | Change an appointment; note a cancellation (no cancel tool) | 84 (+54 when Booking is not selected) |
 | 04 | [Reminder, outbound](04-reminder-outbound.md) | 1 | Outbound | Remind a patient of a booked appointment | 170 |
 | 05 | [Lab tests](05-lab-tests.md) | 2 | Inbound | Lab test and home sample booking | stub |
 | 06 | [Check-up packages](06-checkup-packages.md) | 2 | Inbound | Package enquiry and booking | stub |

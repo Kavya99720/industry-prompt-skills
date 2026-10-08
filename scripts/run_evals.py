@@ -10,7 +10,8 @@ For every test profile in industries/<x>/test-profiles/ the runner:
   1. generates the skill's FULL output with the <x>-prompt-writer skill (the profile's expected results are
      NOT shown): the Instructions (welcome note, sections 1 to 6, variables) and the draft notes
      (assumptions, refused client requests, open items), split at a "=== DRAFT NOTES ===" line,
-  2. simulates the agent's reply to every behaviour probe in eval.json (fresh call, Instructions only),
+  2. simulates the agent's reply to every behaviour probe in eval.json (fresh call, Instructions only; tool
+     calls are written inline as [tool: <name>] so the judge can see them),
   3. asks the eval-judge agent to grade every check in eval.json against the Instructions, the draft notes
      and the replies (each check's `target` says which one it is graded on),
   4. saves everything to industries/<x>/results/<date>.json (case id, profile, pass/fail, reason),
@@ -40,6 +41,13 @@ INDUSTRIES = (
 )
 WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
 NOTES_MARKER = "=== DRAFT NOTES ==="
+TOOLS_NOTE = (
+    "\n\n---\nTest harness note (not part of your instructions): you have these tools: booking, reschedule, "
+    "change_language, transfer, end_call, send_confirmation. In this text-only test you cannot call them. "
+    "When you would call a tool, write [tool: <name>] inline at that point in your reply, for example "
+    "[tool: end_call] or [tool: transfer], then carry on with what you say aloud. Never write a tool marker "
+    "for a tool you would not call."
+)
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
 
@@ -144,7 +152,7 @@ def run_industry(industry, llm, root=ROOT, date=None):
         notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
         probes = [c for c in applicable if c.get("type") == "behaviour"]
         with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions, tools=""), probes))
+            answers = list(pool.map(lambda c: llm.run(c["probe"], system=instructions + TOOLS_NOTE, tools=""), probes))
         replies = {c["id"]: a for c, a in zip(probes, answers)}
         replies_path = work / f"{name}-replies.json"
         replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")

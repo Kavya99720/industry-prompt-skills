@@ -78,7 +78,7 @@ def test_generator_never_sees_expected_results(repo):
 def test_replies_are_simulated_with_instructions_only(repo):
     llm = FakeLlm()
     run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
-    simulated = [c for c in llm.calls if c[1] == "generated text"]
+    simulated = [c for c in llm.calls if c[1] and c[1].startswith("generated text")]
     assert len(simulated) == 20  # 10 behaviour checks x 2 profiles
     assert all("pass_criteria" not in c[2] for c in simulated)
 
@@ -119,7 +119,7 @@ def test_checks_with_profiles_run_only_on_those_profiles(repo):
     asked = [p.split("ONLY these checks from the industry's eval.json: ")[1].split(". After")[0] for p in judge_prompts]
     assert "DEM-E01" not in asked[0] and "DEM-E02" in asked[0]   # profile 01
     assert "DEM-E01" in asked[1] and "DEM-E02" not in asked[1]   # profile 02
-    probes = [c[2] for c in llm.calls if c[1] == "generated text"]
+    probes = [c[2] for c in llm.calls if c[1] and c[1].startswith("generated text")]
     assert probes.count("probe 1") == 1 and probes.count("probe 3") == 2
 
 
@@ -147,3 +147,11 @@ def test_missing_draft_notes_marker_is_recorded(repo):
 def test_split_output():
     assert run_evals.split_output("a" + chr(10) + "=== DRAFT NOTES ===" + chr(10) + "b") == ("a", "b")
     assert run_evals.split_output("only") == ("only", "")
+
+
+def test_simulated_replies_are_told_to_write_tool_calls_inline(repo):
+    llm = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    systems = [c[1] for c in llm.calls if c[1]]
+    assert systems and all(s.startswith("generated text") and "[tool: <name>]" in s for s in systems)
+    assert all("end_call" in s and "transfer" in s for s in systems)
