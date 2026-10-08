@@ -370,3 +370,41 @@ def test_lint_ignores_the_format_example_and_variable_routes(tmp_path):
     core.write_text(core.read_text(encoding="utf-8") + '\nFormat: say exactly "X", then in the same reply transfer.', encoding="utf-8")
     text = GOOD + OOS + "If {{var.prescription_upload_method}} is whatsapp or email, send the upload instructions.\n"
     assert run_evals.lint_fixed_and_config("demo", text, FIXED_PROFILE, root) == []
+
+
+def test_split_marked_reads_only_between_the_markers():
+    text = "Here is the output:\n=== INSTRUCTIONS ===\nWelcome\n## 1\n=== DRAFT NOTES ===\nnotes\n"
+    assert run_evals.split_marked(text) == ("Welcome\n## 1", "notes", ["Here is the output:"])
+    assert run_evals.split_marked("a\n=== DRAFT NOTES ===\nb") == ("a", "b", [])
+
+
+def test_case_selected_accepts_short_and_full_ids():
+    assert run_evals.case_selected("PHA-E04", None)
+    assert run_evals.case_selected("PHA-E04", ["E04"]) and run_evals.case_selected("PHA-E04", ["pha-e04"])
+    assert not run_evals.case_selected("PHA-E14", ["E04"])
+
+
+def test_cases_option_judges_only_those_cases_and_skips_other_profiles(repo):
+    ind = repo / "industries" / "healthcare"
+    data = json.loads((ind / "eval.json").read_text(encoding="utf-8"))
+    data["checks"][2]["profiles"] = ["01"]
+    (ind / "eval.json").write_text(json.dumps(data), encoding="utf-8")
+    llm = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--cases", "E03"], llm)
+    judged = [c[2] for c in llm.calls if c[0] == "eval-judge"]
+    assert len(judged) == 1 and "01-a" in judged[0] and "DEM-E03" in judged[0] and "DEM-E04" not in judged[0]
+    generated = [c for c in llm.calls if c[0] is None and c[1] is None]
+    assert len(generated) == 1
+
+
+def test_stray_text_outside_the_markers_is_a_warning_not_an_error(repo):
+    class Llm(FakeLlm):
+        def run(self, prompt, system=None, agent=None, tools=None):
+            if agent is None and system is None:
+                self.calls.append((agent, system, prompt))
+                return "chatter\n=== INSTRUCTIONS ===\nbody\n=== DRAFT NOTES ===\nnotes"
+            return super().run(prompt, system=system, agent=agent, tools=tools)
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], Llm())
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert any(m.startswith("warning: text outside the markers") for m in saved["lint"]["01-a"])
+    assert (repo / "industries/healthcare/results/2026-10-08/01-a-instructions.md").read_text(encoding="utf-8").startswith("body")

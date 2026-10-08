@@ -85,13 +85,16 @@ Do all of this and fix what fails:
 6. Word counts computed for every section and for section 6 against 615.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
 8. Section 1 has the priority order (R-73). Section 5 has R-72 word for word. Every "say exactly" line is in the Instructions word for word with its action.
-9. The FIRST line of the output is the welcome message, word for word. Nothing before it: no code fence, no "Here is the output", no word count, no heading. Check the first line before you finish.
+9. The FIRST line of the output is `=== INSTRUCTIONS ===` and the next line is the welcome message, word for word. Nothing before the marker: no code fence, no "Here is the output", no word count, no heading. Check both lines before you finish.
+10. The draft notes "Fill these in the platform" table has a row for every variable used and for every intake item (marked "not used in these Instructions" where its workflow is not selected).
+11. Section 5 never says back a condition, symptom or medicine use (R-13), spoken helpline numbers are digit by digit (R-08), the Tele-MANAS and team handoff lines are word for word (R-08, R-75), and the WhatsApp upload step asks "Is the number you're calling from on WhatsApp?" and uses the send tool (R-54).
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first characters are the welcome message: no code fence, no preface, no "here is the output" line:
+Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. No code fence, no preface, no "here is the output" line, no word count before the marker:
 
 ```
+=== INSTRUCTIONS ===
 <Welcome message>
 
 ## 1. Role & Identity
@@ -115,13 +118,13 @@ Output exactly this, nothing before or after. The very first characters are the 
 | Variable | Value you gave | Where to set it |
 |---|---|---|
 | `{{var.agent_name}}` | <value from intake, or "not provided"> | Voice settings |
-(one row for every variable the Instructions use; business_hours and business_phone under Your business; custom details such as store_address, return_policy, delivery_info, payment_modes, max_qty_without_pharmacist, prescription_upload_method and business_info under Your business, Add a detail; customer_name and refill_details are passed by the platform on outbound calls, unconfirmed)
+(one row for every variable the Instructions use, PLUS one row for EVERY intake item in the Intake table of `references/core.md` (business type, call direction, workflows, channel, prescription upload, pickup or delivery, return policy, payment modes, transfer targets, business hours, store address, languages, extra emergency signs, always-hand-off medicines, special client rules, largest quantity without the pharmacist), each with the value given or the default used, and "not used in these Instructions" when its workflow is not selected; never leave an intake item out; business_hours and business_phone under Your business; custom details such as store_address, return_policy, delivery_info, payment_modes, max_qty_without_pharmacist, prescription_upload_method and business_info under Your business, Add a detail; customer_name and refill_details are passed by the platform on outbound calls, unconfirmed)
 `{{var.company_name}}` = your business name, filled in automatically from Variables.
 ```
 
 Real values (the business name, hours, phone number, address, delivery terms, return policy, payment modes) appear ONLY in the "Fill these in the platform" block of the draft notes, never in the Instructions. If the client gave no value, write "not provided"; never invent one. Open questions in the draft notes include any that apply from `references/core.md` and the workflow files (unconfirmed outbound variables, chat, controlled-medicine schedules and what a valid prescription is, the assumed check_stock fields).
 
-The marker line `=== DRAFT NOTES ===` stands alone on its own line. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
+The marker lines `=== INSTRUCTIONS ===` and `=== DRAFT NOTES ===` each stand alone on their own line. The platform text is only what sits between them. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
 
 ## Rules for you
 

@@ -90,7 +90,7 @@ REFILL (also "my usual medicine", "same as last time", "repeat my order"): Ask w
 Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02, and the STOCK line of workflow 01):
 
 ```main-lines-outbound
-OUTBOUND REFILL: You called them. Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say exactly "Sorry for the trouble. I can only speak with the customer." then end the call. Never give the purpose; never say refill, medicine, order or prescription. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from the stock check, with the medicine already known.
+OUTBOUND REFILL: Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say exactly "Sorry for the trouble. I can only speak with the customer." then end the call. Never give the purpose; never say refill, medicine, order or prescription. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from the stock check.
 If they say stop calling, apologise once, then say exactly "I've noted that you don't want further calls. Our team will update this." then, in the same reply, use the end_call tool. Never argue or retry.
 Voicemail: say exactly and only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Never leave a name, medicine or refill detail.
 ```

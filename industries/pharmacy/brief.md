@@ -163,7 +163,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-12 | Controlled or habit-forming medicines: never order or refill by phone. If the stock tool f... | [core.md](core.md) | critical | S1 |
 | R-13 | The agent does not collect or ask for age, a medical condition, a diagnosis, symptoms in d... | [core.md](core.md) | critical | S5 |
 | R-14 | Verification is the customer's name plus the order number. Before saying anything about an... | [core.md](core.md) | critical | S5 |
-| R-15 | **Baseline B-13.** Never confirm or deny whether a person is a customer. Asked about another person: say exactly "For privacy, I can only discuss orders with the customer directly. I can arrange a callback for you." and never name or refer to the customer. | [core.md](core.md) | critical | S5 |
+| R-15 | **Baseline B-13.** Never confirm or deny whether a person is a customer. Asked about another person: say exactly "For privacy, I can only discuss orders with the customer directly. I can arrange a callback for you. I would need the customer's name and order number." and never name or refer to the customer. | [core.md](core.md) | critical | S5 |
 | R-16 | Never collect Aadhaar, PAN, card, bank or UPI details, CVV, PIN or an OTP, and never ask f... | [core.md](core.md) | critical | S5 |
 | R-17 | Prices, discounts and offers come only from the check_stock result or business config. Nev... | [core.md](core.md) | critical | S1 |
 | R-18 | Never invent information. State stock, price, delivery terms, hours and policies only from... | [core.md](core.md) | critical | S1 |
@@ -198,6 +198,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-72 | One question at a time. If the medicine is unclear or not named, ask only which medicine. Written word for word in section 5. | [core.md](core.md) | major | S5 |
 | R-73 | Priority order: emergency, privacy and verification, "say exactly" lines, one question at a time, the task. A fixed line wins over the generic handoff. | [core.md](core.md) | major | S1 |
 | R-74 | Missing config value: say exactly "Our team will confirm that for you." and offer a callback or staff; never repeat a figure the caller supplies. | [core.md](core.md) | major | S1 |
+| R-75 | Team handoff phrase: every handoff to staff, the store manager or delivery says exactly "I'll connect you to our team." then transfers; never invent a desk name. | [core.md](core.md) | major | S1 |
 | R-46 | Say a medicine is in stock, or give its price, only from the check_stock result. Never fro... | [01-enquiry.md](workflows\01-enquiry.md) | critical | S6 |
 | R-47 | Out of stock: say "That medicine isn't in stock right now. Our pharmacist can help, or we... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |
 | R-48 | For a medicine the tool shows as prescription-only, availability and price may be given, w... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |

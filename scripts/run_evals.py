@@ -6,6 +6,8 @@ Usage:
   python scripts/run_evals.py --all
   python scripts/run_evals.py --industry healthcare --dry-run     check inputs, call nothing
   python scripts/run_evals.py --industry healthcare --profiles 01 03   run only these test profiles
+  python scripts/run_evals.py --industry pharmacy --profiles 01 02 --cases E04,E06   run and judge only these cases
+                                      (a profile with none of them is skipped, with no generation)
 
 For every test profile in industries/<x>/test-profiles/ the runner:
   1. generates the skill's FULL output with the <x>-prompt-writer skill (the profile's expected results are
@@ -47,6 +49,7 @@ RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
 RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))
 WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
 NOTES_MARKER = "=== DRAFT NOTES ==="
+INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
 COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
 # Platform tools per industry; an industry not listed gets only the common ones. Keep in step with each core.md tool table.
 INDUSTRY_TOOLS = {
@@ -131,6 +134,26 @@ def split_output(text):
     """Split the skill's full output into (instructions, draft_notes) at the marker line."""
     head, sep, tail = text.partition(NOTES_MARKER)
     return head.strip(), (tail.strip() if sep else "")
+
+
+def split_marked(text):
+    """Split the full output using both markers. Returns (instructions, draft_notes, outside_lines).
+    With an INSTRUCTIONS marker, the Instructions are only what sits between the two markers and any text before
+    the marker is returned as outside text. Without it, this is split_output and nothing counts as outside."""
+    if INSTRUCTIONS_MARKER not in text:
+        instructions, notes = split_output(text)
+        return instructions, notes, []
+    before, _, rest = text.partition(INSTRUCTIONS_MARKER)
+    instructions, notes = split_output(rest)
+    return instructions, notes, [l.strip() for l in before.splitlines() if l.strip()]
+
+
+def case_selected(case_id, wanted):
+    """True when no case filter is given, or the id equals a wanted token or ends with -TOKEN (E04 matches PHA-E04)."""
+    if not wanted:
+        return True
+    cid = case_id.upper()
+    return any(cid == w.upper() or cid.endswith("-" + w.upper()) for w in wanted)
 
 
 SAY_EXACTLY = re.compile(r'say exactly(?: and only)?\s+"([^"]+)"', re.I)
@@ -321,7 +344,7 @@ def parse_judge(text):
     return out
 
 
-def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None):
+def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, cases=None):
     out = out or sys.stdout
     date = date or datetime.date.today().isoformat()
     d = root / "industries" / industry
@@ -335,17 +358,23 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None):
             continue
         name = pf.stem
         pid = name.split("-")[0]
-        applicable = [c for c in checks if not c.get("profiles") or pid in c["profiles"]]
+        applicable = [c for c in checks if (not c.get("profiles") or pid in c["profiles"]) and case_selected(c["id"], cases)]
+        if cases and not applicable:
+            continue
         full = llm.run(
             f"Use the {industry}-prompt-writer skill for this test business. Output exactly two parts. "
-            f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax). "
+            f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax); "
+            f"if the skill's output format starts with a line containing only {INSTRUCTIONS_MARKER} , keep that line. "
             f"Then a line containing only {NOTES_MARKER} . "
             f"Part 2: the draft notes (assumptions and defaults used, refused or changed client requests "
             f"with a one-line reason each, open items, the section 6 word count). Output nothing else. "
             f"Do not open eval.json files or results folders.\n\n"
             + visible_profile(pf.read_text(encoding="utf-8")))
-        instructions, notes = split_output(full)
+        instructions, notes, outside = split_marked(full)
         profile_text = pf.read_text(encoding="utf-8")
+        warnings = []
+        if outside:
+            warnings.append("warning: text outside the markers (ignored): " + " / ".join(o[:60] for o in outside))
         welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text), root) if source == "welcome"), None)
         stray = []
         if welcome:
@@ -355,7 +384,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None):
                          + " / ".join(r.strip()[:60] for r in removed)]
         inst_path = work / f"{name}-instructions.md"
         inst_path.write_text(instructions + "\n", encoding="utf-8")
-        lint[name] = lint_instructions(inst_path, root) + stray + [
+        lint[name] = lint_instructions(inst_path, root) + warnings + stray + [
             "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
         for problem in lint[name]:
             print(f"lint {name}: {problem}", file=out)
@@ -397,6 +426,7 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
     ap.add_argument("--date")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--profiles", nargs="+", help="only these profile ids, for example 01 03")
+    ap.add_argument("--cases", help="comma list of case ids to run and judge, for example E04,E06 (PHA-E04 also works)")
     args = ap.parse_args(argv)
     targets = list(INDUSTRIES) if args.all else [args.industry]
     llm = llm or ClaudeCli()
@@ -411,7 +441,8 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
             n = len(profile_files(Path(root) / "industries" / ind))
             table.append((ind, "ready", f"{n} profiles, nothing run"))
             continue
-        summary, rows = run_industry(ind, llm, Path(root), args.date, args.profiles)
+        summary, rows = run_industry(ind, llm, Path(root), args.date, args.profiles,
+                                     cases=[c.strip() for c in args.cases.split(",") if c.strip()] if args.cases else None)
         table.append((ind, f"{summary['passed']}/{summary['total']} passed", f"{summary['pass_rate']}%"))
         failing += [(ind, r) for r in rows if r["result"] == "fail"]
         if summary["failed"]:
