@@ -5,6 +5,7 @@ Usage:
   python scripts/run_evals.py --industry healthcare
   python scripts/run_evals.py --all
   python scripts/run_evals.py --industry healthcare --dry-run     check inputs, call nothing
+  python scripts/run_evals.py --industry healthcare --profiles 01 03   run only these test profiles
 
 For every test profile in industries/<x>/test-profiles/ the runner:
   1. generates the skill's FULL output with the <x>-prompt-writer skill (the profile's expected results are
@@ -144,7 +145,7 @@ def parse_judge(text):
     return out
 
 
-def run_industry(industry, llm, root=ROOT, date=None):
+def run_industry(industry, llm, root=ROOT, date=None, profiles=None):
     date = date or datetime.date.today().isoformat()
     d = root / "industries" / industry
     checks = json.loads((d / "eval.json").read_text(encoding="utf-8"))["checks"]
@@ -153,6 +154,8 @@ def run_industry(industry, llm, root=ROOT, date=None):
     work.mkdir(parents=True, exist_ok=True)
     rows, lint = [], {}
     for pf in profile_files(d):
+        if profiles and pf.stem.split("-")[0] not in profiles:
+            continue
         name = pf.stem
         pid = name.split("-")[0]
         applicable = [c for c in checks if not c.get("profiles") or pid in c["profiles"]]
@@ -202,6 +205,7 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
     g.add_argument("--all", action="store_true")
     ap.add_argument("--date")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--profiles", nargs="+", help="only these profile ids, for example 01 03")
     args = ap.parse_args(argv)
     targets = list(INDUSTRIES) if args.all else [args.industry]
     llm = llm or ClaudeCli()
@@ -216,7 +220,7 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
             n = len(profile_files(Path(root) / "industries" / ind))
             table.append((ind, "ready", f"{n} profiles, nothing run"))
             continue
-        summary, rows = run_industry(ind, llm, Path(root), args.date)
+        summary, rows = run_industry(ind, llm, Path(root), args.date, args.profiles)
         table.append((ind, f"{summary['passed']}/{summary['total']} passed", f"{summary['pass_rate']}%"))
         failing += [(ind, r) for r in rows if r["result"] == "fail"]
         if summary["failed"]:

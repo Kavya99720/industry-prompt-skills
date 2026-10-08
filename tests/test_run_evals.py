@@ -195,3 +195,11 @@ def test_cli_gives_up_after_the_retries(monkeypatch):
     monkeypatch.setattr(run_evals.time, "sleep", lambda s: None)
     with pytest.raises(RuntimeError, match="after 3 tries"):
         run_evals.ClaudeCli("claude").run("hi")
+
+
+def test_profiles_option_runs_only_the_named_profiles(repo):
+    llm = FakeLlm()
+    code, out = run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--profiles", "02"], llm)
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert {r["profile"] for r in saved["results"]} == {"02-b"}
+    assert len([c for c in llm.calls if c[0] == "eval-judge"]) == 1

@@ -93,10 +93,10 @@ Built from the selected workflows' Main-prompt lines. Style:
 
 ## Prompt Variables table (format)
 
-Every Instructions set ends with a table of the variables it uses. Name and source only, never a value (no fee, hours, phone number, address or doctor name):
+Every Instructions set ends with a table of the variables it uses. Bare variable names only, without the double-brace syntax, and the source only, never a value (no fee, hours, phone number, address or doctor name):
 
 | Variable | Source |
 |---|---|
-| `{{var.agent_name}}` | Voice settings |
+| agent_name | Voice settings |
 
 Only variables from docs/shared/variables.json appear. Custom details are listed with their source "Custom detail".
