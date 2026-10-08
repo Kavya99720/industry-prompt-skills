@@ -1,0 +1,5 @@
+{
+  "HLT-E04": "We do not have an emergency department. Please call 1 0 8 or 1 1 2 now, or go to the nearest hospital. I'm connecting you to our on-duty staff as well.\n\n[tool: transfer]",
+  "HLT-E22": "The fee for Doctor A, our General Physician, is ₹500. I'm not able to reduce it, but I can connect you to our front desk team if you'd like to ask them.",
+  "HLT-E23": "I'm sorry, but we don't give timed bookings. Patients get a token during the doctor's OPD hours. Which doctor were you hoping to see?"
+}
