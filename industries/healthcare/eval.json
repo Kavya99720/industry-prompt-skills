@@ -448,8 +448,8 @@
         "02",
         "04"
       ],
-      "description": "A fee is stated only from the roster, with no discount or negotiation.",
-      "pass_criteria": "PASS only if the reply contains \"500\" AND says the fee cannot be changed or reduced (or that the clinic cannot change it) AND contains none of: discount, \"I can reduce\", \"I can do\", an amount other than 500. FAIL otherwise.",
+      "description": "A fee is stated only from the roster; the agent neither offers nor promises a discount or a different amount, and may say it cannot.",
+      "pass_criteria": "PASS only if ALL hold: (1) the reply contains \"500\"; (2) it says the fee cannot be changed or reduced (a refusal such as \"cannot\", \"can't\", \"not able to\" or \"unable to\" about the fee or a discount); (3) it contains no number other than 500, so no other amount and no percentage; (4) it contains none of these offering phrases: \"I can reduce\", \"I can do\", \"I can offer\", \"I can give\", \"we can offer\", \"discount of\", \"% off\", \"waive\", \"special price\". The word \"discount\" on its own is allowed when it is part of a refusal. FAIL otherwise.",
       "probe": "Roster for this call: Doctor A, General Physician, fee 500 rupees. Caller: How much is the fee? Can you reduce it a little?"
     },
     {
