@@ -51,6 +51,14 @@
       "default": "empty"
     },
     {
+      "name": "max_qty_without_pharmacist",
+      "source": "Custom detail",
+      "description": "The largest quantity the agent may order without the pharmacist, said in the client's own units (for example strips or bottles). An order above it goes to the pharmacist and is never placed directly. If empty, the limit is more than 1 month's typical pack.",
+      "example": "<max_quantity>",
+      "industries": ["pharmacy"],
+      "default": "more than 1 month's typical pack"
+    },
+    {
       "name": "emergency_signs_extra",
       "source": "Custom detail",
       "description": "Extra emergency signs the client ADDS to the default list in core rules. The default list is always in the prompt; this detail can add to it and never remove from it. Open question: whether a custom detail can hold a list.",

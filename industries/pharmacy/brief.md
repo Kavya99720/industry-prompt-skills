@@ -140,6 +140,8 @@ Full text is in industries/pharmacy/grill-me.md and docs/DECISIONS.md entries 41
 | S-65 | Refill of a controlled medicine, inbound or outbound | [03-refill.md](workflows\03-refill.md) | S6 |
 | S-66 | Angry about a late or wrong delivery | [04-delivery-returns.md](workflows\04-delivery-returns.md) | S4 |
 | S-67 | No order number | [04-delivery-returns.md](workflows\04-delivery-returns.md) | S5 |
+| S-68 | The stock tool returns no prescription-needed or controlled flags | [02-order-prescription.md](workflows-order-prescription.md) | S6 |
+| S-69 | The caller orders more than the limit | [02-order-prescription.md](workflows-order-prescription.md) | S6 |
 
 ## 5. Rule register
 
@@ -216,6 +218,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-67 | Returns follow only the configured policy in var.return_policy, said as written. If mi... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-68 | A wrong, damaged or expired item goes to staff. The agent does not decide, does not ask th... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-69 | For a return or delivery problem take only the customer name, the order number and one lin... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | major | S6 |
+| R-70 | Bulk quantity: an order above var.max_qty_without_pharmacist is never placed directly; hand off to the pharmacist. Default limit: more than 1 month's typical pack. | [02-order-prescription.md](workflows-order-prescription.md) | major | S6 |
 
 ## 6. Vocabulary
 - **Prescription-only medicine**: a medicine that needs a valid prescription. The agent never judges validity; the pharmacist verifies (R-11). What counts as valid: to be confirmed by the industry expert.
@@ -260,18 +263,18 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 Not decided in the grill-me. None of these is guessed in the brief; the defaults named here are the conservative ones used until the owner answers.
 
 1. **Chat channel.** Voice Instructions only. Chat behaviour (prescription image upload, no TTS rules) is open until the platform supports chat (workflow 07; R-45).
-2. **Controlled-medicine schedules and what counts as a valid prescription.** For an industry expert. Until then the agent relies on the stock tool's controlled and prescription flags and on "when unsure, hand off" (R-11, R-12). The `check_stock` result fields assumed in core.md (in stock, price, prescription needed, controlled) are not confirmed.
-3. **Can an on-file prescription ever be treated as valid by a tool?** Default: no. Every prescription-only order or refill goes to the pharmacist (R-50, R-57). There is no prescription-check tool.
-4. **Outbound verification.** Default: after the person confirms the customer's name, only "a refill is due" is said; the medicine is named after the order number is given (R-58). Open: is the order number required on outbound, and can the platform pass it so the agent compares it? Also whether naming the medicine on an outbound call is acceptable under DPDP.
-5. **Outbound call data.** Does the platform pass `{{var.customer_name}}` and `{{var.refill_details}}` (both unconfirmed), detect voicemail, or offer a do-not-call tool? Until then R-59 and R-62 apply as written.
-6. **AI disclosure up front on outbound** (legal or lead decision, as in healthcare). Default: follow the client's welcome template; always answer honestly (R-06).
+2. **Controlled-medicine schedules and what counts as a valid prescription.** For an industry expert. Until then the agent relies on the stock tool's controlled and prescription flags and on "when unsure, hand off" (R-11, R-12). If the tool does not return those flags, the medicine is treated as prescription-needed and handed to the pharmacist; no order (decided, DECISIONS 44). The `check_stock` result fields are a question for the lead (platform-contract.md, section 5).
+3. **On-file prescription: decided, not valid in v1** (DECISIONS 44). Every prescription-only order or refill goes to the pharmacist (R-50, R-57). There is no prescription-check tool.
+4. **Outbound verification: decided** (DECISIONS 44). After the person confirms the customer's name only "a refill is due" is said; the medicine is named only after the order number is given (R-58). Whether naming the medicine on an outbound call is acceptable under DPDP stays with compliance.
+5. **Outbound call data, voicemail and do-not-call.** Moved to "Questions for lead" in docs/shared/platform-contract.md. Until answered R-59 and R-62 apply as written.
+6. **AI disclosure up front on outbound.** Moved to "Questions for lead" in docs/shared/platform-contract.md. Default: follow the client's welcome template; always answer honestly (R-06).
 7. **Outbound closing wording** (R-24) is a proposal and needs sign-off.
-8. **Delivery address.** Does `place_order` already hold the customer's address? Default: the agent takes and reads back an address for home delivery only (R-56).
+8. **Delivery address: decided** (DECISIONS 44). The agent takes the address and reads it back for home delivery only (R-56). On an outbound call the agent never says or repeats an address; for delivery it says the team will confirm it. Whether `place_order` already holds the address is a question for the lead.
 9. **Hospital-pharmacy specifics.** Collection counter, discharge medicines, queue questions: Phase 2 (workflow 05). Until then nothing is shared about an admitted person.
 10. **Other outbound call types** beyond refill reminders (delivery updates, payment reminders, promotions): Phase 2 (workflow 06).
 11. **Languages.** Assumed to follow healthcare's 11 platform languages; not confirmed for pharmacy.
 12. **Poison-control helpline.** Not discussed; only 1 0 8 or 1 1 2 and, for self-harm, 14416, as in healthcare.
-13. **Tools not selected.** An order-status lookup, a cancel or return tool, and a send-link tool for confirmations were not selected. The send tool is used only for prescription-upload instructions when the client enables it. The platform tool name for the send tool is assumed to be `send_confirmation`.
+13. **Tools not selected.** An order-status lookup, a cancel or return tool, and a send-link tool for confirmations were not selected. The send tool is used only for prescription-upload instructions when the client enables it. Its platform name (assumed `send_confirmation`) is a question for the lead (platform-contract.md, section 5).
 14. **Return policy values** (window, refund rules), delivery terms, payment modes and any medicines the client always hands to the pharmacist come from client configuration. Whether a custom detail can hold a list or long text is a platform question (docs/shared/platform-contract.md).
 15. **Emergency signs list** needs review by the client's clinical team before release; legal references (DPDP, drug schedules, prescription rules) are to be confirmed by the industry expert.
 16. **Platform items still open:** the "How these compose" tooltip, whether the 616-word warning is a hard limit, and how the "How it ends" templates combine with the closing line (docs/shared/platform-contract.md).

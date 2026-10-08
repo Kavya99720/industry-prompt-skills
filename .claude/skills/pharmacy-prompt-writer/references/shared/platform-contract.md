@@ -114,3 +114,10 @@ Still open after the 2026-10-08 decisions. Grouped by who can answer. Resolved o
 **Clinical and compliance**
 10. The default emergency signs list needs review by the client's clinical team.
 11. The exact DPDP provisions for notice, purpose and minimisation, to be confirmed by the industry expert.
+
+**Pharmacy (added 2026-10-09)**
+12. **Stock tool fields.** Does `check_stock` return in stock, price, prescription needed and controlled? Until confirmed the agent treats a missing flag as prescription-needed and hands off to the pharmacist (R-12).
+13. **Send tool name.** Is the platform's WhatsApp or email send called `send_confirmation`? The pharmacy uses it only for prescription-upload instructions.
+14. **Voicemail.** Does the platform detect voicemail or no answer on outbound refill reminders? Until then R-59 applies as written.
+15. **Do-not-call.** Is there a do-not-call tool? Until then the agent never says a stop-calling request is done (R-62).
+16. **Outbound AI disclosure.** Must outbound refill reminders say "an AI assistant" up front? Default: follow the client's welcome template and answer honestly if asked (R-06).

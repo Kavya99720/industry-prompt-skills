@@ -111,7 +111,7 @@ Output exactly this, nothing before or after:
 | Variable | Value you gave | Where to set it |
 |---|---|---|
 | `{{var.agent_name}}` | <value from intake, or "not provided"> | Voice settings |
-(one row for every variable the Instructions use; business_hours and business_phone under Your business; custom details such as store_address, return_policy, delivery_info, payment_modes, prescription_upload_method and business_info under Your business, Add a detail; customer_name and refill_details are passed by the platform on outbound calls, unconfirmed)
+(one row for every variable the Instructions use; business_hours and business_phone under Your business; custom details such as store_address, return_policy, delivery_info, payment_modes, max_qty_without_pharmacist, prescription_upload_method and business_info under Your business, Add a detail; customer_name and refill_details are passed by the platform on outbound calls, unconfirmed)
 `{{var.company_name}}` = your business name, filled in automatically from Variables.
 ```
 
