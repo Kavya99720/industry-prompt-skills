@@ -29,16 +29,20 @@ import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_variables  # noqa: E402
 import validate_eval  # noqa: E402
 
 INDUSTRIES = (
     "healthcare", "pharmacy", "retail", "finance", "banking",
     "education", "logistics", "hr", "real-estate", "travel",
 )
+RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
+RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))
 WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
 NOTES_MARKER = "=== DRAFT NOTES ==="
 TOOLS_NOTE = (
@@ -66,11 +70,15 @@ class ClaudeCli:
             cmd += ["--agent", agent]
         if system:
             cmd += ["--system-prompt", system]
-        result = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
-                                cwd=self.cwd, encoding="utf-8")
-        if result.returncode != 0:
-            raise RuntimeError(f"claude call failed: {result.stderr.strip()[:300]}")
-        return result.stdout.strip()
+        for attempt in range(RETRIES + 1):
+            result = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
+                                    cwd=self.cwd, encoding="utf-8")
+            if result.returncode == 0:
+                return result.stdout.strip()
+            if attempt < RETRIES:
+                time.sleep(RETRY_WAIT)
+        raise RuntimeError(f"claude call failed after {RETRIES + 1} tries: "
+                           f"{(result.stderr or result.stdout).strip()[:300]}")
 
 
 def profile_files(industry_dir):
@@ -92,6 +100,17 @@ def split_output(text):
     """Split the skill's full output into (instructions, draft_notes) at the marker line."""
     head, sep, tail = text.partition(NOTES_MARKER)
     return head.strip(), (tail.strip() if sep else "")
+
+
+def lint_instructions(path, root):
+    """Run the variable, client-value and example-name checks on generated Instructions. Informational only."""
+    vars_path = Path(root) / "docs" / "shared" / "variables.json"
+    if not vars_path.is_file():
+        return []
+    known = check_variables.load_variables(vars_path)
+    denylist = check_variables.load_denylist(Path(root) / "scripts" / "denylist.txt")
+    issues, _ = check_variables.scan_file(Path(path), known, denylist, Path(root))
+    return [f"line {i.line}: {i.level} {i.problem}" for i in issues]
 
 
 def check_inputs(industry, root):
@@ -132,7 +151,7 @@ def run_industry(industry, llm, root=ROOT, date=None):
     out_dir = d / "results"
     work = out_dir / date
     work.mkdir(parents=True, exist_ok=True)
-    rows = []
+    rows, lint = [], {}
     for pf in profile_files(d):
         name = pf.stem
         pid = name.split("-")[0]
@@ -148,6 +167,7 @@ def run_industry(industry, llm, root=ROOT, date=None):
         instructions, notes = split_output(full)
         inst_path = work / f"{name}-instructions.md"
         inst_path.write_text(instructions + "\n", encoding="utf-8")
+        lint[name] = lint_instructions(inst_path, root)
         notes_path = work / f"{name}-draft-notes.md"
         notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
         probes = [c for c in applicable if c.get("type") == "behaviour"]
@@ -171,7 +191,7 @@ def run_industry(industry, llm, root=ROOT, date=None):
                "failed": len(rows) - passed,
                "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0}
     (out_dir / f"{date}.json").write_text(
-        json.dumps({"summary": summary, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
+        json.dumps({"summary": summary, "lint": lint, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
     return summary, rows
 
 

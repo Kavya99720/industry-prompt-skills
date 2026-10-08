@@ -152,3 +152,28 @@ def test_results_folders_are_skipped(repo):
     errors, _, _, issues = cv.run(repo, ["industries"], repo / "docs/shared/variables.json",
                                   repo / "scripts/denylist.txt", out=out)
     assert errors == 1 and all("results" not in i.path for i in issues)
+
+
+@pytest.mark.parametrize("line", ["Say Doctor Rao, is that right?", "Ask Dr. Shah first.", "Dr Kumar is in."])
+def test_example_person_names_fail(repo, line):
+    (errors, _, _, issues), _, _ = scan(repo, line + chr(10))
+    assert errors == 1 and "person name" in problems(issues)[0]
+
+
+@pytest.mark.parametrize("line", ["Say Doctor <name>, is that right?", "Doctor A sits on Monday.", "Doctor On leave: callback.",
+                                  "Doctor status is shown.", "DOCTOR LIST: only these doctors exist.", "The doctor said so."])
+def test_placeholders_and_status_words_are_not_person_names(repo, line):
+    (errors, _, _, _), _, _ = scan(repo, line + chr(10))
+    assert errors == 0
+
+
+def test_person_names_allowed_in_test_profiles_and_eval_json(repo):
+    ind = repo / "industries" / "demo"
+    (ind / "test-profiles").mkdir(parents=True)
+    (ind / "test-profiles" / "01-a.md").write_text("Doctor Rao sits Monday." + chr(10), encoding="utf-8")
+    (ind / "eval.json").write_text('{"probe": "This is Doctor Test from the hospital."}', encoding="utf-8")
+    (ind / "core.md").write_text("Say Doctor Rao." + chr(10), encoding="utf-8")
+    out = io.StringIO()
+    errors, _, _, issues = cv.run(repo, ["industries"], repo / "docs/shared/variables.json",
+                                  repo / "scripts/denylist.txt", out=out)
+    assert errors == 1 and issues[0].path.endswith("core.md")

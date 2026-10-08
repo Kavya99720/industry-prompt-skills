@@ -155,3 +155,43 @@ def test_simulated_replies_are_told_to_write_tool_calls_inline(repo):
     systems = [c[1] for c in llm.calls if c[1]]
     assert systems and all(s.startswith("generated text") and "[tool: <name>]" in s for s in systems)
     assert all("end_call" in s and "transfer" in s for s in systems)
+
+
+def test_generated_instructions_are_linted_into_the_results_file(repo):
+    (repo / "docs" / "shared").mkdir(parents=True)
+    (repo / "docs" / "shared" / "variables.json").write_text(
+        json.dumps({"variables": [{"name": "roster"}]}), encoding="utf-8")
+
+    class Bad(FakeLlm):
+        def run(self, prompt, system=None, agent=None, tools=None):
+            if system is None and agent is None:
+                return "Ask Doctor Rao or use {{doctors}}." + chr(10) + "=== DRAFT NOTES ===" + chr(10) + "n"
+            return super().run(prompt, system, agent, tools)
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], Bad())
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert any("person name" in x for x in saved["lint"]["01-a"])
+    assert any("wrong variable style" in x for x in saved["lint"]["01-a"])
+
+
+def test_cli_retries_a_failed_call_then_succeeds(monkeypatch):
+    calls = []
+
+    class R:
+        def __init__(self, code, out=""):
+            self.returncode, self.stdout, self.stderr = code, out, ""
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        return R(1) if len(calls) < 3 else R(0, "ok")
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: None)
+    assert run_evals.ClaudeCli("claude").run("hi") == "ok" and len(calls) == 3
+
+
+def test_cli_gives_up_after_the_retries(monkeypatch):
+    class R:
+        returncode, stdout, stderr = 1, "", "limit"
+    monkeypatch.setattr(run_evals.subprocess, "run", lambda cmd, **kw: R())
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: None)
+    with pytest.raises(RuntimeError, match="after 3 tries"):
+        run_evals.ClaudeCli("claude").run("hi")

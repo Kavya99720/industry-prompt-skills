@@ -61,6 +61,7 @@ Emergency (core R-09): the compact default list is always written in section 1. 
 Section 6 (Main prompt) plus the expanded roster stays within about 615 words.
 - Allowance for your own section 6 text = 615 minus (23 x number of doctors). The roster placeholder itself is not counted in your text.
 - Count words as whitespace-separated tokens. Count exactly, per section; use a quick script if you can run one.
+- Margin: aim for section 6 at least 20 words BELOW the allowance, so a small client change never tips it over. Reach the margin by the compression order below, never by dropping a rule. Do not use spare room to add wording.
 - If section 6 is over the allowance, compress in this order only: (1) move universal behaviour to sections 1, 4 and 5; (2) shorten wording; (3) merge steps.
 - NEVER drop or weaken a critical rule to save words. If it is still over, keep everything and put a budget warning in the draft notes with the exact counts (section 6 words, allowance, doctors, overage) and the options (shorter doctor "about" texts, fewer doctors in one agent, a split into two agents).
 
@@ -106,7 +107,15 @@ Output exactly this, nothing before or after:
 **Word counts**
 - Welcome: N. Section 1: N. Section 2: N. Section 3: N. Section 4: N. Section 5: N.
 - Section 6: N words. Roster: D doctors x 23 = R. Allowance: 615 - R = A. Status: within budget / OVER by X (warning and options).
+**Fill these in the platform**
+| Variable | Value you gave | Where to set it |
+|---|---|---|
+| `{{var.agent_name}}` | <value from intake, or "not provided"> | Voice settings |
+(one row for every variable the Instructions use; business_hours, business_phone, clinic_address under Your business; roster under Doctors; custom details under Your business, Add a detail)
+`{{var.company_name}}` = your business name, filled in automatically from Variables.
 ```
+
+Real values (the business name, hours, phone number, address, doctor details, fees) appear ONLY in the "Fill these in the platform" block of the draft notes, never in the Instructions. If the client gave no value, write "not provided"; never invent one.
 
 The marker line `=== DRAFT NOTES ===` stands alone on its own line. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
 

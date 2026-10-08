@@ -10,6 +10,8 @@ Usage:
 FAILS (exit 1) on:
   - a {{var.x}} whose name is not in docs/shared/variables.json
   - a wrong style: {{hospital_name}}, {{persona_name}}, {{doctors}}, @company_name, @agent_name ...
+  - an example person name such as "Doctor Rao" or "Dr. Shah": write "Doctor <name>" (allowed only in
+    test-profiles/, docs/shared/reference/ and eval.json test data)
   - a real client value: any term in scripts/denylist.txt (private, gitignored), or a phone number
 WARNS on {{var.company_name}} used outside a welcome, closing or AI-disclosure line.
 
@@ -75,12 +77,15 @@ PHONE_RE = re.compile(r"(?<![\d])(?:\+?91[\s-]?)?[6-9]\d{4}[\s-]?\d{5}(?![\d])")
 PIN_RE = re.compile(r"[A-Za-z],?\s+[1-9]\d{5}(?!\d)")
 VAR_RE = re.compile(r"\{\{\s*var\.([A-Za-z0-9_]+)\s*\}\}")
 BARE_RE = re.compile(r"\{\{\s*(?!var\.)([A-Za-z_][A-Za-z0-9_]*)\s*\}\}")
+PERSON_RE = re.compile(r"\b(?:Doctor|Dr\.?)\s+(?!(?:On|Status|List|Roster)\b)[A-Z][a-z]+\b")
+# Test data may name people (placeholders such as Doctor A, or probe text); authored rules and prompts may not.
+PERSON_EXEMPT = ("/test-profiles/", "docs/shared/reference/")
 AT_RE = re.compile(r"(?<![\w.@/])@([A-Za-z_][A-Za-z0-9_]*)")
 # Lines where the caller hears the company name.
 COMPANY_OK = re.compile(
     r"welcome|greet|opening|closing|close\b|goodbye|thank you for calling|"
     r"ai assistant|ai disclosure|are you (a )?(real |robot|human|person|an ai)|say you are|"
-    r"voicemail|call us back|calling from",
+    r"voicemail|call us back|calling from|your business name",
     re.IGNORECASE,
 )
 
@@ -124,6 +129,11 @@ def collect_files(targets, root):
                 if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and not is_results(f):
                     files.append(f)
     return files
+
+
+def is_person_exempt(rel):
+    rel = "/" + rel
+    return rel.endswith("/eval.json") or any(x in rel or rel.startswith("/" + x) for x in PERSON_EXEMPT)
 
 
 def replacement_for(name, known):
@@ -182,6 +192,9 @@ def scan_file(path, known, denylist, root):
                     issues.append(Issue(rel, n, "ERROR", "real client value (denylist match)",
                                         "replace with a variable or a neutral placeholder such as <business_name>"))
                     break
+        if PERSON_RE.search(line) and not is_person_exempt(rel):
+            issues.append(Issue(rel, n, "ERROR", "example person name in text",
+                                "use a placeholder such as Doctor <name> or <patient_name>"))
         if PHONE_RE.search(line):
             issues.append(Issue(rel, n, "ERROR", "phone number in text",
                                 "use {{var.business_phone}} or a placeholder such as <business_phone>"))

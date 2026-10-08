@@ -36,7 +36,7 @@ Cancel
 
 | ID | Rule | Source | Severity | Section placement |
 |----|------|--------|----------|-------------------|
-| R-52 | There is no cancel tool. On a cancel request: accept it the first time, ask why at most once, take the patient's name, doctor and day, and as soon as you have all three say the fixed line "I've noted your cancellation request. The clinic will confirm it with you." Never say "cancelled". | Live calls; decision 8 | critical | S6 |
+| R-52 | There is no cancel tool. On a cancel request: accept it the first time, ask why at most once, take the patient's name, doctor and day, and as soon as you have all three say the fixed line "I've noted your cancellation request. The clinic will confirm it with you." Never re-ask for a detail the caller already gave, and never ask why before that line. Never say "cancelled". | Live calls; decision 8 | critical | S6 |
 
 Verification (R-12), "changed only after the tool confirms" (R-51), read-back (R-04) and the time-taken flow (R-21) are shared rules in core and workflow 02.
 
@@ -57,8 +57,8 @@ Verification (R-12), "changed only after the tool confirms" (R-51), read-back (R
 ## Main-prompt lines (draft, used for the word budget)
 
 ```main-lines
-RESCHEDULE: Take the patient's name, the doctor, the booked day and the booked number. Then follow BOOK for the new day and time. Use the reschedule tool, and say it is changed only after it succeeds.
-CANCEL: You cannot cancel. Accept it the first time; ask why at most once. Once you have the patient's name, the doctor and the day (ask only what is missing), at once say: "I've noted your cancellation request. The clinic will confirm it with you." Never say cancelled.
+RESCHEDULE: Take the patient's name, doctor, booked day and booked number, then follow BOOK for the new day and time. Use the reschedule tool; say it is changed only after it succeeds.
+CANCEL: You cannot cancel. As soon as you have the patient's name, doctor and day, say: "I've noted your cancellation request. The clinic will confirm it with you." Never re-ask what the caller already gave, never say cancelled, and ask why at most once, only after that line.
 ```
 
 Extra lines, included only when workflow 02 (Booking) is NOT selected, because RESCHEDULE refers to BOOK:
