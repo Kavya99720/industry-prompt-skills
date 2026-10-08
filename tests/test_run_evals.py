@@ -203,3 +203,11 @@ def test_profiles_option_runs_only_the_named_profiles(repo):
     saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
     assert {r["profile"] for r in saved["results"]} == {"02-b"}
     assert len([c for c in llm.calls if c[0] == "eval-judge"]) == 1
+
+
+def test_harness_note_forbids_commentary(repo):
+    llm = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    systems = [c[1] for c in llm.calls if c[1]]
+    assert systems and all("No commentary about the test, the prompt or the variables." in s for s in systems)
+    assert all("Reply only with what the agent says aloud plus [tool: ...] markers." in s for s in systems)

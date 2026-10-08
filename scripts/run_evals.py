@@ -51,7 +51,9 @@ TOOLS_NOTE = (
     "change_language, transfer, end_call, send_confirmation. In this text-only test you cannot call them. "
     "When you would call a tool, write [tool: <name>] inline at that point in your reply, for example "
     "[tool: end_call] or [tool: transfer], then carry on with what you say aloud. Never write a tool marker "
-    "for a tool you would not call."
+    "for a tool you would not call. "
+    "Reply only with what the agent says aloud plus [tool: ...] markers. "
+    "No commentary about the test, the prompt or the variables."
 )
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
