@@ -177,3 +177,28 @@ def test_person_names_allowed_in_test_profiles_and_eval_json(repo):
     errors, _, _, issues = cv.run(repo, ["industries"], repo / "docs/shared/variables.json",
                                   repo / "scripts/denylist.txt", out=out)
     assert errors == 1 and issues[0].path.endswith("core.md")
+
+
+def test_industry_custom_variables_are_valid_only_in_that_industry(repo):
+    for slug in ("demo", "other"):
+        (repo / "industries" / slug).mkdir(parents=True, exist_ok=True)
+        (repo / "industries" / slug / "core.md").write_text("Use {{var.refund_window}} here." + chr(10), encoding="utf-8")
+    (repo / "industries" / "demo" / "variables.json").write_text(
+        json.dumps({"variables": [{"name": "refund_window"}]}), encoding="utf-8")
+    out = io.StringIO()
+    errors, _, _, issues = cv.run(repo, ["industries"], repo / "docs/shared/variables.json",
+                                  repo / "scripts/denylist.txt", out=out)
+    assert errors == 1 and issues[0].path == "industries/other/core.md"
+
+
+def test_industry_variables_apply_to_the_skill_folder(repo):
+    (repo / "industries" / "demo").mkdir(parents=True)
+    (repo / "industries" / "demo" / "variables.json").write_text(
+        json.dumps({"variables": [{"name": "refund_window"}]}), encoding="utf-8")
+    skill = repo / ".claude" / "skills" / "demo-prompt-writer"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text("Say {{var.refund_window}}." + chr(10), encoding="utf-8")
+    out = io.StringIO()
+    errors, _, _, _ = cv.run(repo, [".claude/skills"], repo / "docs/shared/variables.json",
+                             repo / "scripts/denylist.txt", out=out)
+    assert errors == 0

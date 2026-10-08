@@ -16,6 +16,8 @@ FAILS (exit 1) on:
 WARNS on {{var.company_name}} used outside a welcome, closing or AI-disclosure line.
 
 Put `check_variables: ignore` on a line to skip it (for text that explains a wrong style).
+Industry custom details: an industry may define extra variables in industries/<x>/variables.json (same format as
+docs/shared/variables.json). They are valid only in that industry's files.
 Standard library only.
 """
 import argparse
@@ -114,6 +116,27 @@ def load_denylist(path):
         if term and not term.startswith("#"):
             terms.append(re.compile(r"(?<!\w)" + re.escape(term) + r"(?!\w)", re.IGNORECASE))
     return terms
+
+
+def industry_of(path, root):
+    """The industry slug a file belongs to: industries/<x>/..., .claude/skills/<x>-prompt-writer/... or outputs/<x>/..."""
+    try:
+        parts = Path(path).resolve().relative_to(Path(root).resolve()).parts
+    except ValueError:
+        return None
+    if len(parts) >= 2 and parts[0] in ("industries", "outputs"):
+        return parts[1]
+    if len(parts) >= 3 and parts[0] == ".claude" and parts[1] == "skills" and parts[2].endswith("-prompt-writer"):
+        return parts[2][: -len("-prompt-writer")]
+    return None
+
+
+def industry_variables(industry, root):
+    """Custom details an industry defines in industries/<x>/variables.json (same format as docs/shared/variables.json)."""
+    if not industry:
+        return set()
+    p = Path(root) / "industries" / industry / "variables.json"
+    return load_variables(p) if p.is_file() else set()
 
 
 def collect_files(targets, root):
@@ -222,11 +245,16 @@ def apply_fixes(path, fixes):
 
 def run(root, targets, variables_path, denylist_path, fix=False, out=sys.stdout):
     """Scan and return (errors, warnings, fixed_count, issues_left)."""
-    known = load_variables(variables_path)
+    base_known = load_variables(variables_path)
+    industry_known = {}
     denylist = load_denylist(denylist_path)
     files = collect_files(targets, root)
     all_issues, fixed = [], 0
     for f in files:
+        ind = industry_of(f, root)
+        if ind not in industry_known:
+            industry_known[ind] = base_known | industry_variables(ind, root)
+        known = industry_known[ind]
         issues, fixes = scan_file(f, known, denylist, root)
         if fix and fixes:
             apply_fixes(f, fixes)

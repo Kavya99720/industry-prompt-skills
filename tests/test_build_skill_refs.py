@@ -75,3 +75,12 @@ def test_real_skill_references_are_in_sync(industry):
 def test_references_never_include_tests_or_results():
     names = b.plan("healthcare")
     assert not any("eval" in n or "results" in n or "test-profiles" in n for n in names)
+
+
+def test_optional_industry_files_are_copied_when_present(tmp_path):
+    root = make_repo(tmp_path)
+    (root / "industries/demo/section-bases.md").write_text("bases" + chr(10), encoding="utf-8")
+    (root / "industries/demo/variables.json").write_text("{}" + chr(10), encoding="utf-8")
+    names = b.build("demo", root)
+    assert "industry/section-bases.md" in names and "industry/variables.json" in names
+    assert b.problems("demo", root) == []

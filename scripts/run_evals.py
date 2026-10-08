@@ -110,7 +110,8 @@ def lint_instructions(path, root):
     vars_path = Path(root) / "docs" / "shared" / "variables.json"
     if not vars_path.is_file():
         return []
-    known = check_variables.load_variables(vars_path)
+    known = check_variables.load_variables(vars_path) | check_variables.industry_variables(
+        check_variables.industry_of(path, root), root)
     denylist = check_variables.load_denylist(Path(root) / "scripts" / "denylist.txt")
     issues, _ = check_variables.scan_file(Path(path), known, denylist, Path(root))
     return [f"line {i.line}: {i.level} {i.problem}" for i in issues]

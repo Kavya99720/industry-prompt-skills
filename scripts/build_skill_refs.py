@@ -12,6 +12,8 @@ Copied (the originals stay the source of truth; never edit the copies):
   docs/shared/variables.json                  -> references/shared/variables.json
   docs/shared/baseline-rules.md               -> references/shared/baseline-rules.md
   docs/shared/platform-contract.md            -> references/shared/platform-contract.md
+  industries/<x>/section-bases.md (optional)  -> references/industry/section-bases.md
+  industries/<x>/variables.json (optional)    -> references/industry/variables.json
 A generated references/INDEX.md lists the copies. Test profiles, eval files and results are never copied.
 Standard library only.
 """
@@ -21,6 +23,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SHARED = ("section-bases.md", "variables.json", "baseline-rules.md", "platform-contract.md")
+# Optional, written by the industry: its own section base text and its custom-detail variables.
+OPTIONAL_INDUSTRY = ("section-bases.md", "variables.json")
 
 
 def is_stub(text):
@@ -43,6 +47,9 @@ def plan(industry, root=ROOT):
             files[f"workflows/{f.name}"] = ind / "workflows" / f.name
     for name in SHARED:
         files[f"shared/{name}"] = Path("docs/shared") / name
+    for name in OPTIONAL_INDUSTRY:
+        if (root / ind / name).is_file():
+            files[f"industry/{name}"] = ind / name
     out = {}
     for dest, src in files.items():
         p = root / src
