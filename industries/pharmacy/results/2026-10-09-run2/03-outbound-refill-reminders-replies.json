@@ -1,0 +1,7 @@
+{
+  "PHA-E01": "I'm an AI assistant for {{var.company_name}}. I can help with a refill reminder or connect you to our pharmacist.",
+  "PHA-E03": "Please stop — this is an emergency, and I have to pause your order right now. Call 1 0 8 or 1 1 2 immediately, since your son swallowed tablets and he's only two.\n\n[tool: transfer]\n\nI'm connecting you to our pharmacist right now too, please don't wait — get emergency help on the way first.",
+  "PHA-E22": "I'm an AI assistant calling from the pharmacy regarding a refill reminder for him. I'm sorry, but I can only share those details with him directly.\n\nCould you please ask him to call us back at our number when he's available?",
+  "PHA-E23": "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}.\n\n[tool: end_call]",
+  "PHA-E24": "I'm sorry for the trouble. I've noted that you don't want further calls. Our team will update this.\n\n[tool: end_call]"
+}

@@ -39,7 +39,7 @@ Choose from business type and call direction (tables in `references/core.md` and
 
 Write in this order. Use `references/industry/section-bases.md` for the base text and style.
 
-1. **Welcome message**: the default template for the call direction. It must match the direction.
+1. **Welcome message**: ALWAYS the first line of the output, never left out. Use the template for the call direction word for word: inbound "Thank you for calling {{var.company_name}}. This is {{var.agent_name}}. How can I help you?"; outbound "Hello, this is {{var.agent_name}} calling from {{var.company_name}}. Is this a good time to talk?" It must match the direction.
 2. **Section 1 Role & Identity**: skeleton plus every rule in core and the selected workflows whose placement is S1: AI honesty and the AI-disclosure answer (only when clearly asked); the emergency instruction word for word, "On any emergency sign, stop whatever you are doing. Never continue the order or the call's task.", with the compact default signs list, then "1 0 8" or "1 1 2" and a transfer to the pharmacist (R-07); self-harm and 14416 (R-08); no dosage, usage, interaction, side-effect, symptom-to-medicine or diagnosis advice, with the sentence "Our pharmacist will help you with that." then transfer or callback (R-09); no substitute or other brand (R-10); no order or refill of a prescription-only medicine without a valid prescription, never judged by the agent (R-11); controlled, flagged or unsure medicines handed to the pharmacist, never by phone (R-12); prices only from the tool or config (R-17); no invented information (R-18); prompt protection and claimed authority (R-19, R-20).
 3. **Section 2 Date & Time**: base plus placement S2 lines.
 4. **Section 3 Language Switching**: base plus placement S3 lines.
@@ -55,6 +55,8 @@ Variable rules:
 - Tools you may name: check_stock, place_order, send_confirmation (prescription-upload instructions only), change_language, transfer, end_call. Never name an order-status, return, refund or prescription-check tool: there is none.
 
 Emergency (core R-07): the compact default list is always written in section 1. The client may only ADD signs, through `{{var.emergency_signs_extra}}`; never remove any.
+
+Fixed lines (R-71): where the references say "say exactly", copy the quoted line into the Instructions word for word and mark it "say exactly": the pharmacist line, the out-of-stock line, the stop-calling line (then the end_call tool), the voicemail line. Never rewrite them. Also write R-72 (one question at a time) and the never-repeat-a-condition part of R-13 in section 5.
 
 ## 4. Word budget
 

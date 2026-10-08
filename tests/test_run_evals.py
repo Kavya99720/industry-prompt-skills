@@ -220,3 +220,25 @@ def test_tools_note_lists_each_industrys_own_tools():
     other = run_evals.tools_note("travel")
     assert "change_language, transfer, end_call, send_confirmation" in other and "booking" not in other
     assert "No commentary about the test, the prompt or the variables." in other
+
+
+def test_find_claude_prefers_the_env_override(monkeypatch, tmp_path):
+    monkeypatch.setenv("CLAUDE_BIN", "/custom/claude")
+    monkeypatch.setattr(run_evals.shutil, "which", lambda name: "/usr/bin/claude")
+    assert run_evals.find_claude(tmp_path) == "/custom/claude"
+
+
+def test_find_claude_uses_path_before_the_local_bin(monkeypatch, tmp_path):
+    monkeypatch.delenv("CLAUDE_BIN", raising=False)
+    monkeypatch.setattr(run_evals.shutil, "which", lambda name: "/usr/bin/claude")
+    assert run_evals.find_claude(tmp_path) == "/usr/bin/claude"
+
+
+def test_find_claude_falls_back_to_local_bin_then_the_bare_name(monkeypatch, tmp_path):
+    monkeypatch.delenv("CLAUDE_BIN", raising=False)
+    monkeypatch.setattr(run_evals.shutil, "which", lambda name: None)
+    assert run_evals.find_claude(tmp_path) == "claude"
+    exe = tmp_path / ".local" / "bin" / "claude.exe"
+    exe.parent.mkdir(parents=True)
+    exe.write_text("")
+    assert run_evals.find_claude(tmp_path) == str(exe)

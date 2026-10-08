@@ -19,7 +19,7 @@ For every test profile in industries/<x>/test-profiles/ the runner:
   5. prints a pass-rate summary per industry and lists the failing cases to feed back into the SKILL.
 
 It never edits eval.json or the skill. Language-model calls go through the Claude Code CLI
-(`claude -p`); set CLAUDE_BIN to use another binary. Standard library only.
+(`claude -p`); the binary is found on PATH, then in ~/.local/bin; set CLAUDE_BIN to override. Standard library only.
 Exit code: 0 all passed, 1 some failed, 2 an industry was missing inputs.
 """
 import argparse
@@ -28,6 +28,7 @@ import datetime
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -69,11 +70,27 @@ def tools_note(industry):
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget")
 
 
+def find_claude(home=None):
+    """The claude binary: CLAUDE_BIN, then PATH, then ~/.local/bin/claude(.exe). Falls back to the bare name."""
+    override = os.environ.get("CLAUDE_BIN")
+    if override:
+        return override
+    found = shutil.which("claude")
+    if found:
+        return found
+    base = Path(home) if home else Path.home()
+    for name in ("claude.exe", "claude"):
+        candidate = base / ".local" / "bin" / name
+        if candidate.is_file():
+            return str(candidate)
+    return "claude"
+
+
 class ClaudeCli:
     """Calls `claude -p`. Replace with a fake in tests."""
 
     def __init__(self, binary=None, cwd=ROOT):
-        self.binary = binary or os.environ.get("CLAUDE_BIN", "claude")
+        self.binary = binary or find_claude()
         self.cwd = cwd
 
     def run(self, prompt, system=None, agent=None, tools=None):

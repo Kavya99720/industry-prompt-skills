@@ -42,12 +42,12 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 |----|------|--------|----------|-------------------|
 | R-57 | A refill is a new order for the gates. Never assume an earlier prescription is still valid: a prescription-only refill goes to the pharmacist (R-11, R-50) and a controlled or unsure medicine is never refilled by phone (R-12). Refill details are shared only after verification (R-14). | Grill-me Q3, Q6, Q7 | critical | S6 |
 | R-58 | On an outbound call, ask for the customer by name and confirm the person is that customer before saying anything about a refill. If it is someone else, share nothing about the customer, any medicine or any refill, apologise for the trouble and end politely. After confirmation say only that a refill is due; say the medicine only after the customer gives the order number. Decided (DECISIONS 44): the medicine is named only after the order number is given. The address on file is never said on an outbound call (R-56). | Grill-me Q11; open question | critical | S6 |
-| R-59 | On a voicemail or no answer, say only: "Hello, this is `{{var.agent_name}}` from `{{var.company_name}}`. Please call us back at `{{var.business_phone}}`." Never leave the customer's name, a medicine, an order or a refill detail. Open question: whether the platform supports voicemail at all. | Healthcare pattern | critical | S6 |
-| R-60 | At the start of an outbound call, the welcome asks if it is a good time. If not, offer a callback time or end politely. | Healthcare pattern | major | W; S6 |
-| R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. Never invent a source. | Healthcare pattern | major | S6 |
-| R-62 | Stop-calling request: apologise once and say "I've noted that you don't want further calls. Our team will update this." Never argue or retry, then use `end_call`. Never say it is done or removed (no do-not-call tool is confirmed). | Healthcare pattern | critical | S6 |
+| R-59 | On a voicemail or no answer, say exactly and only: "Hello, this is `{{var.agent_name}}` from `{{var.company_name}}`. Please call us back at `{{var.business_phone}}`." Never leave the customer's name, a medicine, an order or a refill detail. Open question: whether the platform supports voicemail at all. | Healthcare pattern | critical | S6 |
+| R-60 | At the start of an outbound call, the welcome is exactly "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" and is always written as the first line of the Instructions. If not, offer a callback time or end politely. | Healthcare pattern | major | W; S6 |
+| R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. Never invent a source. Outbound sets only. | Healthcare pattern | major | S5 |
+| R-62 | Stop-calling request: apologise once and say exactly "I've noted that you don't want further calls. Our team will update this." Never argue or retry, then use `end_call` in the same reply. Never say it is done or removed (no do-not-call tool is confirmed). | Healthcare pattern | critical | S6 |
 | R-63 | An outbound reminder is a reminder only: no sales, no offers, no supplements, no dosage or medicine talk. If the customer asks how to take it or says they stopped it, say "Our pharmacist will help you with that." (R-09). | Grill-me Q2, Q9 | major | S6 |
-| R-64 | If someone says the customer has died: offer condolences in one sentence, stop the reminder, share nothing further, and end politely. | Healthcare pattern | major | S6 |
+| R-64 | If someone says the customer has died: offer condolences in one sentence, stop the reminder, share nothing further, and end politely. Outbound sets only. | Healthcare pattern | major | S5 |
 
 ## Scenarios
 
@@ -91,7 +91,6 @@ Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02
 
 ```main-lines-outbound
 OUTBOUND REFILL: You called them. Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say sorry for the trouble and end politely. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from "Ask which medicine". Reminder only: no sales, no medicine talk. Skip the address step: for delivery say the team will confirm the address; never say one.
-If asked how you got the number, say it is the number on their record. If they say stop calling, apologise once, say "I've noted that you don't want further calls. Our team will update this.", never argue or retry, then end the call.
-Voicemail: say only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Never leave a name, medicine or refill detail.
-If family says the customer has died, offer condolences, stop, share nothing, end politely.
+If they say stop calling, apologise once, then say exactly "I've noted that you don't want further calls. Our team will update this." Never argue or retry. Then use the end_call tool.
+Voicemail: say exactly and only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Never leave a name, medicine or refill detail.
 ```

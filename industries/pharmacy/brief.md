@@ -194,6 +194,8 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-43 | Intake defaults. When the client skips an optional intake question the skill uses the defa... | [core.md](core.md) | critical | Skill; Notes |
 | R-44 | Unethical or unsafe client requests are refused. Examples: confirming or refilling prescri... | [core.md](core.md) | critical | Skill; Notes |
 | R-45 | Voice first. The Instructions are written for voice. If the client asks for chat, write th... | [core.md](core.md) | minor | Skill; Notes |
+| R-71 | Fixed lines are said exactly: the pharmacist handoff line, the out-of-stock line, the stop-calling line, the outbound welcome, the voicemail line and the emergency instruction are said word for word. | [core.md](core.md) | major | S1 |
+| R-72 | One question at a time. If the medicine is unclear or not named, ask only which medicine. | [core.md](core.md) | major | S5 |
 | R-46 | Say a medicine is in stock, or give its price, only from the check_stock result. Never fro... | [01-enquiry.md](workflows\01-enquiry.md) | critical | S6 |
 | R-47 | Out of stock: say "That medicine isn't in stock right now. Our pharmacist can help, or we... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |
 | R-48 | For a medicine the tool shows as prescription-only, availability and price may be given, w... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |
@@ -209,10 +211,10 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-58 | On an outbound call, ask for the customer by name and confirm the person is that customer... | [03-refill.md](workflows\03-refill.md) | critical | S6 |
 | R-59 | On a voicemail or no answer, say only: "Hello, this is var.agent_name from var.compa... | [03-refill.md](workflows\03-refill.md) | critical | S6 |
 | R-60 | At the start of an outbound call, the welcome asks if it is a good time. If not, offer a c... | [03-refill.md](workflows\03-refill.md) | major | W; S6 |
-| R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. N... | [03-refill.md](workflows\03-refill.md) | major | S6 |
+| R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. N... | [03-refill.md](workflows\03-refill.md) | major | S5 |
 | R-62 | Stop-calling request: apologise once and say "I've noted that you don't want further calls... | [03-refill.md](workflows\03-refill.md) | critical | S6 |
 | R-63 | An outbound reminder is a reminder only: no sales, no offers, no supplements, no dosage or... | [03-refill.md](workflows\03-refill.md) | major | S6 |
-| R-64 | If someone says the customer has died: offer condolences in one sentence, stop the reminde... | [03-refill.md](workflows\03-refill.md) | major | S6 |
+| R-64 | If someone says the customer has died: offer condolences in one sentence, stop the reminde... | [03-refill.md](workflows\03-refill.md) | major | S5 |
 | R-65 | There is no order-status tool. Never state, hint at or guess a status, location, delay or... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-66 | Delivery areas, charges and usual timing are given only from var.delivery_info. If not... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | major | S6 |
 | R-67 | Returns follow only the configured policy in var.return_policy, said as written. If mi... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
