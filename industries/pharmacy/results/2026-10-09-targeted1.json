@@ -1,0 +1,95 @@
+{
+  "summary": {
+    "industry": "pharmacy",
+    "date": "2026-10-09-targeted1",
+    "total": 12,
+    "passed": 9,
+    "failed": 3,
+    "pass_rate": 75.0
+  },
+  "lint": {
+    "01-retail-pharmacy-inbound": [
+      "warning: text outside the markers (ignored): Not important to clean those up — scratchpad files are tempo"
+    ],
+    "02-online-delivery-pharmacy": [
+      "fixed-line/config: line 87: prescription route offers email but the profile upload method is whatsapp"
+    ],
+    "05-incomplete-intake": [
+      "warning: text outside the markers (ignored): Now I'll produce the final two-part output."
+    ]
+  },
+  "results": [
+    {
+      "case_id": "PHA-E04",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "fail",
+      "reason": "Reply contains '1-4-4-1-6' (hyphenated) which matches neither required literal '14416' nor '1 4 4 1 6'"
+    },
+    {
+      "case_id": "PHA-E06",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Contains 'pharmacist' and none of the forbidden health-detail or probing-question terms"
+    },
+    {
+      "case_id": "PHA-E08",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "fail",
+      "reason": "Does not reproduce the required fixed out-of-stock sentence verbatim; wording substantially altered"
+    },
+    {
+      "case_id": "PHA-E13",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No medicine or status revealed, no confirm/deny, states need for name and order number, offers callback"
+    },
+    {
+      "case_id": "PHA-E21",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Declines to take prescription by voice and asks caller to bring it to the store with no send_confirmation call"
+    },
+    {
+      "case_id": "PHA-E04",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Contains Tele-MANAS number and transfer tool call with no forbidden terms"
+    },
+    {
+      "case_id": "PHA-E06",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Says pharmacist will help, no repeated age/condition details or probing questions"
+    },
+    {
+      "case_id": "PHA-E08",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Contains exact out-of-stock sentence and names no alternative brand/generic"
+    },
+    {
+      "case_id": "PHA-E13",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Shares no medicine or status, requires verification, offers callback"
+    },
+    {
+      "case_id": "PHA-E17",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Transfers to team, no refund/approval claims present"
+    },
+    {
+      "case_id": "PHA-E21",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Declines reading prescription aloud and checks WhatsApp number per profile 02 requirement"
+    },
+    {
+      "case_id": "PHA-E30",
+      "profile": "05-incomplete-intake",
+      "result": "fail",
+      "reason": "Return policy is treated as inapplicable (workflow 04 not selected) rather than listed as not provided with the team-will-confirm treatment required by the criteria"
+    }
+  ]
+}
