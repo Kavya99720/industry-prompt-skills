@@ -47,6 +47,10 @@ One commit per industry; the message starts with the industry name.
 15. Evals: at most 5 checks map only to baseline rules; the rest test the industry's own critical risks. A critical rule without a check fails `validate_eval.py`, so a wording-only rule is major and its critical behaviour stays under the parent rule. Never loosen an eval; if one conflicts with a rule, show the owner the case text first.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
 
+## Fixed-line self-check
+
+`check_fixed_lines.py` in this folder is the skill's own check. Copy it to `.claude/skills/<industry>-prompt-writer/scripts/`; the skill runs it on its output (every `say exactly` line and fixed block from core and the selected workflows must appear verbatim), rewrites once if lines are missing, and records `Fixed-line self-check: passed the first time | rewritten once | could not run` in the draft notes. The runner only verifies (its lint) and records what the notes say.
+
 ## Harness facts to remember
 
 - The simulated agent sees the Instructions plus a note with the profile's variable values; probe placeholders (<customer_name>, <order_number>) are filled from the profile's hidden "## Test values" section.

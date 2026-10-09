@@ -56,7 +56,9 @@ Apply the client's config and flow changes when they do not touch a critical rul
 9. With no transfer target the Instructions and the notes say a callback is offered, never a transfer; the emergency line and the helpline line stay.
 10. In the draft notes a missing value is "not provided - the team will confirm"; the Fill table has a row for every variable used AND every intake item, including both banking tools ("off (default)" when skipped); "not used in these Instructions" only in its note column.
 11. Tool OFF: no block or balance instruction and no tool named. Tool ON: the block is called only after the minimal check and "Your card is blocked." only after success; the lookup is called only after all three verification items.
-12. Word counts computed for every section and for section 6.
+12. Fixed blocks, word for word (these two are required lines, not examples). Card number or code read out during a fraud or lost-card call (R-07): say exactly "Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone." then, in the same reply, ask the full name (card block ON) or say the team phrase and transfer (card block OFF). Coached or vulnerable caller about to move money (R-12): say exactly "For your safety, please don't send any money right now. Please report this quickly on the cybercrime helpline, 1 9 3 0." then the protective handoff. Outbound fraud-alert verification (R-75): the PROVE line "You can hang up and call us back on the number on your card." is the first sentence of the next reply, even when the person asks what happened or how much; then ask the full name.
+13. FIXED-LINE CHECK, required, run on your own output before you finish. Write the whole output to a file (a temp or scratchpad folder), then run `python .claude/skills/banking-prompt-writer/scripts/check_fixed_lines.py <file> --workflows <the numbers you selected> --tool card_block_tool=<on|off> --tool balance_lookup_tool=<on|off>` (add `--tool confirmation_channels=on` only when the client configured a channel). It lists every `say exactly` line and fixed block from core and the selected workflows that is missing word for word. If it lists any, add exactly those lines, with their action, where their rule says, run it once more, and rewrite only once; then output. If you cannot run the script, compare the references' fixed lines against your output by hand, one by one, and say so. Name these two in particular: "I can't share account details on this call." and "I'm sorry, I could not complete that. Our team will call you to confirm."
+14. Word counts computed for every section and for section 6.
 
 ## 7. Output format (exact)
 
@@ -78,6 +80,8 @@ Apply the client's config and flow changes when they do not touch a critical rul
 - <request>: <one-line reason>   (write "none" if there were none)
 **Open questions**
 - ... (include: the outbound welcome names an AI assistant, which differs from the shared template; legal references and timelines are not quoted; the other call direction needs its own run; chat is not written)
+**Fixed-line self-check**
+- passed the first time | rewritten once (list the lines added) | could not run (compared by hand)
 **Word counts**
 - Welcome: N. Section 1: N. ... Section 6: N words. Allowance: 615 (aim 595). Status: within budget / OVER by X.
 **Fill these in the platform**

@@ -566,3 +566,11 @@ def test_banking_gets_variable_values_and_its_outbound_only_workflows():
     assert "banking" in run_evals.VARIABLE_VALUE_INDUSTRIES
     assert run_evals.OUTBOUND_ONLY_WORKFLOWS["banking"] == ("04", "05")
 
+
+
+def test_self_check_statement_is_read_from_the_draft_notes():
+    notes = "**Fixed-line self-check**\n- rewritten once (added: the failed-action line)\n**Word counts**\n- x"
+    assert run_evals.self_check_statement(notes) == "rewritten once (added: the failed-action line)"
+    assert run_evals.self_check_statement("**Fixed-line self-check:** passed the first time") == "passed the first time"
+    assert run_evals.self_check_statement("nothing") == "not reported"
+    assert run_evals.self_check_statement(None) == "not reported"

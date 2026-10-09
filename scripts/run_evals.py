@@ -191,7 +191,7 @@ def case_selected(case_id, wanted):
     return any(cid == w.upper() or cid.endswith("-" + w.upper()) for w in wanted)
 
 
-SAY_EXACTLY = re.compile(r'say exactly(?: and only)?\s+"([^"]+)"', re.I)
+SAY_EXACTLY = re.compile(r'say exactly(?: and only)?(?: this block\b[^"]{0,50})?\s*"([^"]+)"', re.I)
 WELCOME_LINE = re.compile(r'^- (Inbound|Outbound): "([^"]+)"', re.M)
 
 
@@ -389,6 +389,12 @@ def parse_judge(text):
     return out
 
 
+def self_check_statement(notes):
+    """What the skill says about its fixed-line self-check (passed first time, rewritten once, could not run), or 'not reported'."""
+    m = re.search(r"Fixed-line self-check\W*\n?\s*[-*]?\s*(.+)", notes or "", re.I)
+    return m.group(1).strip().strip("*") if m else "not reported"
+
+
 def load_judgment(path, wanted):
     """A saved per-profile judgment, or None when it is missing, unreadable or for different cases."""
     try:
@@ -417,7 +423,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
     out_dir = d / "results"
     work = out_dir / date
     work.mkdir(parents=True, exist_ok=True)
-    rows, lint, harness_errors = [], {}, []
+    rows, lint, harness_errors, selfchecks = [], {}, [], {}
     for pf in profile_files(d):
         if profiles and pf.stem.split("-")[0] not in profiles:
             continue
@@ -431,6 +437,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
         notes_path = work / f"{name}-draft-notes.md"
         replies_path = work / f"{name}-replies.json"
         lint_path = work / f"{name}-lint.json"
+        selfcheck_path = work / f"{name}-selfcheck.txt"
         judgment_path = work / f"{name}-judgment.json"
         wanted = [c["id"] for c in applicable]
         probes = [c for c in applicable if c.get("type") == "behaviour"]
@@ -439,6 +446,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
             if saved:
                 rows += saved["rows"]
                 lint[name] = saved.get("lint", [])
+                selfchecks[name] = saved.get("self_check", "not reported")
                 print(f"resume {name}: complete, skipped", file=out)
                 continue
         reuse = (resume and inst_path.is_file() and notes_path.is_file() and replies_complete(replies_path, probes))
@@ -483,6 +491,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                 "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
             lint_path.write_text(json.dumps(lint[name], indent=2, ensure_ascii=False), encoding="utf-8")
             notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
+            selfcheck_path.write_text(self_check_statement(notes) + "\n", encoding="utf-8")
             filled = test_values(profile_text)
             note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
             system = instructions + tools_note(industry, profile_text) + note
@@ -503,7 +512,8 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
         profile_rows = [{"case_id": r["case_id"], "profile": name, "result": r["result"], "reason": r["reason"]}
                         for r in parse_judge(verdict)]
         rows += profile_rows
-        judgment_path.write_text(json.dumps({"cases": wanted, "rows": profile_rows, "lint": lint[name]},
+        selfchecks[name] = selfcheck_path.read_text(encoding="utf-8").strip() if selfcheck_path.is_file() else "not reported"
+        judgment_path.write_text(json.dumps({"cases": wanted, "rows": profile_rows, "lint": lint[name], "self_check": selfchecks[name]},
                                             indent=2, ensure_ascii=False), encoding="utf-8")
     passed = sum(r["result"] == "pass" for r in rows)
     summary = {"industry": industry, "date": date, "total": len(rows), "passed": passed,
@@ -511,7 +521,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0,
                "harness_errors": harness_errors}
     (out_dir / f"{date}.json").write_text(
-        json.dumps({"summary": summary, "lint": lint, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
+        json.dumps({"summary": summary, "lint": lint, "self_check": selfchecks, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
     return summary, rows
 
 
