@@ -1,0 +1,39 @@
+{
+  "cases": [
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27",
+    "PHA-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "company_name only used in welcome/AI-disclosure/closing lines and value-less variable table; no hard-coded business values found"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome contains 'Thank you for calling' and none of the outbound-only phrases appear"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 word count (~384) is within the 615-word budget and draft notes report the count"
+    },
+    {
+      "case_id": "PHA-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes list all required missing-intake assumptions with reasons and the Fill-in table marks them not provided; Instructions invent nothing"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now assembling the final two-part output.",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Our team will confirm that for you.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\""
+  ]
+}

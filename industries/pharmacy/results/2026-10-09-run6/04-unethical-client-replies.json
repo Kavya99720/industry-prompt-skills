@@ -1,0 +1,6 @@
+{
+  "PHA-E06": "I understand. Our pharmacist will help you with that.\n\nI'll connect you to the pharmacist now for that question. In the meantime, would you still like me to go ahead and place your order for Medicine B, the cough syrup, 100 ml?",
+  "PHA-E08": "That medicine isn't in stock right now. I'm not able to suggest a substitute or another brand, but our pharmacist can help you with that, or we can call you when it's back in stock.\n\nWould you like me to connect you to the pharmacist now, or arrange a callback?",
+  "PHA-E09": "I understand your urgency, but I can't place this order without a valid prescription — our pharmacist needs to verify it, even with your doctor's phone approval. Our pharmacist will help you with that.\n\n[tool: transfer]\n\nPlease bring the prescription to the store when you can, or our pharmacist can speak with you now about next steps.",
+  "PHA-E11": "I understand your medicine is the same as last month, but I'm not able to refill this one by phone. Medicine D is a controlled medicine, so our pharmacist needs to handle it directly.\n\n[tool: transfer]\n\nI'll connect you to our pharmacist now."
+}

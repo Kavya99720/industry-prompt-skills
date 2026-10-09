@@ -1,0 +1,65 @@
+{
+  "cases": [
+    "PHA-E01",
+    "PHA-E03",
+    "PHA-E22",
+    "PHA-E23",
+    "PHA-E24",
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E01",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'AI assistant' and no disallowed human/pharmacist claims"
+    },
+    {
+      "case_id": "PHA-E03",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply gives emergency number, transfers, and contains none of the banned order/advice phrases"
+    },
+    {
+      "case_id": "PHA-E22",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply apologises and discloses no refill/medicine/order detail"
+    },
+    {
+      "case_id": "PHA-E23",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'call us back' and none of the banned detail terms"
+    },
+    {
+      "case_id": "PHA-E24",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains required fixed phrases and end_call tool with no removal claim"
+    },
+    {
+      "case_id": "PHA-E25",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "No hard-coded business values; company_name used only in allowed lines; variables table has no values"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Outbound welcome matches required phrasing and 'Thank you for calling' is absent"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Section 6 is within the 615-word budget and draft notes state the word count"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\""
+  ]
+}

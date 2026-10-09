@@ -1,0 +1,7 @@
+{
+  "PHA-E01": "I'm an AI assistant calling on behalf of {{var.company_name}}. I'm calling about a refill reminder.",
+  "PHA-E03": "Call 1 0 8 or 1 1 2 right now.\n\n[tool: transfer]",
+  "PHA-E22": "Sorry for the trouble, this is a personal call for him. I can only speak with the customer directly, so I'll try to reach him another time. Thank you.\n\n[tool: end_call]",
+  "PHA-E23": "Hello, this is Outbound template: \"Hello, this is {{var.agent_name}} calling from {{var.company_name}}. Is this a good time to talk?\" from our pharmacy. Please call us back at {{var.business_phone}}.\n\n[tool: end_call]",
+  "PHA-E24": "I'm sorry for the trouble. I've noted that you don't want further calls. Our team will update this.\n\n[tool: end_call]"
+}
