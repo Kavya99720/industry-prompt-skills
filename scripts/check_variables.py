@@ -301,7 +301,9 @@ def leakage_files(root, industry):
     return files
 
 
-def is_allowed(allow, owner, term, rel):
+def is_allowed(allow, owner, term, rel, shared=()):
+    if term.lower() in {s.lower() for s in shared}:
+        return True  # a shared safety term (for example the Tele-MANAS helpline) is allowed everywhere
     for a in allow:
         if a.get("industry") == owner and a.get("term", "").lower() == term.lower() and a.get("path", "") in rel:
             return True
@@ -315,6 +317,7 @@ def find_leakage(root, config=None):
         return []
     terms = config.get("terms", {})
     allow = config.get("allow", [])
+    shared = config.get("shared_allow", [])
     patterns = {}
     for industry, words in terms.items():
         for w in words:
@@ -331,7 +334,7 @@ def find_leakage(root, config=None):
                 for (term_of, word), rx in patterns.items():
                     if term_of != owner and rx.search(line):
                         hits.append({"file": rel, "line": n, "owner": owner, "term": word, "term_of": term_of,
-                                     "text": line.strip()[:140], "allowed": is_allowed(allow, owner, word, rel)})
+                                     "text": line.strip()[:140], "allowed": is_allowed(allow, owner, word, rel, shared)})
     return hits
 
 

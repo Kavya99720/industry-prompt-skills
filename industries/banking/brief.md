@@ -139,19 +139,9 @@ The team phrase is "I'll connect you to our team." for staff handoffs only. The 
 
 ## 7. Open Questions
 
-1. **Tools.** Which banking tools exist on the platform (card block, lookup, verification against records, KYC status)? v1 assumes none and defaults both optional tools off (platform-contract question 18).
-2. **Lookup tool shape.** Does one tool both match the three verification items and return the balance and transactions? v1 assumes one tool does both.
-3. **Call context.** Does the platform pass `customer_name` and the alert on outbound calls? v1 never states alert details; if `customer_name` is empty the agent asks whether it is speaking with the customer.
-4. **Outbound welcome.** The welcome says "an AI assistant" (grill-me row 12); this differs from the shared template. Needs the platform and legal lead to confirm that a client's welcome template keeps it.
-5. **Legal references and timelines.** RBI rules, grievance timelines, ombudsman wording and KYC norms are for an industry expert (grill-me row 19). None is quoted unless configured.
-6. **Self-harm.** Grill-me gave no banking self-harm helpline. v1 treats a statement of self-harm as an emergency sign (1 0 8 or 1 1 2) and names no counselling helpline. Needs the owner's decision.
-7. **Minimal verification for a card block.** v1 uses full name plus last 4 digits of the card (no registered mobile), because a block shares nothing and speed matters. The owner should confirm.
-8. **Card status.** The status of a caller's own card is treated as account data (same gate as the balance). The grill-me lists it with config items; v1 reads it as account data when a tool exists and hands to staff otherwise.
-9. **Chat.** Voice first; chat is open (R-28).
-10. **Voicemail and do-not-call.** Does the platform detect voicemail or provide a do-not-call tool? Until answered, R-73 and R-74 apply as written and the agent never says a stop request is done.
-11. **Confirmation content.** Whether the After-the-call message may name a card block or a complaint is for the platform and compliance lead; the agent never says what the message contains.
-12. **Test harness.** scripts/run_evals.py has no banking entry in `INDUSTRY_TOOLS`, `VARIABLE_VALUE_INDUSTRIES` or `OUTBOUND_ONLY_WORKFLOWS`, so the simulated agent is told it has `send_confirmation`, does not see variable values, and has no banking tools. Shared script: the owner decides.
-13. **Counts and thresholds.** "The last few transactions" has no number; the tool decides how many it returns.
+Decided by the owner (DECISIONS 60): the outbound welcome says "an AI assistant" (banking-specific); self-harm gets the Tele-MANAS line plus 1 0 8 / 1 1 2 and a transfer (R-04); a card block needs full name plus the last 4 digits of the card; the status of a caller's own card is account data; the banking test harness entries are added to scripts/run_evals.py.
+
+Still open: moved to "Questions for lead" in docs/shared/platform-contract.md, items 20 to 26 (which banking tools exist, lookup tool shape, call context on outbound calls, AI disclosure on outbound for all industries, chat, voicemail and do-not-call, confirmation content and counts), plus item 19 (legal references and timelines).
 
 ## Traceability
 

@@ -66,3 +66,15 @@ def test_report_mode_never_fails(tmp_path, capsys):
     assert check_variables.main(["--root", str(root)]) == 0
     assert check_variables.main(["--root", str(root), "--leakage"]) == 0
     assert "HIT 'pharmacist'" in capsys.readouterr().out
+
+
+def test_shared_safety_terms_are_allowed_in_every_industry(tmp_path):
+    root = make_root(tmp_path)
+    cfg = json.loads((root / "scripts" / "leakage_terms.json").read_text(encoding="utf-8"))
+    cfg["terms"]["healthcare"] = ["Tele-MANAS"]
+    cfg["shared_allow"] = ["Tele-MANAS"]
+    (root / "scripts" / "leakage_terms.json").write_text(json.dumps(cfg), encoding="utf-8")
+    (root / "industries" / "banking" / "core.md").write_text("Say Tele-MANAS: 1 4 4 1 6.", encoding="utf-8")
+    hits = check_variables.find_leakage(root)
+    assert len(hits) == 1 and hits[0]["allowed"] is True and hits[0]["term"] == "Tele-MANAS"
+

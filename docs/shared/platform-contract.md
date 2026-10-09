@@ -126,3 +126,10 @@ Still open after the 2026-10-08 decisions. Grouped by who can answer. Resolved o
 **Banking (added 2026-10-09)**
 18. **Which banking tools exist?** A card-block tool (`card_block_tool`), a balance and transactions lookup (`balance_lookup_tool`), caller verification against records (name, registered mobile, last 4 digits), KYC status. v1 assumes none: both tools default off, no account data is shared, and card blocking goes to the fraud desk.
 19. **Legal references.** RBI rules, grievance timelines, banking ombudsman wording and KYC norms: for an industry expert. Prompts quote no timeline unless the client configures it.
+20. **Banking lookup tool shape.** Does one tool both match the three verification items (name, registered mobile, last 4 digits) and return the balance and transactions? v1 assumes one tool does both (`balance_lookup_tool`).
+21. **Banking outbound call context.** Does the platform pass `customer_name` and the alert on outbound calls? v1 never states alert details; with no name the agent asks whether it is speaking with the customer.
+22. **AI disclosure on outbound, all industries.** Banking's outbound welcome says "an AI assistant" (approved, banking-specific). Should every industry say so up front? (extends question 8 and 16)
+23. **Chat (banking and others).** Voice first; chat is open.
+24. **Voicemail and do-not-call (banking).** Does the platform detect voicemail or provide a do-not-call tool? Until answered the agent never says a stop request is done (extends 14 and 15).
+25. **Confirmation content.** May the After-the-call message name a card block or a complaint? For the platform and compliance lead; the agent never says what the message contains.
+26. **Thresholds.** "The last few transactions" has no number; the lookup tool decides how many it returns.

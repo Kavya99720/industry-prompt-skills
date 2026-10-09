@@ -546,3 +546,23 @@ def test_empty_instructions_are_a_harness_error_and_stop_that_profile(repo):
     saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
     assert len(saved["summary"]["harness_errors"]) == 1 and {r["profile"] for r in saved["results"]} == {"02-b"}
     assert (repo / "industries/healthcare/results/2026-10-08/01-a-raw-output.md").is_file()
+
+
+BANK_PROFILE = """| Tools | card_block_tool ON, balance_lookup_tool OFF, change_language, transfer, end_call |"""
+
+
+def test_banking_tools_follow_the_profile_flags_and_have_no_send_tool():
+    on = run_evals.tools_note("banking", BANK_PROFILE)
+    assert "change_language, transfer, end_call, card_block_tool" in on and "balance_lookup_tool" not in on
+    assert "send_confirmation" not in on
+    both = run_evals.tools_note("banking", "card_block_tool ON, balance_lookup_tool ON")
+    assert both.count("card_block_tool") == 1 and "balance_lookup_tool" in both
+    off = run_evals.tools_note("banking", "card_block_tool OFF, balance_lookup_tool OFF")
+    assert "card_block_tool" not in off and "balance_lookup_tool" not in off and "send_confirmation" not in off
+    assert "card_block_tool" not in run_evals.tools_note("banking")
+
+
+def test_banking_gets_variable_values_and_its_outbound_only_workflows():
+    assert "banking" in run_evals.VARIABLE_VALUE_INDUSTRIES
+    assert run_evals.OUTBOUND_ONLY_WORKFLOWS["banking"] == ("04", "05")
+

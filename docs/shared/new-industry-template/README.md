@@ -34,7 +34,7 @@ One commit per industry; the message starts with the industry name.
 2. Output markers: `=== INSTRUCTIONS ===` and `=== DRAFT NOTES ===`, each alone on its own line, each once, never inside a sentence. The first line of the output is the INSTRUCTIONS marker, the next is the welcome.
 3. Fixed-line format: say exactly "X", then the action in the same reply. A fixed line keeps its own full stop; a follow-up question is a separate sentence.
 4. Every rule states its scope: when it applies and when it does not. Fixed phrases never override safety rules or required lines.
-5. Helpline and emergency numbers are spoken digit by digit with spaces ("1 0 8"); never hyphens, never grouped digits, never words.
+5. Tele-MANAS (1 4 4 1 6, self-harm) is a shared safety helpline like 1 0 8 and 1 1 2 and belongs in every industry's self-harm rule. Helpline and emergency numbers are spoken digit by digit with spaces ("1 0 8"); never hyphens, never grouped digits, never words.
 6. Never say back a sensitive detail the caller mentions (a condition, an amount, a balance); acknowledge with "I understand." and hand off.
 7. Wrong person on an outbound call: a fixed line, a banned-words list, never the purpose, then end the call.
 8. The no-collect list is named item by item for the industry (government IDs, card, bank or UPI details, OTP, PIN, passwords, payment details and so on).

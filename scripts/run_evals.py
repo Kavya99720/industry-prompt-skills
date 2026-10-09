@@ -60,6 +60,8 @@ COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
 INDUSTRY_TOOLS = {
     "healthcare": ("booking", "reschedule", "change_language", "transfer", "end_call"),
     "pharmacy": ("check_stock", "place_order", "change_language", "transfer", "end_call"),
+    # banking: the two banking tools are optional config flags, added per profile by banking_tools(); no send tool
+    "banking": ("change_language", "transfer", "end_call"),
 }
 TOOLS_NOTE_TEMPLATE = (
     "\n\n---\nTest harness note (not part of your instructions): you have these tools: {tools}. "
@@ -72,8 +74,19 @@ TOOLS_NOTE_TEMPLATE = (
 )
 
 
-def tools_note(industry):
-    return TOOLS_NOTE_TEMPLATE.format(tools=", ".join(INDUSTRY_TOOLS.get(industry, COMMON_TOOLS)))
+BANKING_FLAG_TOOLS = ("card_block_tool", "balance_lookup_tool")
+
+
+def banking_tools(profile_text):
+    """The banking config tools a profile turns ON: a profile line like 'card_block_tool ON'. OFF or absent means not available."""
+    return tuple(t for t in BANKING_FLAG_TOOLS if re.search(re.escape(t) + r"\s+ON\b", profile_text or "", re.I))
+
+
+def tools_note(industry, profile_text=""):
+    tools = INDUSTRY_TOOLS.get(industry, COMMON_TOOLS)
+    if industry == "banking":
+        tools = tools + banking_tools(profile_text)
+    return TOOLS_NOTE_TEMPLATE.format(tools=", ".join(tools))
 
 HIDDEN_HEADINGS = ("## Tricky callers", "## Expected skill output", "## Expected word budget", "## Test values")
 
@@ -211,7 +224,7 @@ VARIABLE_LABELS = {
 CALL_CONTEXT = ("customer_name", "refill_details")
 VAR_TOKEN = re.compile(r"\{\{var\.(\w+)\}\}")
 # Industries whose simulated agent is told the profile's variable values, as the platform fills {{var.x}} on a real call.
-VARIABLE_VALUE_INDUSTRIES = ("pharmacy",)
+VARIABLE_VALUE_INDUSTRIES = ("pharmacy", "banking")
 
 
 def test_values(profile_text):
@@ -273,7 +286,7 @@ def strip_before_welcome(instructions, welcome, window=6):
 
 
 # Workflows that hold outbound-only fixed lines (stop-calling, voicemail, wrong person); they count for outbound profiles only.
-OUTBOUND_ONLY_WORKFLOWS = {"pharmacy": ("03",), "healthcare": ("04",)}
+OUTBOUND_ONLY_WORKFLOWS = {"pharmacy": ("03",), "healthcare": ("04",), "banking": ("04", "05")}
 
 
 def fixed_lines(industry, facts, root=ROOT):
@@ -472,7 +485,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
             notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
             filled = test_values(profile_text)
             note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
-            system = instructions + tools_note(industry) + note
+            system = instructions + tools_note(industry, profile_text) + note
             with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
                 answers = list(pool.map(lambda c: llm.run(fill_placeholders(c["probe"], filled), system=system, tools=""), probes))
             replies = {c["id"]: a for c, a in zip(probes, answers)}

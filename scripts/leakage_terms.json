@@ -108,11 +108,6 @@
       "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
     },
     {
-      "industry": "pharmacy",
-      "term": "Tele-MANAS",
-      "reason": "national self-harm helpline used by pharmacy by owner decision (DECISIONS 41, 42); shared with healthcare"
-    },
-    {
       "industry": "healthcare",
       "term": "EMI",
       "reason": "out-of-scope boundary note: medical loans and EMI belong to finance (scope list)"
@@ -137,5 +132,9 @@
       "term": "debit card",
       "reason": "boundary note: cards belong to banking"
     }
-  ]
+  ],
+  "shared_allow": [
+    "Tele-MANAS"
+  ],
+  "shared_allow_reason": "Shared safety helpline (self-harm), like 1 0 8 and 1 1 2: allowed in every industry's files (DECISIONS 60)."
 }
