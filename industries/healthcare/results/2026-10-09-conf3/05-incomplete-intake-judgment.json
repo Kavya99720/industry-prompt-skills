@@ -1,0 +1,23 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "fail",
+      "reason": "Instructions file is empty; no 108/112 or emergency sign content found"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "fail",
+      "reason": "Instructions file is empty; no never-ask instruction for Aadhaar/PAN/card/bank/UPI/insurance/medical history/OTP/payment found"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"For that, you can see our <specialty> or <specialty> doctors. Which would you like?\""
+  ]
+}
