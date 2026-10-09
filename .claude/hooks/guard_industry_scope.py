@@ -7,9 +7,11 @@
 2. Lock. Industries listed in .claude/locked-industries.json (finished ones) cannot be edited by anyone,
    main session included, until the owner says "unlock <industry>" and the entry is removed from that file.
 
-The hook reads the tool event from stdin. Subagent calls carry agent_type (and agent_id); a call from the main
+Every event with a file path is logged as one line to .claude/logs/hook-events.log (gitignored) so the agent_type field
+can be checked on real subagent writes. The hook reads the tool event from stdin. Subagent calls carry agent_type (and agent_id); a call from the main
 session carries neither. Exit code 2 blocks the call and shows the message to Claude.
 """
+import datetime
 import json
 import os
 import re
@@ -21,6 +23,7 @@ INDUSTRIES = (
     "education", "logistics", "hr", "real-estate", "travel",
 )
 LOCK_FILE = ".claude/locked-industries.json"
+LOG_FILE = ".claude/logs/hook-events.log"
 AGENT_RE = re.compile(r"^([a-z][a-z-]*)-agent$")
 
 
@@ -88,12 +91,37 @@ def decide(event, root):
     return None
 
 
+def log_event(event, root, message):
+    """Append one line: time, tool, path, agent_type (or "missing"), decision. Never raises."""
+    try:
+        path = (event.get("tool_input") or {}).get("file_path")
+        if not isinstance(path, str):
+            return
+        agent = event.get("agent_type") or event.get("subagent_type") or "missing"
+        rel = relative_path(path, root) or path
+        line = " | ".join([
+            datetime.datetime.now().isoformat(timespec="seconds"),
+            str(event.get("tool_name") or "?"),
+            rel,
+            f"agent_type={agent}",
+            "block" if message else "allow",
+        ])
+        log = Path(root) / LOG_FILE
+        log.parent.mkdir(parents=True, exist_ok=True)
+        with log.open("a", encoding="utf-8") as f:
+            f.write(line + "\n")
+    except Exception:
+        pass
+
+
 def main():
     try:
         event = json.load(sys.stdin)
     except ValueError:
         return 0
-    message = decide(event, repo_root(event))
+    root = repo_root(event)
+    message = decide(event, root)
+    log_event(event, root, message)
     if message:
         print(message, file=sys.stderr)
         return 2

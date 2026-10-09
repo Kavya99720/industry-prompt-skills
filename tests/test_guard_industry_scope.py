@@ -83,3 +83,23 @@ def test_hook_exit_codes_through_the_command_line(tmp_path):
     ok = subprocess.run([sys.executable, str(HOOK)], input=json.dumps(allowed), capture_output=True, text=True,
                         env={"PATH": "", "CLAUDE_PROJECT_DIR": str(root)})
     assert ok.returncode == 0
+
+
+def test_events_are_logged_with_agent_type_and_decision(tmp_path):
+    root = make_root(tmp_path)
+    env = {"PATH": "", "CLAUDE_PROJECT_DIR": str(root)}
+    for target, agent in (("industries/banking/core.md", "banking-agent"), ("industries/retail/core.md", "banking-agent"),
+                          ("docs/x.md", None), ("industries/healthcare/core.md", None)):
+        e = event(root / target, agent)
+        e["cwd"] = str(root)
+        subprocess.run([sys.executable, str(HOOK)], input=json.dumps(e), capture_output=True, text=True, env=env)
+    lines = (root / ".claude/logs/hook-events.log").read_text(encoding="utf-8").splitlines()
+    assert len(lines) == 4
+    fields = [l.split(" | ") for l in lines]
+    assert [f[2:] for f in fields] == [
+        ["industries/banking/core.md", "agent_type=banking-agent", "allow"],
+        ["industries/retail/core.md", "agent_type=banking-agent", "block"],
+        ["docs/x.md", "agent_type=missing", "allow"],
+        ["industries/healthcare/core.md", "agent_type=missing", "block"],
+    ]
+    assert all(f[1] == "Write" for f in fields)
