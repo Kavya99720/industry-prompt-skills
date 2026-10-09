@@ -6,7 +6,7 @@ Each workflow file has: purpose, trigger, direction, steps, data and variables, 
 
 | # | Workflow | Phase | Direction | Purpose | Main-prompt words (draft) |
 |---|---|---|---|---|---|
-| 01 | [Medicine enquiry](01-enquiry.md) | 1 | Inbound | Availability and price from the stock tool; store information | 90 (STOCK 46, OUT OF STOCK 33, STORE 11) |
+| 01 | [Medicine enquiry](01-enquiry.md) | 1 | Inbound | Availability and price from the stock tool; store information | 89 (STOCK 46, OUT OF STOCK 32, STORE 11) |
 | 02 | [Order and prescription](02-order-prescription.md) | 1 | Inbound; also after an outbound reminder | Order a medicine with read-back; prescription route; payment modes | 199 (ORDER 121, PRESCRIPTION 71, PAYMENT 7) |
 | 03 | [Refill](03-refill.md) | 1 | Inbound and outbound (two sets) | Inbound refill; outbound refill reminder | Inbound 69 (REFILL); outbound 154 (OUTBOUND REFILL 93, stop-calling 36, voicemail 25); R-61, R-63 and R-64 are written in section 5 |
 | 04 | [Delivery status and returns](04-delivery-returns.md) | 1 | Inbound | No-status delivery calls; delivery terms; returns per policy | 122 (STATUS 35, DELIVERY 14, RETURNS 73) |
@@ -21,8 +21,8 @@ Core Main-prompt lines (UNDERSTAND 20, HANDOFF 74) add 94 words to every prompt.
 
 | Set | Lines | Words |
 |---|---|---|
-| Inbound, all four Phase 1 workflows | core 94 + 01 (90) + 02 (199) + 03 REFILL (69) + 04 (122) | 574 |
-| Outbound refill reminders | core 94 + 03 OUTBOUND REFILL block (154) + REFILL (69) + 01 STOCK and OUT OF STOCK (79) + 02 (199) | 595 |
+| Inbound, all four Phase 1 workflows | core 94 + 01 (89) + 02 (199) + 03 REFILL (69) + 04 (122) | 573 |
+| Outbound refill reminders | core 94 + 03 OUTBOUND REFILL block (154) + REFILL (69) + 01 STOCK and OUT OF STOCK (78) + 02 (199) | 594 |
 
 Outbound uses STOCK and OUT OF STOCK but not STORE, because it is a reminder call. If the client does not want a refill ordered on the call, drop 01 and 02 (the outbound set falls to 317 words and the agent offers the pharmacist or a callback).
 
