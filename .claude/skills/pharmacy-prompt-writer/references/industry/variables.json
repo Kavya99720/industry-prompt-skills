@@ -21,7 +21,7 @@
     {
       "name": "prescription_upload_method",
       "source": "Custom detail",
-      "description": "How a customer sends a prescription: whatsapp, email or in_store. For whatsapp or email the agent uses the platform send tool to share the upload instructions. For in_store, or when not set, the agent asks the customer to bring the prescription to the store, or offers a staff callback. The agent never takes a prescription by voice.",
+      "description": "How a customer sends a prescription: whatsapp, email or in_store. For whatsapp or email the agent says the upload link will arrive shortly on that channel; the platform's After-the-call trigger sends it. For in_store, or when not set, the agent asks the customer to bring the prescription to the store, or offers a staff callback. The agent never takes a prescription by voice.",
       "example": "whatsapp",
       "industries": ["pharmacy"],
       "default": "not set (bring it to the store, or a staff callback)"
@@ -61,7 +61,7 @@
     {
       "name": "confirmation_channels",
       "source": "Custom detail",
-      "description": "The channels the agent may offer for an order confirmation after an order number is returned: whatsapp, email or both. If empty, no confirmation is offered. The agent never says a confirmation is sent without the send tool.",
+      "description": "The channels the agent may offer for an order confirmation after an order number is returned: whatsapp, email or both. If empty, no confirmation is offered. The platform's After-the-call trigger sends the confirmation; the agent only asks and says it will arrive shortly.",
       "example": "whatsapp, email",
       "industries": ["pharmacy"],
       "default": "empty (no confirmation offered)"

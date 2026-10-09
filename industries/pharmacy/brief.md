@@ -63,10 +63,10 @@ Full text is in industries/pharmacy/grill-me.md and docs/DECISIONS.md entries 41
 | 12 | Escalation: pharmacist, store manager, callback when nobody is available | R-21, R-22 |
 | 13 | Prices and discounts only from the system or config; payment modes only; never take payment details | R-16, R-17, R-55 |
 | 14 | Returns only per configured policy; wrong, damaged or expired item to staff; never say "refunded" | R-67, R-68, R-69 |
-| 15 | Tools: stock and price check, place order (order number only on success), plus change_language, transfer, end_call and the send tool | core.md tools, R-52 |
+| 15 | Tools: stock and price check, place order (order number only on success), plus change_language, transfer and end_call (confirmations and upload links go out through the After-the-call trigger, not a tool) | core.md tools, R-52 |
 | 16 | Client special requests as in healthcare: refuse unsafe or deceptive, adapt, list in draft notes | R-44 |
 | 17 | No order-status lookup: never guess a status; callback or transfer | R-65 |
-| 18 | Prescription upload only through the send tool when `prescription_upload_method` is set; otherwise the store or a staff callback | R-54 | Prescription upload link: right after the prescription question, run the upload-link flow (R-76) when the upload method is whatsapp or email; if in_store or not set, bring it to the store or a staff callback. | [02-order-prescription.md](workflows\02-order-prescription.md) | major | S5 |
+| 18 | Prescription upload link (said aloud, sent by the After-the-call trigger) only when `prescription_upload_method` is set; otherwise the store or a staff callback | R-54 | Prescription upload link: right after the prescription question, run the upload-link flow (R-76) when the upload method is whatsapp or email; if in_store or not set, bring it to the store or a staff callback. | [02-order-prescription.md](workflows\02-order-prescription.md) | major | S5 |
 | 19 | Out of stock line; never another brand | R-47 |
 
 ## 4. Scenario register
@@ -281,7 +281,7 @@ Not decided in the grill-me. None of these is guessed in the brief; the defaults
 10. **Other outbound call types** beyond refill reminders (delivery updates, payment reminders, promotions): Phase 2 (workflow 06).
 11. **Languages.** Assumed to follow healthcare's 11 platform languages; not confirmed for pharmacy.
 12. **Poison-control helpline.** Not discussed; only 1 0 8 or 1 1 2 and, for self-harm, 14416, as in healthcare.
-13. **Tools not selected.** An order-status lookup, a cancel or return tool, and a send-link tool for confirmations were not selected. The send tool is used only for prescription-upload instructions when the client enables it. Its platform name (assumed `send_confirmation`) is a question for the lead (platform-contract.md, section 5).
+13. **Tools not selected.** An order-status lookup, a cancel or return tool and any in-call send tool were not selected. Confirmations and upload links are sent by the platform's After-the-call trigger (DECISIONS 51); what that trigger reads is a question for the lead (platform-contract.md, section 5).
 14. **Return policy values** (window, refund rules), delivery terms, payment modes and any medicines the client always hands to the pharmacist come from client configuration. Whether a custom detail can hold a list or long text is a platform question (docs/shared/platform-contract.md).
 15. **Emergency signs list** needs review by the client's clinical team before release; legal references (DPDP, drug schedules, prescription rules) are to be confirmed by the industry expert.
 16. **Platform items still open:** the "How these compose" tooltip, whether the 616-word warning is a hard limit, and how the "How it ends" templates combine with the closing line (docs/shared/platform-contract.md).

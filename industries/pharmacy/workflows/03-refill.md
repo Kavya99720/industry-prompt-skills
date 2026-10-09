@@ -34,7 +34,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 
 ## Tools
 
-`check_stock`, `place_order`, `send_confirmation` (via workflow 02: order confirmation and upload link), `transfer`, `change_language`, `end_call`. Voicemail detection and any do-not-call tool are unconfirmed.
+`check_stock`, `place_order`, `transfer`, `change_language`, `end_call`. Voicemail detection and any do-not-call tool are unconfirmed.
 
 ## Rules owned by this workflow
 

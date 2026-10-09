@@ -9,7 +9,7 @@ Synthetic business. Rules: industries/pharmacy/core.md and workflows 03 (outboun
 | Business type | Pharmacy chain (the agent says "our pharmacy") |
 | Direction | Outbound |
 | Channel | Voice |
-| Tools | Stock and price check, place order, change_language, transfer, end_call, send_confirmation |
+| Tools | Stock and price check, place order, change_language, transfer, end_call |
 | Prescription upload | whatsapp (`{{var.prescription_upload_method}}`) |
 | Hours | `{{var.business_hours}}` = 9 AM to 7 PM, Monday to Saturday |
 | Transfer targets | Pharmacist on duty |

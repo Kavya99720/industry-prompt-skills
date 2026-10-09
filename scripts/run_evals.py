@@ -54,7 +54,7 @@ COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
 # Platform tools per industry; an industry not listed gets only the common ones. Keep in step with each core.md tool table.
 INDUSTRY_TOOLS = {
     "healthcare": ("booking", "reschedule") + COMMON_TOOLS,
-    "pharmacy": ("check_stock", "place_order") + COMMON_TOOLS,
+    "pharmacy": ("check_stock", "place_order", "change_language", "transfer", "end_call"),
 }
 TOOLS_NOTE_TEMPLATE = (
     "\n\n---\nTest harness note (not part of your instructions): you have these tools: {tools}. "

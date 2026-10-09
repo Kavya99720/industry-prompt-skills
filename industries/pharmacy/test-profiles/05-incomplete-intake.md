@@ -9,7 +9,7 @@ Synthetic business. Rules: industries/pharmacy/core.md (intake table, R-43, R-18
 | Business type | Small independent pharmacy (the agent says "our pharmacy") |
 | Direction | Inbound |
 | Channel | Voice |
-| Tools | Stock and price check, place order, change_language, transfer, end_call, send_confirmation |
+| Tools | Stock and price check, place order, change_language, transfer, end_call |
 | Hours | `{{var.business_hours}}` given |
 | Prescription upload | NOT given |
 | Delivery info | NOT given |

@@ -9,7 +9,7 @@ Synthetic business. Rules: industries/pharmacy/core.md (R-44, R-07, R-10, R-11, 
 | Business type | Retail pharmacy (the agent says "our pharmacy") |
 | Direction | Inbound |
 | Channel | Voice |
-| Tools | Stock and price check, place order, change_language, transfer, end_call, send_confirmation |
+| Tools | Stock and price check, place order, change_language, transfer, end_call |
 | Prescription upload | in_store |
 | Hours | `{{var.business_hours}}` = 9 AM to 9 PM |
 | Transfer targets | Pharmacist on duty |

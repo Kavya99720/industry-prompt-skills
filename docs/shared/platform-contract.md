@@ -76,7 +76,7 @@ Confirmed from the reference Starter texts:
 | change_language | Called first when the caller switches to a supported language |
 | end_call | Ends the call after the closing line |
 | transfer | Transfers the caller to the team |
-| WhatsApp / email send | Sends the confirmation to the caller's choice of channel |
+| (After the call trigger) | Confirmations and links are NOT sent by an in-call tool. The platform's "After the call" trigger sends them once the call ends (corrected 2026-10-09). The agent only asks for the channel, confirms it (and reads an email address back) aloud, and says that the message will arrive shortly |
 
 There is **no cancel tool**. Cancellations are noted for the clinic: the agent takes the patient's name, doctor and day and says the clinic will confirm. There is no confirmed tool for logging a failure or for leaving a voicemail.
 
@@ -117,7 +117,8 @@ Still open after the 2026-10-08 decisions. Grouped by who can answer. Resolved o
 
 **Pharmacy (added 2026-10-09)**
 12. **Stock tool fields.** Does `check_stock` return in stock, price, prescription needed and controlled? Until confirmed the agent treats a missing flag as prescription-needed and hands off to the pharmacist (R-12).
-13. **Send tool name.** Is the platform's WhatsApp or email send called `send_confirmation`? The pharmacy uses it only for prescription-upload instructions.
+13. **After-the-call trigger.** What does it read: the call transcript, or extracted fields (channel, email address, order number)? How does it know the chosen channel and the confirmed email address? Until answered, the agent states the channel and reads the email back aloud in the conversation (R-76).
 14. **Voicemail.** Does the platform detect voicemail or no answer on outbound refill reminders? Until then R-59 applies as written.
 15. **Do-not-call.** Is there a do-not-call tool? Until then the agent never says a stop-calling request is done (R-62).
 16. **Outbound AI disclosure.** Must outbound refill reminders say "an AI assistant" up front? Default: follow the client's welcome template and answer honestly if asked (R-06).
+17. **Skill configuration.** Should the skill also write the After-the-call trigger's configuration (what to send, to which channel), not only the Instructions?

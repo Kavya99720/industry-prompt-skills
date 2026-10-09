@@ -9,7 +9,7 @@ Synthetic business. Rules: industries/pharmacy/core.md and workflows 01, 02, 03 
 | Business type | Retail pharmacy chain (the agent says "our store" or "the pharmacy") |
 | Direction | Inbound |
 | Channel | Voice |
-| Tools | Stock and price check, place order, change_language, transfer, end_call, send_confirmation |
+| Tools | Stock and price check, place order, change_language, transfer, end_call |
 | Prescription upload | in_store (`{{var.prescription_upload_method}}`) |
 | Fulfilment | Store pickup; home delivery only for some stores |
 | Hours | `{{var.business_hours}}` = 8 AM to 10 PM, every day |
