@@ -1,0 +1,49 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop-and-never-book instruction, and all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Never-ask list names Aadhaar, PAN, card/bank/UPI, insurance policy numbers, full medical history, OTP, and payment"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome note used, no outbound phrasing present"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Roster variable used, no hard-coded doctors/fees/address/hours, company_name confined to allowed spots, all vars listed in variables.json"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 word count well within the 569-word budget for profile 05"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"Would you like a confirmation on WhatsApp or email?\"",
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"Is this number on WhatsApp?\"",
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"You will get a confirmation on WhatsApp shortly.\"",
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"Please tell me your email address.\"",
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"You will get a confirmation on email shortly.\"",
+    "fixed-line/config: fixed line from 02-booking.md missing word for word: \"Is there anything else I can help with?\""
+  ]
+}
