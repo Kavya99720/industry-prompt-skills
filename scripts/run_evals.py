@@ -6,6 +6,7 @@ Usage:
   python scripts/run_evals.py --all
   python scripts/run_evals.py --industry healthcare --dry-run     check inputs, call nothing
   python scripts/run_evals.py --industry healthcare --profiles 01 03   run only these test profiles
+  python scripts/run_evals.py --industry pharmacy --date <same date> --resume   continue a cut run: finished profiles are skipped
   python scripts/run_evals.py --industry pharmacy --profiles 01 02 --cases E04,E06   run and judge only these cases
                                       (a profile with none of them is skipped, with no generation)
 
@@ -47,7 +48,11 @@ INDUSTRIES = (
 )
 RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
 RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))
-WORKERS = int(os.environ.get("RUN_EVALS_WORKERS", "6"))
+MAX_PARALLEL = 4  # never more than 4 claude processes at once
+WORKERS = min(MAX_PARALLEL, int(os.environ.get("RUN_EVALS_WORKERS", str(MAX_PARALLEL))))
+AUTH_RETRIES = int(os.environ.get("RUN_EVALS_AUTH_RETRIES", "3"))
+AUTH_WAIT = int(os.environ.get("RUN_EVALS_AUTH_WAIT", "60"))
+AUTH_ERROR = re.compile(r"oauth|authenticat|unauthori[sz]ed|\b401\b|token.{0,20}(expired|refresh|invalid)|please run /login|invalid.{0,20}credential", re.I)
 NOTES_MARKER = "=== DRAFT NOTES ==="
 INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
 COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
@@ -104,15 +109,25 @@ class ClaudeCli:
             cmd += ["--agent", agent]
         if system:
             cmd += ["--system-prompt", system]
-        for attempt in range(RETRIES + 1):
+        auth_tries = 0
+        attempt = 0
+        while True:
             result = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
                                     cwd=self.cwd, encoding="utf-8")
             if result.returncode == 0:
                 return result.stdout.strip()
+            message = (result.stderr or "") + " " + (result.stdout or "")
+            if AUTH_ERROR.search(message) and auth_tries < AUTH_RETRIES:
+                auth_tries += 1  # an OAuth refresh problem: wait a minute, then try again
+                time.sleep(AUTH_WAIT)
+                continue
             if attempt < RETRIES:
+                attempt += 1
                 time.sleep(RETRY_WAIT)
-        raise RuntimeError(f"claude call failed after {RETRIES + 1} tries: "
-                           f"{(result.stderr or result.stdout).strip()[:300]}")
+                continue
+            raise RuntimeError(f"claude call failed after {attempt + 1} tries"
+                               f"{f' and {auth_tries} auth waits' if auth_tries else ''}: "
+                               f"{message.strip()[:300]}")
 
 
 def profile_files(industry_dir):
@@ -345,7 +360,27 @@ def parse_judge(text):
     return out
 
 
-def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, cases=None):
+def load_judgment(path, wanted):
+    """A saved per-profile judgment, or None when it is missing, unreadable or for different cases."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if data.get("cases") != wanted or not isinstance(data.get("rows"), list):
+        return None
+    return data
+
+
+def replies_complete(path, probes):
+    """True when the saved replies file holds a reply for every probe."""
+    try:
+        data = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return all(c["id"] in data and isinstance(data[c["id"]], str) for c in probes)
+
+
+def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, cases=None, resume=False):
     out = out or sys.stdout
     date = date or datetime.date.today().isoformat()
     d = root / "industries" / industry
@@ -362,44 +397,65 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
         applicable = [c for c in checks if (not c.get("profiles") or pid in c["profiles"]) and case_selected(c["id"], cases)]
         if cases and not applicable:
             continue
-        full = llm.run(
-            f"Use the {industry}-prompt-writer skill for this test business. Output exactly two parts. "
-            f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax); "
-            f"if the skill's output format starts with a line containing only {INSTRUCTIONS_MARKER} , keep that line. "
-            f"Then a line containing only {NOTES_MARKER} . "
-            f"Part 2: the draft notes (assumptions and defaults used, refused or changed client requests "
-            f"with a one-line reason each, open items, the section 6 word count). Output nothing else. "
-            f"Do not open eval.json files or results folders.\n\n"
-            + visible_profile(pf.read_text(encoding="utf-8")))
-        instructions, notes, outside = split_marked(full)
         profile_text = pf.read_text(encoding="utf-8")
-        warnings = []
-        if outside:
-            warnings.append("warning: text outside the markers (ignored): " + " / ".join(o[:60] for o in outside))
-        welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text), root) if source == "welcome"), None)
-        stray = []
-        if welcome:
-            instructions, removed = strip_before_welcome(instructions, welcome)
-            if removed:
-                stray = ["fixed-line/config: stray text before the welcome (removed for judging): "
-                         + " / ".join(r.strip()[:60] for r in removed)]
         inst_path = work / f"{name}-instructions.md"
-        inst_path.write_text(instructions + "\n", encoding="utf-8")
-        lint[name] = lint_instructions(inst_path, root) + warnings + stray + [
-            "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
+        notes_path = work / f"{name}-draft-notes.md"
+        replies_path = work / f"{name}-replies.json"
+        lint_path = work / f"{name}-lint.json"
+        judgment_path = work / f"{name}-judgment.json"
+        wanted = [c["id"] for c in applicable]
+        probes = [c for c in applicable if c.get("type") == "behaviour"]
+        if resume:
+            saved = load_judgment(judgment_path, wanted)
+            if saved:
+                rows += saved["rows"]
+                lint[name] = saved.get("lint", [])
+                print(f"resume {name}: complete, skipped", file=out)
+                continue
+        reuse = (resume and inst_path.is_file() and notes_path.is_file() and replies_complete(replies_path, probes))
+        if reuse:
+            print(f"resume {name}: Instructions, notes and replies are complete, judging only", file=out)
+            try:
+                lint[name] = json.loads(lint_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                lint[name] = lint_instructions(inst_path, root)
+        else:
+            if resume:
+                print(f"resume {name}: not complete, regenerating", file=out)
+            full = llm.run(
+                f"Use the {industry}-prompt-writer skill for this test business. Output exactly two parts. "
+                f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax); "
+                f"if the skill's output format starts with a line containing only {INSTRUCTIONS_MARKER} , keep that line. "
+                f"Then a line containing only {NOTES_MARKER} . "
+                f"Part 2: the draft notes (assumptions and defaults used, refused or changed client requests "
+                f"with a one-line reason each, open items, the section 6 word count). Output nothing else. "
+                f"Do not open eval.json files or results folders.\n\n"
+                + visible_profile(profile_text))
+            instructions, notes, outside = split_marked(full)
+            warnings = []
+            if outside:
+                warnings.append("warning: text outside the markers (ignored): " + " / ".join(o[:60] for o in outside))
+            welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text), root) if source == "welcome"), None)
+            stray = []
+            if welcome:
+                instructions, removed = strip_before_welcome(instructions, welcome)
+                if removed:
+                    stray = ["fixed-line/config: stray text before the welcome (removed for judging): "
+                             + " / ".join(r.strip()[:60] for r in removed)]
+            inst_path.write_text(instructions + "\n", encoding="utf-8")
+            lint[name] = lint_instructions(inst_path, root) + warnings + stray + [
+                "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
+            lint_path.write_text(json.dumps(lint[name], indent=2, ensure_ascii=False), encoding="utf-8")
+            notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
+            filled = test_values(profile_text)
+            note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
+            system = instructions + tools_note(industry) + note
+            with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
+                answers = list(pool.map(lambda c: llm.run(fill_placeholders(c["probe"], filled), system=system, tools=""), probes))
+            replies = {c["id"]: a for c, a in zip(probes, answers)}
+            replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")
         for problem in lint[name]:
             print(f"lint {name}: {problem}", file=out)
-        notes_path = work / f"{name}-draft-notes.md"
-        notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
-        probes = [c for c in applicable if c.get("type") == "behaviour"]
-        filled = test_values(profile_text)
-        note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
-        system = instructions + tools_note(industry) + note
-        with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
-            answers = list(pool.map(lambda c: llm.run(fill_placeholders(c["probe"], filled), system=system, tools=""), probes))
-        replies = {c["id"]: a for c, a in zip(probes, answers)}
-        replies_path = work / f"{name}-replies.json"
-        replies_path.write_text(json.dumps(replies, indent=2, ensure_ascii=False), encoding="utf-8")
         verdict = llm.run(
             f"Industry: {industry}\nprofile: {name}\nprompt_file: {inst_path.as_posix()}\n"
             f"draft_notes_file: {notes_path.as_posix()}\n"
@@ -408,8 +464,11 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
             "After your table, end with one ```json block: "
             '{"results":[{"id":"...","result":"PASS or FAIL","reason":"one line"}]}',
             agent="eval-judge")
-        for r in parse_judge(verdict):
-            rows.append({"case_id": r["case_id"], "profile": name, "result": r["result"], "reason": r["reason"]})
+        profile_rows = [{"case_id": r["case_id"], "profile": name, "result": r["result"], "reason": r["reason"]}
+                        for r in parse_judge(verdict)]
+        rows += profile_rows
+        judgment_path.write_text(json.dumps({"cases": wanted, "rows": profile_rows, "lint": lint[name]},
+                                            indent=2, ensure_ascii=False), encoding="utf-8")
     passed = sum(r["result"] == "pass" for r in rows)
     summary = {"industry": industry, "date": date, "total": len(rows), "passed": passed,
                "failed": len(rows) - passed,
@@ -427,6 +486,8 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
     ap.add_argument("--date")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--profiles", nargs="+", help="only these profile ids, for example 01 03")
+    ap.add_argument("--resume", action="store_true",
+                    help="skip profiles already judged in this run folder; judge only a profile whose replies are complete; regenerate one cut mid-way")
     ap.add_argument("--cases", help="comma list of case ids to run and judge, for example E04,E06 (PHA-E04 also works)")
     args = ap.parse_args(argv)
     targets = list(INDUSTRIES) if args.all else [args.industry]
@@ -443,7 +504,8 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
             table.append((ind, "ready", f"{n} profiles, nothing run"))
             continue
         summary, rows = run_industry(ind, llm, Path(root), args.date, args.profiles,
-                                     cases=[c.strip() for c in args.cases.split(",") if c.strip()] if args.cases else None)
+                                     cases=[c.strip() for c in args.cases.split(",") if c.strip()] if args.cases else None,
+                                     resume=args.resume, out=out)
         table.append((ind, f"{summary['passed']}/{summary['total']} passed", f"{summary['pass_rate']}%"))
         failing += [(ind, r) for r in rows if r["result"] == "fail"]
         if summary["failed"]:

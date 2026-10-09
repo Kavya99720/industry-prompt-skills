@@ -408,3 +408,79 @@ def test_stray_text_outside_the_markers_is_a_warning_not_an_error(repo):
     saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
     assert any(m.startswith("warning: text outside the markers") for m in saved["lint"]["01-a"])
     assert (repo / "industries/healthcare/results/2026-10-08/01-a-instructions.md").read_text(encoding="utf-8").startswith("body")
+
+
+class _R:
+    def __init__(self, code, out="", err=""):
+        self.returncode, self.stdout, self.stderr = code, out, err
+
+
+def test_auth_error_waits_60_seconds_and_retries_up_to_3_times(monkeypatch):
+    waits, calls = [], []
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        return _R(1, err="OAuth token has expired") if len(calls) < 4 else _R(0, "ok")
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
+    assert run_evals.ClaudeCli("claude").run("hi") == "ok"
+    assert waits == [60, 60, 60] and len(calls) == 4
+
+
+def test_auth_error_gives_up_after_3_waits(monkeypatch):
+    waits = []
+    monkeypatch.setattr(run_evals.subprocess, "run", lambda cmd, **kw: _R(1, err="401 Unauthorized"))
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
+    with pytest.raises(RuntimeError, match="3 auth waits"):
+        run_evals.ClaudeCli("claude").run("hi")
+    assert waits.count(60) == 3
+
+
+def test_other_errors_do_not_wait_60_seconds(monkeypatch):
+    waits = []
+    monkeypatch.setattr(run_evals.subprocess, "run", lambda cmd, **kw: _R(1, err="some other failure"))
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
+    with pytest.raises(RuntimeError):
+        run_evals.ClaudeCli("claude").run("hi")
+    assert 60 not in waits
+
+
+def test_at_most_4_claude_processes_run_in_parallel(monkeypatch):
+    assert run_evals.MAX_PARALLEL == 4 and run_evals.WORKERS <= 4
+
+
+def _resume(repo, llm, extra=()):
+    return run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--resume", *extra], llm)
+
+
+def test_resume_skips_complete_profiles_and_judges_only_when_replies_exist(repo):
+    first = FakeLlm()
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], first)
+    work = repo / "industries/healthcare/results/2026-10-08"
+    # profile 02-b is cut mid-way (no replies, no judgment); profile 01-a lost only its judgment
+    (work / "02-b-replies.json").unlink()
+    (work / "02-b-judgment.json").unlink()
+    (work / "01-a-judgment.json").unlink()
+    again = FakeLlm()
+    code, out = _resume(repo, again)
+    assert "resume 01-a: Instructions, notes and replies are complete, judging only" in out
+    assert "resume 02-b: not complete, regenerating" in out
+    generated = [c for c in again.calls if c[0] is None and c[1] is None]
+    judged = [c for c in again.calls if c[0] == "eval-judge"]
+    assert len(generated) == 1 and len(judged) == 2
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert saved["summary"]["total"] == 40
+
+
+def test_resume_skips_a_fully_judged_profile_without_any_call(repo):
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], FakeLlm())
+    again = FakeLlm()
+    code, out = _resume(repo, again)
+    assert again.calls == [] and out.count("complete, skipped") == 2 and "40/40 passed" in out
+
+
+def test_resume_ignores_a_judgment_made_for_other_cases(repo):
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--cases", "E03"], FakeLlm())
+    again = FakeLlm()
+    _resume(repo, again, extra=["--cases", "E05"])
+    assert [c for c in again.calls if c[0] == "eval-judge"]
