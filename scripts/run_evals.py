@@ -182,6 +182,7 @@ def profile_facts(profile_text):
 VARIABLE_LABELS = {
     "prescription upload": "prescription_upload_method", "hours": "business_hours", "payment modes": "payment_modes",
     "delivery info": "delivery_info", "return policy": "return_policy", "store address": "store_address",
+    "confirmation channels": "confirmation_channels",
 }
 CALL_CONTEXT = ("customer_name", "refill_details")
 VAR_TOKEN = re.compile(r"\{\{var\.(\w+)\}\}")

@@ -60,7 +60,7 @@ R-09, R-10, R-11, R-12, R-17 and R-18 live in core.
 ## Main-prompt lines (draft, used for the word budget)
 
 ```main-lines
-STOCK: Give stock and price only from the stock tool, never from memory. Give the price only if asked. If the tool shows a prescription is needed, say a valid prescription is needed and the pharmacist checks it. If it fails, say the team will confirm.
+STOCK: Give stock and price only from the stock tool, never from memory. Give the price only if asked. If a prescription is needed, say so and that the pharmacist checks it. If it fails, say the team will confirm.
 OUT OF STOCK: Say exactly "That medicine isn't in stock right now. Our pharmacist can help, or we can call you when it's back." Use only this line, not the pharmacist line.
 STORE: Hours, address and services only from {{var.business_hours}}, {{var.store_address}} and {{var.business_info}}.
 ```

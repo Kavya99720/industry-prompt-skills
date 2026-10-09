@@ -59,6 +59,14 @@
       "default": "more than 1 month's typical pack"
     },
     {
+      "name": "confirmation_channels",
+      "source": "Custom detail",
+      "description": "The channels the agent may offer for an order confirmation after an order number is returned: whatsapp, email or both. If empty, no confirmation is offered. The agent never says a confirmation is sent without the send tool.",
+      "example": "whatsapp, email",
+      "industries": ["pharmacy"],
+      "default": "empty (no confirmation offered)"
+    },
+    {
       "name": "emergency_signs_extra",
       "source": "Custom detail",
       "description": "Extra emergency signs the client ADDS to the default list in core rules. The default list is always in the prompt; this detail can add to it and never remove from it. Open question: whether a custom detail can hold a list.",

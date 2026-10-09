@@ -66,7 +66,7 @@ Full text is in industries/pharmacy/grill-me.md and docs/DECISIONS.md entries 41
 | 15 | Tools: stock and price check, place order (order number only on success), plus change_language, transfer, end_call and the send tool | core.md tools, R-52 |
 | 16 | Client special requests as in healthcare: refuse unsafe or deceptive, adapt, list in draft notes | R-44 |
 | 17 | No order-status lookup: never guess a status; callback or transfer | R-65 |
-| 18 | Prescription upload only through the send tool when `prescription_upload_method` is set; otherwise the store or a staff callback | R-54 |
+| 18 | Prescription upload only through the send tool when `prescription_upload_method` is set; otherwise the store or a staff callback | R-54 | Prescription upload link: right after the prescription question, run the upload-link flow (R-76) when the upload method is whatsapp or email; if in_store or not set, bring it to the store or a staff callback. | [02-order-prescription.md](workflows\02-order-prescription.md) | major | S5 |
 | 19 | Out of stock line; never another brand | R-47 |
 
 ## 4. Scenario register
@@ -198,7 +198,8 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-72 | One question at a time. If the medicine is unclear or not named, ask only which medicine. Written word for word in section 5. | [core.md](core.md) | major | S5 |
 | R-73 | Priority order: emergency, privacy and verification, "say exactly" lines, one question at a time, the task. A fixed line wins over the generic handoff. | [core.md](core.md) | major | S1 |
 | R-74 | Missing config value: say exactly "Our team will confirm that for you." and offer a callback or staff; never repeat a figure the caller supplies. | [core.md](core.md) | major | S1 |
-| R-75 | Team handoff phrase: every handoff to staff, the store manager or delivery says exactly "I'll connect you to our team." then transfers; never invent a desk name. | [core.md](core.md) | major | S1 |
+| R-75 | Team handoff phrase "I'll connect you to our team." Scope: only staff, store-manager and delivery handoffs; never replaces the pharmacist line, "the pharmacy will call to confirm" after a failed order, a callback when no target is given, or a safety line. | [core.md](core.md) | major | S1 |
+| R-76 | Confirmation flow after an order number and the prescription upload link, with fixed lines and only the channels enabled in config; never after a failed order. See docs/shared/confirmation-flow.md. | [core.md](core.md) | major | S5 |
 | R-46 | Say a medicine is in stock, or give its price, only from the check_stock result. Never fro... | [01-enquiry.md](workflows\01-enquiry.md) | critical | S6 |
 | R-47 | Out of stock: say "That medicine isn't in stock right now. Our pharmacist can help, or we... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |
 | R-48 | For a medicine the tool shows as prescription-only, availability and price may be given, w... | [01-enquiry.md](workflows\01-enquiry.md) | major | S6 |
@@ -224,6 +225,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-68 | A wrong, damaged or expired item goes to staff. The agent does not decide, does not ask th... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-69 | For a return or delivery problem take only the customer name, the order number and one lin... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | major | S6 |
 | R-70 | Bulk quantity: an order above var.max_qty_without_pharmacist is never placed directly; hand off to the pharmacist. Default limit: more than 1 month's typical pack. | [02-order-prescription.md](workflows-order-prescription.md) | major | S6 |
+| R-77 | No-prescription line, said exactly: "I can't place this order without a valid prescription. Our pharmacist verifies the prescription." then the upload step. | [02-order-prescription.md](workflows\02-order-prescription.md) | major | S6 |
 
 ## 6. Vocabulary
 - **Prescription-only medicine**: a medicine that needs a valid prescription. The agent never judges validity; the pharmacist verifies (R-11). What counts as valid: to be confirmed by the industry expert.
