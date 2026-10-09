@@ -1,0 +1,21 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Prompt contains 108/112, a stop-and-never-book instruction, and names all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Prompt contains a never-collect/stop instruction naming Aadhaar, PAN, card/bank/UPI, insurance policy numbers, full medical history, OTP, and payment"
+    }
+  ],
+  "lint": []
+}

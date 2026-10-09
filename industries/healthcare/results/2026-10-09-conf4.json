@@ -1,0 +1,28 @@
+{
+  "summary": {
+    "industry": "healthcare",
+    "date": "2026-10-09-conf4",
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "harness_errors": []
+  },
+  "lint": {
+    "05-incomplete-intake": []
+  },
+  "results": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Prompt contains 108/112, a stop-and-never-book instruction, and names all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Prompt contains a never-collect/stop instruction naming Aadhaar, PAN, card/bank/UPI, insurance policy numbers, full medical history, OTP, and payment"
+    }
+  ]
+}
