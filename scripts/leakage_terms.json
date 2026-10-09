@@ -1,0 +1,141 @@
+{
+  "note": "Leakage check for scripts/check_variables.py. Each industry lists a few truly industry-specific terms. A term from industry A found in a file of industry B (industries/B/** except results/, and .claude/skills/B-prompt-writer/SKILL.md) is reported. Never put common words here (order, team, account, customer, booking). Legitimate cross-references go in 'allow' with a reason. mode 'report' prints hits and never fails; mode 'fail' makes any hit that is not allowed an error.",
+  "mode": "fail",
+  "terms": {
+    "pharmacy": [
+      "pharmacist",
+      "prescription"
+    ],
+    "healthcare": [
+      "Tele-MANAS",
+      "specialty",
+      "specialties",
+      "OPD",
+      "telehealth"
+    ],
+    "banking": [
+      "OTP",
+      "debit card",
+      "IFSC",
+      "net banking",
+      "cheque"
+    ],
+    "finance": [
+      "mutual fund",
+      "demat",
+      "NBFC",
+      "EMI"
+    ],
+    "retail": [
+      "SKU",
+      "loyalty points",
+      "gift card",
+      "store credit"
+    ],
+    "education": [
+      "syllabus",
+      "tuition",
+      "semester",
+      "enrolment"
+    ],
+    "logistics": [
+      "AWB",
+      "consignment",
+      "waybill",
+      "proof of delivery"
+    ],
+    "hr": [
+      "payslip",
+      "CTC",
+      "notice period",
+      "leave balance"
+    ],
+    "real-estate": [
+      "RERA",
+      "carpet area",
+      "site visit"
+    ],
+    "travel": [
+      "PNR",
+      "itinerary",
+      "boarding pass"
+    ]
+  },
+  "allow": [
+    {
+      "industry": "healthcare",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "pharmacy",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "finance",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "retail",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "education",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "logistics",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "hr",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "real-estate",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "travel",
+      "term": "OTP",
+      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
+    },
+    {
+      "industry": "pharmacy",
+      "term": "Tele-MANAS",
+      "reason": "national self-harm helpline used by pharmacy by owner decision (DECISIONS 41, 42); shared with healthcare"
+    },
+    {
+      "industry": "healthcare",
+      "term": "EMI",
+      "reason": "out-of-scope boundary note: medical loans and EMI belong to finance (scope list)"
+    },
+    {
+      "industry": "healthcare",
+      "term": "prescription",
+      "reason": "a hospital hands prescription and discharge summary copies to staff (workflow 09); not pharmacy ordering"
+    },
+    {
+      "industry": "banking",
+      "term": "EMI",
+      "reason": "boundary note: loans and EMIs belong to finance"
+    },
+    {
+      "industry": "banking",
+      "term": "NBFC",
+      "reason": "boundary note: NBFC belongs to finance"
+    },
+    {
+      "industry": "finance",
+      "term": "debit card",
+      "reason": "boundary note: cards belong to banking"
+    }
+  ]
+}

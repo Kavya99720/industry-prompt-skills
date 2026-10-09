@@ -13,7 +13,8 @@
       {
         "matcher": "Edit|Write|MultiEdit",
         "hooks": [
-          { "type": "command", "command": "python .claude/hooks/guard_frozen_eval.py" }
+          { "type": "command", "command": "python .claude/hooks/guard_frozen_eval.py" },
+          { "type": "command", "command": "python .claude/hooks/guard_industry_scope.py" }
         ]
       }
     ],

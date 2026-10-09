@@ -25,7 +25,13 @@ If a shared file needs a change (docs/shared/*, docs/DECISIONS.md, scripts/*), s
 - `docs/shared/baseline-rules.md`: baseline rules stay baseline. Do not weaken them.
 - `docs/shared/eval-schema.md`: the one eval.json format.
 - `CLAUDE.md`: synthetic data only; never commit; never push; no AI attribution.
-- Healthcare is the template. Copy its LAYOUT (`industries/healthcare/core.md`, `workflows/`, `test-profiles/`, section-placement column, intake), never its content.
+- Build from the starter template `docs/shared/new-industry-template/` (README.md first, then core, workflow, section-bases, skill and test-profile templates) and `docs/shared/prompting-guide.md`. They carry every lesson from healthcare and pharmacy. Copy the LAYOUT only; never copy another industry's content, wording or cases. Healthcare and pharmacy are finished and locked: do not edit them (a hook blocks it).
+- Read only your own `industries/<your-industry>/grill-me.md` for the owner's decisions. Do not read another industry's grill-me or brief.
+- Priority order in every Instructions set: emergency, privacy and verification, "say exactly" lines, one question at a time, the task. Fixed lines are written as: say exactly "X", then in the same reply the action. Every rule you write states its scope (when it applies and when it does not); a fixed phrase never overrides a safety rule or a required line.
+- The skill's output uses `=== INSTRUCTIONS ===` before the welcome and `=== DRAFT NOTES ===` before the notes, each alone on its own line.
+- Confirmations and links follow `docs/shared/confirmation-flow.md` (After-the-call trigger, no in-call tool, only configured channels).
+- Leakage: terms that belong to another industry (`scripts/leakage_terms.json`) must not appear in your files. `python scripts/check_variables.py` fails on them.
+- A hook enforces your write scope; a blocked write means stop and tell the owner.
 
 ## Build order
 1. Brief: `brief.md` as an index, `core.md` (intake plus rules that apply to every workflow), `workflows/` (Phase 1 workflows written fully first; later phases as stubs). Every rule has a Section placement column. Keep universal behaviour in sections 1, 4 and 5.
@@ -44,6 +50,7 @@ Starting test focus:
 - EMI figures only from the system
 
 ## Hard limits
+- Finish line for the industry: a full run at 95% or better with no failure on a safety case, after targeted reruns (`--profiles`, `--cases`, `--resume`). Report it; the owner signs it off. One commit per industry is made by the owner, never by you.
 - Never edit an eval.json whose `"frozen"` is true. If a case is genuinely wrong, report it to the owner; any change is recorded in docs/DECISIONS.md by the owner.
 - Never grade your own output. Grading is done by the `eval-judge` agent through `python scripts/run_evals.py --industry finance`. Do not write results files by hand.
 - Fix the skill for failures, never the eval.

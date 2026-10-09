@@ -16,6 +16,9 @@ FAILS (exit 1) on:
 WARNS on {{var.company_name}} used outside a welcome, closing or AI-disclosure line.
 
 Put `check_variables: ignore` on a line to skip it (for text that explains a wrong style).
+Leakage check (scripts/leakage_terms.json): a term that belongs to another industry (for example 'pharmacist' in a
+banking file) is reported. Mode 'report' prints the hits and never fails; mode 'fail' makes every hit that is not in the
+'allow' list an error. `--leakage` runs only this check, report-only.
 Industry custom details: an industry may define extra variables in industries/<x>/variables.json (same format as
 docs/shared/variables.json). They are valid only in that industry's files.
 Standard library only.
@@ -273,11 +276,81 @@ def run(root, targets, variables_path, denylist_path, fix=False, out=sys.stdout)
     return len(errors), len(warns), fixed, all_issues
 
 
+LEAKAGE_FILE = "scripts/leakage_terms.json"
+
+
+def load_leakage(root):
+    path = Path(root) / LEAKAGE_FILE
+    if not path.is_file():
+        return None
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def leakage_files(root, industry):
+    """Authored files of one industry: industries/<x>/** except results/, plus its skill's SKILL.md."""
+    root = Path(root)
+    files = []
+    base = root / "industries" / industry
+    if base.is_dir():
+        for f in sorted(base.rglob("*")):
+            if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and "results" not in f.relative_to(base).parts:
+                files.append(f)
+    skill = root / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
+    if skill.is_file():
+        files.append(skill)
+    return files
+
+
+def is_allowed(allow, owner, term, rel):
+    for a in allow:
+        if a.get("industry") == owner and a.get("term", "").lower() == term.lower() and a.get("path", "") in rel:
+            return True
+    return False
+
+
+def find_leakage(root, config=None):
+    """Return a list of hits {file, line, owner, term, term_of, text, allowed}. owner = the industry whose file it is."""
+    config = config if config is not None else load_leakage(root)
+    if not config:
+        return []
+    terms = config.get("terms", {})
+    allow = config.get("allow", [])
+    patterns = {}
+    for industry, words in terms.items():
+        for w in words:
+            patterns[(industry, w)] = re.compile(r"(?<![A-Za-z0-9])" + re.escape(w) + r"(?![A-Za-z0-9])", re.I)
+    hits = []
+    for owner in terms:
+        for f in leakage_files(root, owner):
+            rel = f.relative_to(Path(root)).as_posix()
+            try:
+                lines = f.read_text(encoding="utf-8").splitlines()
+            except (OSError, UnicodeDecodeError):
+                continue
+            for n, line in enumerate(lines, 1):
+                for (term_of, word), rx in patterns.items():
+                    if term_of != owner and rx.search(line):
+                        hits.append({"file": rel, "line": n, "owner": owner, "term": word, "term_of": term_of,
+                                     "text": line.strip()[:140], "allowed": is_allowed(allow, owner, word, rel)})
+    return hits
+
+
+def print_leakage(hits, out=None):
+    out = out or sys.stdout
+    for h in hits:
+        tag = "allowed" if h["allowed"] else "HIT"
+        print(f"{h['file']}:{h['line']}: {tag} '{h['term']}' belongs to {h['term_of']} (file of {h['owner']}): {h['text']}", file=out)
+    open_hits = [h for h in hits if not h["allowed"]]
+    print(f"leakage: {len(hits)} hits, {len(open_hits)} not allowed", file=out)
+    return open_hits
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--fix", action="store_true", help="rewrite known old names to {{var.x}}")
     ap.add_argument("--paths", nargs="+", help="files or folders to scan instead of the default scope")
     ap.add_argument("--include-docs", action="store_true", help="also scan docs/ and the README files")
+    ap.add_argument("--leakage", action="store_true", help="run only the leakage check, report-only (prints every hit)")
     ap.add_argument("--root", default=str(ROOT))
     ap.add_argument("--variables", default=None)
     ap.add_argument("--denylist", default=None)
@@ -286,7 +359,16 @@ def main(argv=None):
     targets = args.paths or list(DEFAULT_SCOPE) + (list(DOCS_SCOPE) if args.include_docs else [])
     variables = args.variables or root / "docs" / "shared" / "variables.json"
     denylist = args.denylist or root / "scripts" / "denylist.txt"
+    if args.leakage:
+        print_leakage(find_leakage(root))
+        return 0
     errors, _, _, _ = run(root, targets, variables, denylist, fix=args.fix)
+    config = load_leakage(root)
+    if config and config.get("mode") == "fail" and not args.paths:
+        open_hits = print_leakage([h for h in find_leakage(root, config) if not h["allowed"]])
+        if open_hits:
+            print("fix: remove the term, or add a reason to the 'allow' list in " + LEAKAGE_FILE)
+            errors += len(open_hits)
     return 1 if errors else 0
 
 

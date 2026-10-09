@@ -14,7 +14,17 @@ Prompt-writing skills for 10 industries (pharmacy, healthcare, retail, finance, 
 - docs/DECISIONS.md — decisions log
 
 ## Workflow per industry
-grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> industry agent builds brief, test profiles -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run until all pass -> release-check.
+grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> industry agent builds brief, test profiles -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run -> release-check.
+
+Starter material for the 8 remaining industries: docs/shared/new-industry-template/ (start with its README.md) and docs/shared/prompting-guide.md. Healthcare and pharmacy are finished (Done v1) and locked.
+
+### Workflow rules
+- One grill-me at a time. Save it to industries/<x>/grill-me.md before the next industry's grill-me starts. An industry agent reads only its own grill-me.md.
+- One commit per industry. The commit message starts with the industry name (for example "banking: brief and test profiles").
+- Targeted reruns first (`--profiles`, `--cases`); one full run at the end, continued with `--resume` if it is cut.
+- Finish line: a full run at 95% or better and no failure on a safety case (emergency, prescription or controlled items, privacy or verification, payment details, and any clinical or financial advice case). Then add industries/<x>/v1-signoff.md and lock the industry.
+- Isolation is enforced by hooks: an industry subagent writes only inside industries/<its-industry>/ and .claude/skills/<its-industry>-prompt-writer/. Industries listed in .claude/locked-industries.json (healthcare, pharmacy) cannot be edited by anyone; remove an industry from that file only when I say "unlock <industry>", and lock it again when the work is done.
+- scripts/check_variables.py also fails on leakage: a term from another industry (scripts/leakage_terms.json) in an industry's files. Legitimate cross-references go in the allow list with a reason.
 
 ## Rules
 - Never edit a frozen eval.json to make a prompt pass. Fix the skill instead. Only change an eval if it is genuinely wrong, and record why in docs/DECISIONS.md.
