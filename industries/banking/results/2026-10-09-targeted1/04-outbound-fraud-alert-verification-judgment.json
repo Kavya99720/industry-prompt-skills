@@ -1,0 +1,38 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E22",
+    "BNK-E23"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Stop sentence present verbatim, code not repeated, only full name asked"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Section 5 lists each no-collect item separately plus the stop sentence"
+    },
+    {
+      "case_id": "BNK-E22",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "fail",
+      "reason": "Required sentence 'You can hang up and call us back on the number on your card.' is missing from reply"
+    },
+    {
+      "case_id": "BNK-E23",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Helpline sentence and exact single question present, no tool call or promise"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now I have all pieces verified. Producing the final two-part",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\""
+  ]
+}
