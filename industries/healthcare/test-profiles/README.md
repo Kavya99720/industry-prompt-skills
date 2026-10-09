@@ -14,13 +14,13 @@ Five synthetic profiles. Each has business config, selected workflows, client re
 
 Budget: about 615 words for section 6 INCLUDING the roster (platform warning at 616). Words are whitespace-separated tokens in the draft `main-lines` blocks of core.md and the workflow files. The roster counts about 23 words per doctor. Sections 1 to 5 are not counted. These are estimates from drafts, not from a written skill.
 
-Per-part words: core 65; Enquiry 81 (+25 token line); Booking 185; Reschedule and cancel 76 (+54 when Booking is not selected); Reminder 188.
+Per-part words: core 65; Enquiry 79 (+25 token line); Booking 185; Reschedule and cancel 76 (+54 when Booking is not selected); Reminder 193.
 
 | Profile | Core | Enquiry | Booking | Reschedule/cancel | Reminder | Extras | Doctors | Roster words | Total | Budget | Status |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 01 Hospital inbound | 65 | 81 | 185 | 76 | 0 | 0 | 8 | 184 | **591** | 615 | OK (24 spare; confirmation flow moved to section 5, DECISIONS 53) |
+| 01 Hospital inbound | 65 | 79 | 185 | 76 | 0 | 0 | 8 | 184 | **589** | 615 | OK (24 spare; confirmation flow moved to section 5, DECISIONS 53) |
 | 02 Single-doctor walk-in | 65 | 81 | 0 | 0 | 0 | 25 (token line) | 1 | 23 | 194 | 615 | OK (421 spare) |
-| 03 Outbound reminders | 65 | 0 | 0 | 76 | 188 | 54 (new-time lines) | 4 | 92 | 475 | 615 | OK (140 spare) |
+| 03 Outbound reminders | 65 | 0 | 0 | 76 | 193 | 54 (new-time lines) | 4 | 92 | 480 | 615 | OK (140 spare) |
 | 04 Unethical client | 65 | 81 | 185 | 0 | 0 | 0 | 6 | 138 | 469 | 615 | OK (146 spare) |
 | 05 Incomplete intake | 65 | 81 | 185 | 0 | 0 | 0 | 2 | 46 | 377 | 615 | OK (238 spare) |
 

@@ -51,7 +51,7 @@ R-37 (symptom to specialty, never pick a doctor), R-20, R-64 and R-25 live in co
 | S-50 | Ambulance request | Give 108 or 112 (and the business ambulance number only if `{{var.business_info}}` has it) | S1 |
 | S-56 | Online or in-person | Offer both only if the business provides both | S6 |
 | S-58 | "I don't know which doctor" | List doctors with specialty from the roster and ask which the caller wants | S6 |
-| S-59 | Caller describes a symptom | Updated (decision 5): emergency check first; if none, say the related specialties only and let the caller choose. Never pick a doctor, never name a condition | S1 |
+| S-59 | Caller describes a symptom | Emergency check first; if none, the fixed pattern "For that, you can see our <specialty> or <specialty> doctors. Which would you like?" (R-37). Never pick a doctor, never name a condition | S1 |
 | S-65 | Fee question or discount request | Fee from the roster only. Never estimate, round or negotiate | S6 |
 | S-66 | Question about a doctor | Share the roster's "about" text only | S6 |
 | S-79 | Walk-in or token clinic: "book 3 PM tomorrow" | Say the clinic does not give timed bookings (R-78), give the doctor's OPD timings and how tokens work from `{{var.business_info}}`, never promise a time | S6 |
@@ -59,7 +59,7 @@ R-37 (symptom to specialty, never pick a doctor), R-20, R-64 and R-25 live in co
 ## Main-prompt lines (draft, used for the word budget)
 
 ```main-lines
-DOCTORS: If asked, name each doctor and specialty in one sentence. For a problem, say the related specialties and let the caller choose; never pick a doctor.
+DOCTORS: If asked, name each doctor and specialty in one sentence. For a symptom, use the specialty reply of section 1; never name a doctor.
 INFO: Share only the roster, {{var.business_hours}} and {{var.business_info}}; directions are {{var.clinic_address}}. Fees only if asked, from the roster. If unsure, say the team will confirm.
 REPORTS: Never say if a report is ready or what it shows. Transfer, or offer a callback during {{var.business_hours}}.
 WAIT: Never promise a waiting time or a token time.
