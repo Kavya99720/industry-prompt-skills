@@ -1,0 +1,70 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Banking custom details and call context only (same format as docs/shared/variables.json). Valid only in banking files. Shared variables (agent_name, business_hours, business_phone, company_name, now_local, confirmation_channels, emergency_signs_extra, default_language) stay in docs/shared/variables.json. Example values are neutral placeholders; never use a real bank's values. card_block_tool and balance_lookup_tool are intake flags: the skill writes the Instructions for the chosen state and names the tool only when it is on, so neither appears as a variable in the Instructions.",
+  "variables": [
+    {
+      "name": "card_block_tool",
+      "source": "Custom detail",
+      "description": "Flag, on or off. On: the agent may block a card with the card-block tool after the minimal check (name and last 4 digits of the card). Off: the agent never blocks; fraud and lost-card calls go to the fraud team, or to a callback when no target is given. Read at intake, not typed into the Instructions as a variable.",
+      "example": "off",
+      "industries": ["banking"],
+      "default": "off"
+    },
+    {
+      "name": "balance_lookup_tool",
+      "source": "Custom detail",
+      "description": "Flag, on or off. On: a lookup tool matches the name, registered mobile number and last 4 digits and returns the available balance and the last few transactions. Off: the agent shares no account data at all and hands the caller to staff. Read at intake, not typed into the Instructions as a variable.",
+      "example": "off",
+      "industries": ["banking"],
+      "default": "off"
+    },
+    {
+      "name": "branch_atm_info",
+      "source": "Custom detail",
+      "description": "Free text about branches, ATMs and counters that is safe to say aloud. The agent answers branch, ATM and counter questions only from this text.",
+      "example": "<branch_and_atm_details>",
+      "industries": ["banking"],
+      "default": "empty (the team will confirm)"
+    },
+    {
+      "name": "escalation_path",
+      "source": "Custom detail",
+      "description": "The client's escalation path for a complaint, in order (for example branch, grievance officer, banking ombudsman), as the client wants it said aloud. The agent says it only as configured and never adds a timeline or a legal reference.",
+      "example": "<first_step>, then <second_step>, then <third_step>",
+      "industries": ["banking"],
+      "default": "empty (the team will confirm)"
+    },
+    {
+      "name": "grievance_contact",
+      "source": "Custom detail",
+      "description": "How to reach the grievance team or grievance officer, as the client wants it said aloud. Said only when the caller asks how to contact them.",
+      "example": "<grievance_contact>",
+      "industries": ["banking"],
+      "default": "empty (the team will confirm)"
+    },
+    {
+      "name": "kyc_update_info",
+      "source": "Custom detail",
+      "description": "Outbound KYC reminder: where and how the customer completes the KYC update (app, branch, official website) and any due date the client chooses to state. The agent states nothing about KYC that is not in this text.",
+      "example": "<kyc_update_channels_and_due_date>",
+      "industries": ["banking"],
+      "default": "empty (the team will confirm)"
+    },
+    {
+      "name": "card_activation_info",
+      "source": "Custom detail",
+      "description": "Outbound card activation: how the customer activates the new card (app, ATM, a number printed on the card), as the client wants it said aloud. The agent never activates a card by voice.",
+      "example": "<activation_channels>",
+      "industries": ["banking"],
+      "default": "empty (the team will confirm)"
+    },
+    {
+      "name": "customer_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the customer being called. Used only to ask whether the person on the line is that customer. Whether the platform passes this is an open question; when empty the agent asks whether it is speaking with the account holder.",
+      "example": "<customer_name>",
+      "industries": ["banking"]
+    }
+  ]
+}

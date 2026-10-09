@@ -1,0 +1,124 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Single source of truth for every variable a generated prompt may use. scripts/check_variables.py fails on any variable in the var syntax that is not listed here. Example values are neutral placeholders; never use a real customer's values. Sources: Voice settings, Fixed, Built in and Custom detail are the platform groups (docs/shared/platform-contract.md). 'status: unconfirmed' means the platform has not confirmed the variable exists (see the open questions).",
+  "variables": [
+    {
+      "name": "agent_name",
+      "source": "Voice settings",
+      "description": "The agent's persona name. Spoken in the welcome message and in the AI-disclosure answer only where the persona is introduced.",
+      "example": "<agent_name>",
+      "industries": ["all"]
+    },
+    {
+      "name": "agent_gender",
+      "source": "Voice settings",
+      "description": "Grammatical gender the agent uses for itself in languages that mark it. The caller is always addressed with gender-neutral, respectful forms.",
+      "example": "female",
+      "industries": ["all"]
+    },
+    {
+      "name": "default_language",
+      "source": "Voice settings",
+      "description": "The language every call starts in.",
+      "example": "English (IN)",
+      "industries": ["all"]
+    },
+    {
+      "name": "business_hours",
+      "source": "Fixed",
+      "description": "When the business or its front desk is open. Used when offering a callback or a transfer.",
+      "example": "9 AM to 9 PM, Monday to Saturday",
+      "industries": ["all"]
+    },
+    {
+      "name": "business_phone",
+      "source": "Fixed",
+      "description": "The business phone number. Used for callbacks, voicemail messages and the 'language not supported' fallback.",
+      "example": "<business_phone>",
+      "industries": ["all"]
+    },
+    {
+      "name": "clinic_address",
+      "source": "Fixed",
+      "description": "The street address. Used only when the caller asks for directions or location.",
+      "example": "<address>",
+      "industries": ["healthcare"]
+    },
+    {
+      "name": "company_name",
+      "source": "Fixed",
+      "description": "The business name. Use it only where the caller hears the name: the welcome message, the closing line and the AI-disclosure answer. Elsewhere use a plain word that matches the business type (the hospital, our clinic, the lab, the centre).",
+      "example": "<business_name>",
+      "industries": ["all"]
+    },
+    {
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["all"]
+    },
+    {
+      "name": "roster",
+      "source": "Built in",
+      "description": "The doctor list from the Doctors config: name, status (Available, On call, On leave), specialty, fees, about text and shifts. About 23 words per doctor in the Main prompt word count.",
+      "example": "Doctor <doctor_1> | <specialty> | <days> | <timings> | <fee>",
+      "industries": ["healthcare"]
+    },
+    {
+      "name": "emergency_signs_extra",
+      "source": "Custom detail",
+      "description": "Extra emergency signs the client ADDS to the default list in core rules. The default list is always in the prompt; this detail can add to it and never remove from it. Open question: whether a custom detail can hold a list (platform-contract.md, question 6).",
+      "example": "<extra_sign_1>, <extra_sign_2>",
+      "industries": ["healthcare"],
+      "default": "empty"
+    },
+    {
+      "name": "minors_may_book_alone",
+      "source": "Custom detail",
+      "description": "Flag. When true, a caller under 18 may book alone. Default false, which is rule R-40 as written.",
+      "example": "false",
+      "industries": ["healthcare"],
+      "default": "false"
+    },
+    {
+      "name": "business_info",
+      "source": "Custom detail",
+      "description": "Free text about the business that is safe to say aloud: beds, years of service, services offered. Services are not doctors. Never typed into the prompt itself.",
+      "example": "<number_of_beds>, <years_of_service>, <services_list>",
+      "industries": ["healthcare"]
+    },
+    {
+      "name": "confirmation_channels",
+      "source": "Custom detail",
+      "description": "The channels the agent may offer for a confirmation after the main action succeeded (a booking, an order): whatsapp, email or both. If empty, no confirmation is offered. The platform's After-the-call trigger sends it; the agent only asks, states the channel (and reads an email address back) and says it will arrive shortly. No in-call tool.",
+      "example": "whatsapp, email",
+      "industries": ["healthcare", "pharmacy"],
+      "default": "empty (no confirmation offered)"
+    },
+    {
+      "name": "emergency_department",
+      "source": "Custom detail",
+      "description": "Whether the business has its own emergency department: yes or no. When no, the emergency line says there is no emergency department and tells the caller to call 108 or 112.",
+      "example": "yes",
+      "industries": ["healthcare"],
+      "default": "no"
+    },
+    {
+      "name": "patient_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the patient being called. Used only after the person is confirmed as the patient. Whether the platform passes this is an open question.",
+      "example": "<patient_name>",
+      "industries": ["healthcare"]
+    },
+    {
+      "name": "appointment_details",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound reminder calls: doctor, day and time of the appointment. Said only after the person is confirmed as the patient. Whether the platform passes this is an open question.",
+      "example": "Doctor <doctor_1>, <day>, <time>",
+      "industries": ["healthcare"]
+    }
+  ]
+}
