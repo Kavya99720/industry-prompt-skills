@@ -85,17 +85,20 @@ def industry_row(root, slug):
     industry_dir = root / "industries" / slug
     run = latest_run(industry_dir)
     all_pass = run is not None and run[1]["total"] > 0 and run[1]["failed"] == 0
+    # v1 sign-off: industries/<slug>/v1-signoff.md exists and the newest run is at least 95% passed
+    signed = (industry_dir / "v1-signoff.md").is_file() and run is not None and run[1]["total"] > 0         and 100 * run[1]["passed"] / run[1]["total"] >= 95
     skill = root / ".claude" / "skills" / f"{slug}-prompt-writer" / "SKILL.md"
     if not skill.is_file():
         skill_status = "Todo"
     else:
-        skill_status = "Done" if all_pass else "In progress"
+        skill_status = "Done" if all_pass else ("Done (v1)" if signed else "In progress")
     if run is None:
         last_run, pass_rate = "Todo", "Todo"
     else:
         date, s = run
         last_run = date
-        pass_rate = f"{'Done' if all_pass else 'In progress'} ({s['passed']}/{s['total']})"
+        label = "Done" if all_pass else ("Done (v1)" if signed else "In progress")
+        pass_rate = f"{label} ({s['passed']}/{s['total']})"
     return (
         slug, brief_status(industry_dir), skill_status,
         eval_status(industry_dir), last_run, pass_rate,

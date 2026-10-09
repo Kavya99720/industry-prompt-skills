@@ -169,3 +169,18 @@ def test_newest_run_number_wins_over_older_passing_run(tmp_path):
     make_run_file(ind, "2026-10-08-run1", 10, 10)
     make_run_file(ind, "2026-10-08-run3-quick", 10, 9)
     assert row(root, "pharmacy")[5] == "In progress (9/10)"
+
+
+def test_v1_signoff_shows_done_v1_only_at_95_percent_or_better(tmp_path):
+    root = make_root(tmp_path)
+    d = root / "industries" / "pharmacy"
+    skill = root / ".claude" / "skills" / "pharmacy-prompt-writer"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text("x", encoding="utf-8")
+    make_run(d, "2026-10-09-run6", 65, 64)
+    assert row(root, "pharmacy")[2] == "In progress"
+    (d / "v1-signoff.md").write_text("signed off", encoding="utf-8")
+    r = row(root, "pharmacy")
+    assert r[2] == "Done (v1)" and r[5] == "Done (v1) (64/65)"
+    make_run(d, "2026-10-09-run7", 65, 60)
+    assert row(root, "pharmacy")[2] == "In progress"
