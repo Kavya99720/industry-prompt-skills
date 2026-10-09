@@ -272,7 +272,7 @@ def lint_root(tmp_path):
 
 def test_profile_facts_reads_direction_workflows_and_upload_method():
     facts = run_evals.profile_facts(FIXED_PROFILE)
-    assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store"}
+    assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store", "confirmation": False}
 
 
 def test_fixed_line_lint_reports_a_missing_line(tmp_path):
@@ -484,3 +484,23 @@ def test_resume_ignores_a_judgment_made_for_other_cases(repo):
     again = FakeLlm()
     _resume(repo, again, extra=["--cases", "E05"])
     assert [c for c in again.calls if c[0] == "eval-judge"]
+
+
+def test_confirmation_lines_are_required_only_when_a_channel_is_set(tmp_path):
+    root = lint_root(tmp_path)
+    core = root / "industries" / "demo" / "core.md"
+    core.write_text(core.read_text(encoding="utf-8")
+                    + '\n| R-76 | Flow, only channels in {{var.confirmation_channels}}: ask once, say exactly "Would you like a confirmation?" |\n',
+                    encoding="utf-8")
+    text = GOOD + OOS
+    assert run_evals.lint_fixed_and_config("demo", text, FIXED_PROFILE, root) == []
+    enabled = FIXED_PROFILE + "\n- The hospital wants it (`{{var.confirmation_channels}}` = whatsapp, email).\n"
+    problems = run_evals.lint_fixed_and_config("demo", text, enabled, root)
+    assert len(problems) == 1 and "Would you like a confirmation?" in problems[0]
+    assert run_evals.profile_facts(enabled)["confirmation"] is True
+
+
+def test_outbound_only_workflows_depend_on_the_industry():
+    assert run_evals.OUTBOUND_ONLY_WORKFLOWS["pharmacy"] == ("03",)
+    assert run_evals.OUTBOUND_ONLY_WORKFLOWS["healthcare"] == ("04",)
+

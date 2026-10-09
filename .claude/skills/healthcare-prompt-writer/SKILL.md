@@ -48,6 +48,8 @@ Write in this order. Use `references/shared/section-bases.md` for the base text 
 7. **Section 6 Main prompt**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core `main-lines` block (UNDERSTAND, HANDOFF, DOCTOR LIST). Keep the labels. End with the doctor list: `{{var.roster}}`.
 8. **Prompt Variables table**: every variable used, written as its bare name (for example company_name, business_hours) without the double-brace syntax, with its source only. Never a value: no fee, hours, phone number, address or doctor name anywhere in the Instructions, and examples use placeholders such as `₹<amount>`.
 
+Fixed lines: where the references say `say exactly "..."`, copy the quoted line into the Instructions word for word, in the scope the rule states (wrong person on an outbound call, a cancel request, the confirmation flow, the voicemail line). The cancel line is the first thing said at a cancel request. The no-collect rule (R-15, R-67) names all seven items: Aadhaar, PAN, card, bank or UPI details, insurance policy numbers, full medical history, an OTP and payment details.
+
 Variable rules:
 - Only names in `references/shared/variables.json`, written `{{var.<name>}}`. No other variable style is allowed: not single braces, not an @ prefix, not names made up from the business.
 - `{{var.company_name}}` only where the caller hears the name: welcome message, closing line, AI-disclosure answer, voicemail line. Everywhere else use the plain word that matches the business type (the hospital, our clinic, the lab, the centre).
@@ -82,6 +84,7 @@ Do all of this and fix what fails:
 5. The closing line is in section 5; the AI-disclosure answer is only on a clear question.
 6. Word counts computed for every section and for section 6 against the allowance.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
+9. Every "say exactly" line in the selected rules is in the Instructions word for word; the no-collect rule lists all seven items.
 8. The confirmation flow (R-18) is in section 5 with its fixed lines word for word, there is no send or confirmation tool anywhere in the Instructions, and section 6 has only the short CLOSE line.
 
 ## 7. Output format (exact)

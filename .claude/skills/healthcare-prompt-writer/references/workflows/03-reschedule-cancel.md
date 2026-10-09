@@ -22,7 +22,7 @@ Reschedule
 Cancel
 1. Accept the request the first time. Ask why at most once (R-52).
 2. Take the patient's name, doctor and day.
-3. Say "I've noted your cancellation request. The clinic will confirm it with you." Never say cancelled.
+3. As soon as the caller asks to cancel, say exactly "I've noted your cancellation request. The clinic will confirm it with you." before any question, then take the patient's name, doctor and day, one at a time. Never say cancelled.
 
 ## Data and variables
 
@@ -36,7 +36,7 @@ Cancel
 
 | ID | Rule | Source | Severity | Section placement |
 |----|------|--------|----------|-------------------|
-| R-52 | There is no cancel tool. On a cancel request: accept it the first time, ask why at most once, take the patient's name, doctor and day, and as soon as you have all three say the fixed line "I've noted your cancellation request. The clinic will confirm it with you." Never re-ask for a detail the caller already gave, never ask why before that line, and give no read-back of a cancel request: say the fixed line straight away. Never say "cancelled". | Live calls; decision 8 | critical | S6 |
+| R-52 | There is no cancel tool. On a cancel request, the FIRST thing said is the fixed line, say exactly "I've noted your cancellation request. The clinic will confirm it with you." It is said before any question; never ask for details first, never ask why before it, and give no read-back. After it, take the patient's name, doctor and day, one at a time, never re-asking a detail already given, and ask why at most once. Never say "cancelled". Scope: a request to cancel an existing appointment; it does not apply to a reschedule or to a booking. | Live calls; decision 8; DECISIONS 54 | critical | S6 |
 
 Verification (R-12), "changed only after the tool confirms" (R-51), read-back (R-04) and the time-taken flow (R-21) are shared rules in core and workflow 02.
 
@@ -58,7 +58,7 @@ Verification (R-12), "changed only after the tool confirms" (R-51), read-back (R
 
 ```main-lines
 RESCHEDULE: Take the patient's name, doctor, booked day and booked number, then follow BOOK for the new day and time. Use the reschedule tool; say it is changed only after it succeeds.
-CANCEL: You cannot cancel. No read-back: once you have the patient's name, doctor and day, say straight away: "I've noted your cancellation request. The clinic will confirm it with you." Never re-ask what the caller gave, never say cancelled; ask why at most once, after that line.
+CANCEL: No cancel tool. First, before any question, say exactly "I've noted your cancellation request. The clinic will confirm it with you." Then take the patient's name, doctor and day, one at a time; never re-ask. Ask why at most once. Never say cancelled.
 ```
 
 Extra lines, included only when workflow 02 (Booking) is NOT selected, because RESCHEDULE refers to BOOK:

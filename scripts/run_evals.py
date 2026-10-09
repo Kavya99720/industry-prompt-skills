@@ -191,7 +191,9 @@ def profile_facts(profile_text):
     numbers = sorted(set(re.findall(r"\b0[1-8]\b", chosen)))
     u = re.search(r"\|\s*Prescription upload\s*\|\s*(\w+)", profile_text)
     method = u.group(1).lower() if u and u.group(1).lower() in ("whatsapp", "email", "in_store") else "not set"
-    return {"direction": direction, "workflows": numbers, "upload": method}
+    confirmation = bool(re.search(r"confirmation_channels\W{0,6}=\s*(whatsapp|email)", profile_text, re.I)
+                        or re.search(r"\|\s*Confirmation channels\s*\|\s*(whatsapp|email)", profile_text, re.I))
+    return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation}
 
 
 VARIABLE_LABELS = {
@@ -263,24 +265,31 @@ def strip_before_welcome(instructions, welcome, window=6):
     return instructions, []
 
 
+# Workflows that hold outbound-only fixed lines (stop-calling, voicemail, wrong person); they count for outbound profiles only.
+OUTBOUND_ONLY_WORKFLOWS = {"pharmacy": ("03",), "healthcare": ("04",)}
+
+
 def fixed_lines(industry, facts, root=ROOT):
     """The quoted lines the sources mark 'say exactly' for this profile, plus the welcome for its direction.
-    Workflow 03 holds only outbound fixed lines (stop-calling, voicemail), so it counts for outbound profiles only."""
+    A rule row that mentions confirmation_channels (the confirmation flow) counts only when the profile sets a channel."""
     d = Path(root) / "industries" / industry
     files = [d / "core.md"]
     for n in facts["workflows"]:
-        if n == "03" and facts["direction"] != "outbound":
+        if n in OUTBOUND_ONLY_WORKFLOWS.get(industry, ()) and facts["direction"] != "outbound":
             continue
         files += sorted((d / "workflows").glob(f"{n}-*.md"))
     lines = []
     for f in files:
         if not f.is_file():
             continue
-        for q in SAY_EXACTLY.findall(f.read_text(encoding="utf-8")):
-            if q.strip() == "X":
-                continue  # the format example in R-71, not a real line
-            if _norm(q) not in [_norm(x[1]) for x in lines]:
-                lines.append((f.name, q))
+        for row in f.read_text(encoding="utf-8").splitlines():
+            if "confirmation_channels" in row and not facts.get("confirmation"):
+                continue
+            for q in SAY_EXACTLY.findall(row):
+                if q.strip() == "X":
+                    continue  # the format example in R-71, not a real line
+                if _norm(q) not in [_norm(x[1]) for x in lines]:
+                    lines.append((f.name, q))
     bases = d / "section-bases.md"
     if bases.is_file():
         for kind, q in WELCOME_LINE.findall(bases.read_text(encoding="utf-8")):
