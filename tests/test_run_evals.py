@@ -504,3 +504,14 @@ def test_outbound_only_workflows_depend_on_the_industry():
     assert run_evals.OUTBOUND_ONLY_WORKFLOWS["pharmacy"] == ("03",)
     assert run_evals.OUTBOUND_ONLY_WORKFLOWS["healthcare"] == ("04",)
 
+
+def test_network_drop_waits_60_seconds_and_retries(monkeypatch):
+    waits, calls = [], []
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        return _R(1, err="API Error: Can't reach the API server, check your internet or DNS (ENOTFOUND)") if len(calls) < 3 else _R(0, "ok")
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
+    assert run_evals.ClaudeCli("claude").run("hi") == "ok" and waits == [60, 60]
+

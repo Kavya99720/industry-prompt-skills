@@ -52,7 +52,7 @@ MAX_PARALLEL = 4  # never more than 4 claude processes at once
 WORKERS = min(MAX_PARALLEL, int(os.environ.get("RUN_EVALS_WORKERS", str(MAX_PARALLEL))))
 AUTH_RETRIES = int(os.environ.get("RUN_EVALS_AUTH_RETRIES", "3"))
 AUTH_WAIT = int(os.environ.get("RUN_EVALS_AUTH_WAIT", "60"))
-AUTH_ERROR = re.compile(r"oauth|authenticat|unauthori[sz]ed|\b401\b|token.{0,20}(expired|refresh|invalid)|please run /login|invalid.{0,20}credential", re.I)
+AUTH_ERROR = re.compile(r"oauth|authenticat|unauthori[sz]ed|\b401\b|token.{0,20}(expired|refresh|invalid)|please run /login|invalid.{0,20}credential|ENOTFOUND|EAI_AGAIN|ECONNRESET|ETIMEDOUT|can.t reach the API server|check your internet", re.I)
 NOTES_MARKER = "=== DRAFT NOTES ==="
 INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
 COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
@@ -118,7 +118,7 @@ class ClaudeCli:
                 return result.stdout.strip()
             message = (result.stderr or "") + " " + (result.stdout or "")
             if AUTH_ERROR.search(message) and auth_tries < AUTH_RETRIES:
-                auth_tries += 1  # an OAuth refresh problem: wait a minute, then try again
+                auth_tries += 1  # an OAuth refresh problem or a network drop: wait a minute, then try again
                 time.sleep(AUTH_WAIT)
                 continue
             if attempt < RETRIES:
