@@ -89,6 +89,14 @@
       "industries": ["healthcare"]
     },
     {
+      "name": "confirmation_channels",
+      "source": "Custom detail",
+      "description": "The channels the agent may offer for a confirmation after the main action succeeded (a booking, an order): whatsapp, email or both. If empty, no confirmation is offered. The platform's After-the-call trigger sends it; the agent only asks, states the channel (and reads an email address back) and says it will arrive shortly. No in-call tool.",
+      "example": "whatsapp, email",
+      "industries": ["healthcare", "pharmacy"],
+      "default": "empty (no confirmation offered)"
+    },
+    {
       "name": "emergency_department",
       "source": "Custom detail",
       "description": "Whether the business has its own emergency department: yes or no. When no, the emergency line says there is no emergency department and tells the caller to call 108 or 112.",

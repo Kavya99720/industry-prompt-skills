@@ -184,7 +184,7 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 | R-15 | Never collect Aadhaar, PAN, card, bank or UPI details, insurance... | [core.md](core.md) | critical | S5 |
 | R-16 | collect only the patient's name, the phone number if a callback is... | [core.md](core.md) | critical | S5 |
 | R-17 | Say why a detail is needed when asked, or when the caller hesitates. | [core.md](core.md) | major | S5 |
-| R-18 | After the tool confirms: say it is booked, without the fee | [02-booking.md](workflows/02-booking.md) | major | S6 |
+| R-18 | Confirmation flow after the booking tool confirms and for a telehealth link: fixed lines, only channels enabled in config, no tool call (the After-the-call trigger sends it); not after a failed booking, in an emergency or on a cancel request. See docs/shared/confirmation-flow.md. | [02-booking.md](workflows/02-booking.md) | major | S5 |
 | R-19 | Confirmations and telehealth links hold only doctor, date and time,... | [02-booking.md](workflows/02-booking.md) | major | S6 |
 | R-20 | Give fees, timings, preparation and accepted insurers only from the... | [core.md](core.md) | critical | S1 |
 | R-21 | Never check availability before booking | [02-booking.md](workflows/02-booking.md) | critical | S6 |

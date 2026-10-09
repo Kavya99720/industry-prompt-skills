@@ -22,7 +22,7 @@ Synthetic business. Rules: industries/healthcare/core.md and workflows 01, 02, 0
 ## Client requirements
 
 - Callers may book any roster doctor with status Available.
-- The hospital wants the confirmation by WhatsApp or email.
+- The hospital wants the confirmation by WhatsApp or email (`{{var.confirmation_channels}}` = whatsapp, email), sent by the After-the-call trigger, not by a tool.
 - No special client rules.
 
 ## Tricky callers

@@ -44,7 +44,7 @@ Write in this order. Use `references/shared/section-bases.md` for the base text 
 3. **Section 2 Date & Time**: base + placement S2 lines.
 4. **Section 3 Language Switching**: base + placement S3 lines.
 5. **Section 4 Tone and Conversational Style**: skeleton + placement S4 lines.
-6. **Section 5 Output Format**: base + placement S5 lines (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms).
+6. **Section 5 Output Format**: base + placement S5 lines (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms) and the confirmation flow (R-18) word for word with its fixed lines, in its scope only: once after the booking tool confirms, and a telehealth link; never after a failed booking, in an emergency or for a cancel request. It has no tool call: the platform's After-the-call trigger sends the message, so the agent states the channel and reads an email back aloud. Offer only the channels in `{{var.confirmation_channels}}`; if it is not set, skip the flow. Never use the phrase "calling from" in inbound Instructions.
 7. **Section 6 Main prompt**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core `main-lines` block (UNDERSTAND, HANDOFF, DOCTOR LIST). Keep the labels. End with the doctor list: `{{var.roster}}`.
 8. **Prompt Variables table**: every variable used, written as its bare name (for example company_name, business_hours) without the double-brace syntax, with its source only. Never a value: no fee, hours, phone number, address or doctor name anywhere in the Instructions, and examples use placeholders such as `₹<amount>`.
 
@@ -52,7 +52,7 @@ Variable rules:
 - Only names in `references/shared/variables.json`, written `{{var.<name>}}`. No other variable style is allowed: not single braces, not an @ prefix, not names made up from the business.
 - `{{var.company_name}}` only where the caller hears the name: welcome message, closing line, AI-disclosure answer, voicemail line. Everywhere else use the plain word that matches the business type (the hospital, our clinic, the lab, the centre).
 - Doctors, fees and timings only through `{{var.roster}}`. Business facts (beds, years, services) only through `{{var.business_info}}`. Hours, phone and address only through their variables, and only where the value is spoken or needed.
-- Custom details you rely on: `{{var.emergency_signs_extra}}`, `{{var.minors_may_book_alone}}`, `{{var.business_info}}`, `{{var.emergency_department}}`, and for outbound `{{var.patient_name}}` and `{{var.appointment_details}}`.
+- Custom details you rely on: `{{var.confirmation_channels}}`, `{{var.emergency_signs_extra}}`, `{{var.minors_may_book_alone}}`, `{{var.business_info}}`, `{{var.emergency_department}}`, and for outbound `{{var.patient_name}}` and `{{var.appointment_details}}`.
 
 Emergency (core R-09): the compact default list is always written in section 1. The client may only ADD signs, through `{{var.emergency_signs_extra}}`; never remove any. With `{{var.emergency_department}}` = no (or not given), the line is adapted: there is no emergency department here, call 1 0 8 or 1 1 2, or go to the nearest hospital.
 
@@ -82,6 +82,7 @@ Do all of this and fix what fails:
 5. The closing line is in section 5; the AI-disclosure answer is only on a clear question.
 6. Word counts computed for every section and for section 6 against the allowance.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
+8. The confirmation flow (R-18) is in section 5 with its fixed lines word for word, there is no send or confirmation tool anywhere in the Instructions, and section 6 has only the short CLOSE line.
 
 ## 7. Output format (exact)
 

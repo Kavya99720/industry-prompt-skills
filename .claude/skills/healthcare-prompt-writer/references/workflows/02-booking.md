@@ -22,7 +22,7 @@ Core rules (industries/healthcare/core.md) apply on top of everything here.
 7. Read back doctor, day, date, time and patient name once, without saying "booked". Ask "Shall I book it?" (R-04). A "yes, but..." is not a yes (R-49).
 8. On yes, say "Booking it now, please stay on the line." and call the booking tool.
 9. Tool confirms: say it is booked, without the fee. Time taken: R-21. Tool fails: R-22.
-10. Confirmation by WhatsApp or email (R-18), then "Anything else?".
+10. Confirmation flow (R-18): offered once, with no tool call; the After-the-call trigger sends it.
 
 ## Data and variables
 
@@ -30,7 +30,7 @@ Core rules (industries/healthcare/core.md) apply on top of everything here.
 
 ## Tools
 
-`booking` (time in 24-hour format), `change_language`, WhatsApp or email send, `transfer`, `end_call`. There is no availability check and no lookup.
+`booking` (time in 24-hour format), `change_language`, `transfer`, `end_call`. No send tool: confirmations are sent by the After-the-call trigger. There is no availability check and no lookup.
 
 ## Rules owned by this workflow
 
@@ -38,7 +38,7 @@ Core rules (industries/healthcare/core.md) apply on top of everything here.
 |----|------|--------|----------|-------------------|
 | R-02 | **Partly baseline B-03.** Ask in order: doctor, day, time, whether it is for them or someone else, then the patient's name. One question per turn. If several details come at once, accept them and ask only for what is missing. | Brainstorm | major | S6 |
 | R-04 | **Baseline B-05.** Before booking, read back doctor, day, date, time and patient name once without saying "booked", ask "Shall I book it?", and book only after a clear yes. | Brainstorm | critical | S6 |
-| R-18 | After the tool confirms: say it is booked, without the fee. Ask "WhatsApp or email for the confirmation?" WhatsApp: ask "Is the number you're calling from on WhatsApp?" and never say that number aloud; if not, take another number and read it back. Email: take the address and read it back. Then say it will arrive shortly, send it with the tool without waiting, and ask "Anything else?". Collected only for sending the confirmation. | Entry 2; live calls | major | S6 |
+| R-18 | **Confirmation flow** (docs/shared/confirmation-flow.md). Scope: it applies once, right after the `booking` tool confirms, and to a telehealth link (R-19). It does NOT apply when the booking failed (R-22), in an emergency (R-09), on a handoff, on a voicemail, for a cancel request (R-52, no tool), or when the caller is done. Only channels enabled in `{{var.confirmation_channels}}` (whatsapp, email) are offered (with one enabled, name only that one); if it is not set, skip the flow. There is NO tool call: the platform's After-the-call trigger sends the message after the call ends, so the agent must make the chosen channel (and the email address) clear in the conversation. a. Ask once, say exactly "Would you like a confirmation on WhatsApp or email?" b. WhatsApp: say exactly "Is this number on WhatsApp?" Yes: say exactly "You will get a confirmation on WhatsApp shortly." No: offer email instead. Never read the number aloud. c. Email: say exactly "Please tell me your email address." Read it back once, spelled out, with "at" and "dot", and get a yes; then say exactly "You will get a confirmation on email shortly." d. If the caller does not want one: do not ask again; say exactly "Is there anything else I can help with?" Never say a message has been sent, only that they will get it shortly. Confirmations carry no fee and no clinical detail. Never use the phrase "calling from" in inbound Instructions. | Entry 2; live calls; DECISIONS 53 | major | S5 |
 | R-19 | Confirmations and telehealth links hold only doctor, date and time, with no clinical details. A video link goes through the chosen channel with the same rules as in person. | Entry 2 | major | S6 |
 | R-21 | Updated (decision 4; **baseline B-11**). Never check availability before booking. Any time inside the doctor's timings can be requested, so say only that doctor's from and to time for that day and ask what time suits. No slot lists. If the booking tool says the time is taken: say that time is not available, repeat the doctor's timing range for that day from the roster, and ask for another time. Example: "Sorry, 3 PM is not available. Doctor `<name>` is available from `<start>` to `<end>`. What other time suits you?" NEVER offer or list specific alternative times. In an Indian language the timings are spoken as words with no AM or PM (R-55). Never say a time is unavailable unless the tool said so. | Live calls (listing times like 2:10, 2:20 confused callers); decision 4 | critical | S6 |
 | R-22 | **Baseline B-19.** Updated (decision 10): if booking fails, errors or times out, apologise and say reception will call to confirm. Never say it is booked. There is no logging tool and no retry in this flow. | Live calls; decision 10 | major | S5 |
@@ -62,8 +62,8 @@ Core rules (industries/healthcare/core.md) apply on top of everything here.
 | S-07 | Family member books, or a minor | Book for the named patient. Under 18 goes through a parent or guardian (S-61 in core for a minor alone) | S6 |
 | S-17 | Booking system down | Say so honestly, never say booked (R-22, S-62) | S5 |
 | S-18 | Caller changes their mind at "Shall I book it?" | Update only that detail and read back everything again (R-26) | S6 |
-| S-19 | Confirmation channel | WhatsApp or email per R-18; no confirmation received: send it again the same way | S6 |
-| S-32 | Telehealth link | Sent through the chosen confirmation channel, same rules (R-19) | S6 |
+| S-19 | Confirmation channel | The confirmation flow of R-18 (no tool; the After-the-call trigger sends it). The caller declines: accepted, not asked again | S5 |
+| S-32 | Telehealth link | Same flow as the confirmation, with "link" in place of "confirmation" (R-19, R-18); no tool | S5 |
 | S-35 | Ambiguous or invalid time: "evening", a past time, a closed day | Ask for an exact valid time; apply R-57 and R-59 | S2 |
 | S-37 | Many requests or patients in one message | One at a time, confirm each separately | S5 |
 | S-41 | Follow-up or review visit | Treat as a booking; any review-fee or validity rule comes only from the roster or `{{var.business_info}}` | S6 |
@@ -101,5 +101,5 @@ S-79 (walk-in or token clinic, timed request) is in workflow 01; R-78 here appli
 BOOK: Only the named doctor; if the name was unclear, confirm the part heard, never guess a surname. Ask the day first, then say only that doctor's from and to time that day and ask what time suits. No slot lists; never check availability first. Doctor not sitting that day: say so and ask which day suits. On leave or on call: offer a callback; name same-specialty doctors only if asked; never book. Ask if it is for them or someone else, then the patient's name. Read back doctor, day, date, time and name once, without saying booked: "Shall I book it?" On yes, say "Booking it now, please stay on the line." and use the booking tool.
 TAKEN: If the tool says the time is taken, say "Sorry, that time is not available. Doctor <name> is available from <start> to <end>. What other time suits you?" Never offer specific times.
 FAIL: If booking fails, apologise and say reception will call to confirm. Never say booked.
-CLOSE: When the tool confirms, say it is booked (no fee). Ask "WhatsApp or email for the confirmation?" WhatsApp: ask "Is the number you're calling from on WhatsApp?"; never say it aloud. Email: take it and read it back. Say it will arrive shortly, send without waiting, then ask "Anything else?"
+CLOSE: When the tool confirms, say it is booked (no fee). Then offer the confirmation as section 5 says.
 ```

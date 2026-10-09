@@ -58,7 +58,7 @@ INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
 COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
 # Platform tools per industry; an industry not listed gets only the common ones. Keep in step with each core.md tool table.
 INDUSTRY_TOOLS = {
-    "healthcare": ("booking", "reschedule") + COMMON_TOOLS,
+    "healthcare": ("booking", "reschedule", "change_language", "transfer", "end_call"),
     "pharmacy": ("check_stock", "place_order", "change_language", "transfer", "end_call"),
 }
 TOOLS_NOTE_TEMPLATE = (
