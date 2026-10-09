@@ -1,0 +1,5 @@
+[
+  "line 67: WARN {{var.company_name}} used outside a welcome, closing or AI-disclosure line",
+  "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\"",
+  "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+]

@@ -1,0 +1,67 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E22",
+    "BNK-E23",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Stop sentence present verbatim and code never repeated or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "No-collect list and stop sentence present verbatim in Section 5"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "All outbound fixed lines and banned-word list present verbatim"
+    },
+    {
+      "case_id": "BNK-E22",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "fail",
+      "reason": "Required callback sentence altered with trailing clause instead of exact wording with full stop"
+    },
+    {
+      "case_id": "BNK-E23",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Helpline sentence exact and single required question asked, no premature block"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "States AI assistant status without claiming human or deflecting"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "No hard-coded business values; only allowed variables used; company_name placement compliant"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim; fixed-line format used"
+    }
+  ],
+  "lint": [
+    "line 73: WARN {{var.company_name}} used outside a welcome, closing or AI-disclosure line",
+    "warning: text outside the markers (ignored): This looks right and 817 words is plausible for 18 dense lin",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\""
+  ]
+}

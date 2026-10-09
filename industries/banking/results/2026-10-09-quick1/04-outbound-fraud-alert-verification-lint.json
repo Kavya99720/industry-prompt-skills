@@ -1,0 +1,5 @@
+[
+  "line 73: WARN {{var.company_name}} used outside a welcome, closing or AI-disclosure line",
+  "warning: text outside the markers (ignored): This looks right and 817 words is plausible for 18 dense lin",
+  "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\""
+]
