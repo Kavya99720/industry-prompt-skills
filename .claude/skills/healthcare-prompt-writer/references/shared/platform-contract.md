@@ -122,3 +122,7 @@ Still open after the 2026-10-08 decisions. Grouped by who can answer. Resolved o
 15. **Do-not-call.** Is there a do-not-call tool? Until then the agent never says a stop-calling request is done (R-62).
 16. **Outbound AI disclosure.** Must outbound refill reminders say "an AI assistant" up front? Default: follow the client's welcome template and answer honestly if asked (R-06).
 17. **Skill configuration.** Should the skill also write the After-the-call trigger's configuration (what to send, to which channel), not only the Instructions?
+
+**Banking (added 2026-10-09)**
+18. **Which banking tools exist?** A card-block tool (`card_block_tool`), a balance and transactions lookup (`balance_lookup_tool`), caller verification against records (name, registered mobile, last 4 digits), KYC status. v1 assumes none: both tools default off, no account data is shared, and card blocking goes to the fraud desk.
+19. **Legal references.** RBI rules, grievance timelines, banking ombudsman wording and KYC norms: for an industry expert. Prompts quote no timeline unless the client configures it.

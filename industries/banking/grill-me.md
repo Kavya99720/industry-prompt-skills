@@ -1,6 +1,6 @@
 # Banking grill-me
 
-Date: 2026-10-09. Interview: 17 questions asked one at a time in the main chat (16 answered, 1 skipped). Every answer below was chosen by the owner; "recommended" means the owner picked the option the interviewer suggested. Nothing here is a design: the brief, evals and skill are not started.
+Date: 2026-10-09. Interview: 17 questions asked one at a time in the main chat (16 answered, 1 skipped; rows 16, 18 and 19 were settled by the owner afterwards). Every answer below was chosen by the owner; "recommended" means the owner picked the option the interviewer suggested. Nothing here is a design: the brief, evals and skill are not started.
 
 References used: docs/DECISIONS.md entry 3 (Banking = accounts, cards, KYC, transactions and fraud; loans, EMIs, NBFC, insurance, investments and collections belong to Finance), the healthcare and pharmacy decisions (entries 4 to 56), docs/shared/new-industry-template/ and docs/shared/prompting-guide.md.
 
@@ -23,13 +23,14 @@ References used: docs/DECISIONS.md entry 3 (Banking = accounts, cards, KYC, tran
 | 13 | Money movement and account changes by voice | Never; direct to the app or branch (recommended): no transfers, payments, limit changes or profile changes (mobile, address, nominee) by voice. Only a card block is allowed (Q6) |
 | 14 | Human escalation | Fraud team for fraud and card block, grievance team for complaints, branch staff for the rest, with the team phrase "I'll connect you to our team." for staff handoffs; with no target or nobody free, take a callback number and time. The helpline 1 9 3 0 is given even if nobody is available (recommended) |
 | 15 | Out-of-scope requests and advice | Redirect, never advise (recommended): loans, EMIs, insurance and investments belong to Finance; offer a transfer to staff or a callback; no product advice, no invented rates or offers, no sales push on a fraud or complaint call |
-| 16 | Platform tools | **Skipped by the owner.** Recorded as unspecified. Safe default used until answered: only the confirmed platform tools (change_language, transfer, end_call); a card-block tool, an account or balance lookup, KYC status and verification against records are questions for lead. Until confirmed the agent shares no account data and cannot block a card itself (it hands the block to the fraud desk). Confirmations and links go through the After-the-call trigger, no tool |
+| 16 | Platform tools | **Updated by the owner (2026-10-09, after the interview).** v1 assumes only change_language, transfer and end_call. Card block and balance lookup are OPTIONAL config tools, `card_block_tool` and `balance_lookup_tool`, default OFF. When off: no account data is shared, and card blocking goes to the fraud desk. "Which banking tools exist" is a question for lead (docs/shared/platform-contract.md). Confirmations and links go through the After-the-call trigger, no tool |
 | 17 | Client special requests | Refuse unsafe, adapt safe (recommended): refuse anything that removes a safety rule (never-ask list, verification, fraud response, no money movement) or misleads callers; adapt where safe (an offer at most once, never on a fraud or complaint call); list every refused or adapted request in the draft notes with a reason |
+| 18 | Languages and channel | **Added by the owner (2026-10-09).** Same as healthcare and pharmacy: start in `{{var.default_language}}`; switch automatically with change_language when the caller speaks another supported Indian language (shared section 3). Voice first; chat is an open question |
+| 19 | Legal references | **Added by the owner (2026-10-09).** RBI rules and grievance timelines are an open question for an industry expert; prompts must not quote specific timelines unless they are configured by the client |
 
 ## Not asked (unspecified, defaults to confirm at the brief)
 
-- **Channel and languages:** not asked. Default: voice first (chat as an open item), the 11 platform languages as in the other industries.
-- **Business hours, grievance timelines, transfer numbers:** come from client config; no values chosen here.
+- **Business hours, grievance contacts, transfer numbers:** come from client config; no values chosen here.
 - **Outbound details:** wrong person answers, voicemail and stop-calling lines follow the template defaults; whether the platform passes the customer's name and the reason for an outbound call is a question for lead.
-- **Legal references** (RBI rules, grievance timelines, banking ombudsman, KYC norms, the exact cybercrime helpline wording) are to be confirmed by an industry expert; none is typed into prompts from memory.
+- **Legal references:** see row 19. No timeline, rule number or helpline wording is typed into prompts from memory except the cybercrime helpline 1 9 3 0 the owner named.
 - **Emergencies:** a medical emergency on a banking call follows the template default (stop, 1 0 8 or 1 1 2, transfer); no medical advice.
