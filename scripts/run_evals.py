@@ -145,22 +145,29 @@ def visible_profile(text):
     return text[:cut].rstrip() + "\n"
 
 
+NOTES_RE = re.compile(r"^[ \t]*" + re.escape(NOTES_MARKER) + r"[ \t]*$", re.M)
+INSTRUCTIONS_RE = re.compile(r"^[ \t]*" + re.escape(INSTRUCTIONS_MARKER) + r"[ \t]*$", re.M)
+
+
 def split_output(text):
-    """Split the skill's full output into (instructions, draft_notes) at the marker line."""
-    head, sep, tail = text.partition(NOTES_MARKER)
-    return head.strip(), (tail.strip() if sep else "")
+    """Split the skill's full output into (instructions, draft_notes) at the notes marker.
+    The marker counts only when it is alone on its own line, so a preamble that mentions it cannot split the text."""
+    m = NOTES_RE.search(text)
+    if not m:
+        return text.strip(), ""
+    return text[:m.start()].strip(), text[m.end():].strip()
 
 
 def split_marked(text):
     """Split the full output using both markers. Returns (instructions, draft_notes, outside_lines).
-    With an INSTRUCTIONS marker, the Instructions are only what sits between the two markers and any text before
-    the marker is returned as outside text. Without it, this is split_output and nothing counts as outside."""
-    if INSTRUCTIONS_MARKER not in text:
+    With an INSTRUCTIONS marker (alone on its line), the Instructions are only what sits between the two markers and any
+    text before the marker is returned as outside text. Without it, this is split_output and nothing counts as outside."""
+    m = INSTRUCTIONS_RE.search(text)
+    if not m:
         instructions, notes = split_output(text)
         return instructions, notes, []
-    before, _, rest = text.partition(INSTRUCTIONS_MARKER)
-    instructions, notes = split_output(rest)
-    return instructions, notes, [l.strip() for l in before.splitlines() if l.strip()]
+    instructions, notes = split_output(text[m.end():])
+    return instructions, notes, [l.strip() for l in text[:m.start()].splitlines() if l.strip()]
 
 
 def case_selected(case_id, wanted):
@@ -397,7 +404,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
     out_dir = d / "results"
     work = out_dir / date
     work.mkdir(parents=True, exist_ok=True)
-    rows, lint = [], {}
+    rows, lint, harness_errors = [], {}, []
     for pf in profile_files(d):
         if profiles and pf.stem.split("-")[0] not in profiles:
             continue
@@ -441,6 +448,13 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                 f"Do not open eval.json files or results folders.\n\n"
                 + visible_profile(profile_text))
             instructions, notes, outside = split_marked(full)
+            if not instructions.strip():
+                message = (f"harness error: {name}: the Instructions part is empty after splitting the skill output "
+                           f"(not a skill failure); profile stopped, nothing judged")
+                print(message, file=out)
+                harness_errors.append(message)
+                (work / f"{name}-raw-output.md").write_text(full, encoding="utf-8")
+                continue
             warnings = []
             if outside:
                 warnings.append("warning: text outside the markers (ignored): " + " / ".join(o[:60] for o in outside))
@@ -481,7 +495,8 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
     passed = sum(r["result"] == "pass" for r in rows)
     summary = {"industry": industry, "date": date, "total": len(rows), "passed": passed,
                "failed": len(rows) - passed,
-               "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0}
+               "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0,
+               "harness_errors": harness_errors}
     (out_dir / f"{date}.json").write_text(
         json.dumps({"summary": summary, "lint": lint, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
     return summary, rows
@@ -519,6 +534,9 @@ def main(argv=None, llm=None, root=ROOT, out=sys.stdout):
         failing += [(ind, r) for r in rows if r["result"] == "fail"]
         if summary["failed"]:
             code = 1
+        if summary.get("harness_errors"):
+            code = 2
+            table[-1] = (table[-1][0], table[-1][1], table[-1][2] + f"  [{len(summary['harness_errors'])} harness error(s), see above]")
     print(f"{'industry':<13}{'result':<18}detail", file=out)
     for ind, res, detail in table:
         print(f"{ind:<13}{res:<18}{detail}", file=out)

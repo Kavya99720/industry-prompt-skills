@@ -515,3 +515,34 @@ def test_network_drop_waits_60_seconds_and_retries(monkeypatch):
     monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
     assert run_evals.ClaudeCli("claude").run("hi") == "ok" and waits == [60, 60]
 
+
+
+def test_markers_count_only_when_alone_on_their_own_line():
+    text = ("I will separate the parts with === DRAFT NOTES === and start with === INSTRUCTIONS === below.\n"
+            "=== INSTRUCTIONS ===\nWelcome\n## 1\n=== DRAFT NOTES ===\nnotes\n")
+    instructions, notes, outside = run_evals.split_marked(text)
+    assert instructions == "Welcome\n## 1" and notes == "notes" and len(outside) == 1 and "separate the parts" in outside[0]
+    # without an INSTRUCTIONS marker, a mention inside a sentence does not split the text either
+    text2 = "Plan: put === DRAFT NOTES === after the Instructions.\nWelcome\n## 1\n=== DRAFT NOTES ===\nnotes\n"
+    instructions2, notes2 = run_evals.split_output(text2)
+    assert instructions2.startswith("Plan:") and instructions2.endswith("## 1") and notes2 == "notes"
+    assert run_evals.split_output("only a mention === DRAFT NOTES === here") == ("only a mention === DRAFT NOTES === here", "")
+
+
+def test_empty_instructions_are_a_harness_error_and_stop_that_profile(repo):
+    class Llm(FakeLlm):
+        def run(self, prompt, system=None, agent=None, tools=None):
+            if agent is None and system is None:
+                self.calls.append((agent, system, prompt))
+                if "P1" in prompt:
+                    return "=== INSTRUCTIONS ===\n\n=== DRAFT NOTES ===\nnotes only"
+                return "=== INSTRUCTIONS ===\nbody\n=== DRAFT NOTES ===\nnotes"
+            return super().run(prompt, system=system, agent=agent, tools=tools)
+    llm = Llm()
+    code, out = run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], llm)
+    assert code == 2 and "harness error: 01-a" in out
+    judged = [c for c in llm.calls if c[0] == "eval-judge"]
+    assert len(judged) == 1 and "02-b" in judged[0][2]
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert len(saved["summary"]["harness_errors"]) == 1 and {r["profile"] for r in saved["results"]} == {"02-b"}
+    assert (repo / "industries/healthcare/results/2026-10-08/01-a-raw-output.md").is_file()

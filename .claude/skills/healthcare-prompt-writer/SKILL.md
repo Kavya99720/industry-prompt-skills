@@ -85,13 +85,15 @@ Do all of this and fix what fails:
 6. Word counts computed for every section and for section 6 against the allowance.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
 9. Every "say exactly" line in the selected rules is in the Instructions word for word; the no-collect rule lists all seven items.
+10. The first line of the output is `=== INSTRUCTIONS ===`, the next is the welcome, and `=== DRAFT NOTES ===` appears once, alone on its line.
 8. The confirmation flow (R-18) is in section 5 with its fixed lines word for word, there is no send or confirmation tool anywhere in the Instructions, and section 6 has only the short CLOSE line.
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after:
+Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. No code fence, no preface, no "here is the output" line. Never write either marker anywhere else, not even inside a sentence:
 
 ```
+=== INSTRUCTIONS ===
 <Welcome message>
 
 ## 1. Role & Identity
@@ -121,7 +123,7 @@ Output exactly this, nothing before or after:
 
 Real values (the business name, hours, phone number, address, doctor details, fees) appear ONLY in the "Fill these in the platform" block of the draft notes, never in the Instructions. If the client gave no value, write "not provided"; never invent one.
 
-The marker line `=== DRAFT NOTES ===` stands alone on its own line. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
+The marker lines `=== INSTRUCTIONS ===` and `=== DRAFT NOTES ===` each stand alone on their own line, and appear exactly once. The platform text is only what sits between them. The Instructions part contains only text the platform will use. The draft notes are never part of the Instructions.
 
 ## Rules for you
 
