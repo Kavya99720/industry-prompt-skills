@@ -1,0 +1,1 @@
+checked by hand: rewritten once — added the missing generic failed-action line ("I'm sorry, I could not complete that. Our team will call you to confirm.") to the ACCOUNT step for a `balance_lookup_tool` failure or timeout (R-18), which workflow 01's draft main-lines did not include (it only covered the no-match case).

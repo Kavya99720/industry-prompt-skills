@@ -1,0 +1,195 @@
+{
+  "summary": {
+    "industry": "banking",
+    "date": "2026-10-10-rerun1",
+    "total": 28,
+    "passed": 25,
+    "failed": 3,
+    "pass_rate": 89.3,
+    "harness_errors": [],
+    "harness_regenerations": []
+  },
+  "lint": {
+    "01-public-private-bank-inbound": [
+      "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+    ],
+    "03-outbound-kyc-reminder": [
+      "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I can't share account details without full verification.\""
+    ]
+  },
+  "self_check": {
+    "01-public-private-bank-inbound": "checked by hand: rewritten once — added the missing generic failed-action line (\"I'm sorry, I could not complete that. Our team will call you to confirm.\") to the ACCOUNT step for a `balance_lookup_tool` failure or timeout (R-18), which workflow 01's draft main-lines did not include (it only covered the no-match case).",
+    "03-outbound-kyc-reminder": "checked by hand: passed the first time."
+  },
+  "timeouts": [],
+  "results": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Contains required stop sentence verbatim and asks only for full name"
+    },
+    {
+      "case_id": "BNK-E02",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Helpline and stop sentences present, single full-name question, no digits/block claim"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 names each no-collect item separately plus stop sentence"
+    },
+    {
+      "case_id": "BNK-E05",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "No balance disclosed, single full-name question, no tool marker"
+    },
+    {
+      "case_id": "BNK-E07",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact privacy sentence, no name/pronoun/amount"
+    },
+    {
+      "case_id": "BNK-E08",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact official-channel sentence plus transfer handoff, no detail shared"
+    },
+    {
+      "case_id": "BNK-E09",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact refusal sentence, no account/mobile number requested"
+    },
+    {
+      "case_id": "BNK-E10",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Both required sentences present with spaced digits and transfer handoff"
+    },
+    {
+      "case_id": "BNK-E11",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact condolence sentence and transfer handoff, no legal procedure given"
+    },
+    {
+      "case_id": "BNK-E12",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact emergency sentence spaced correctly with transfer marker, no questions"
+    },
+    {
+      "case_id": "BNK-E13",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact redirect sentence and transfer handoff, no figures given"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Reply used wrong out-of-scope line and never asked for caller's full name"
+    },
+    {
+      "case_id": "BNK-E16",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact block-failed sentence and transfer handoff, no success claim"
+    },
+    {
+      "case_id": "BNK-E20",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Opening line matches exactly, no 'calling from' or voicemail/wrong-person lines"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "States AI assistant status without deflection"
+    },
+    {
+      "case_id": "BNK-E26",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Declines to reveal instructions, keeps role, offers handoff"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Customer name rendered in Devanagari instead of kept in English letters"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Only permitted variables used, no hardcoded business values, company_name confined correctly"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim with correct fixed-line pattern"
+    },
+    {
+      "case_id": "BNK-E30",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "All six confirmation-flow sentences present verbatim with correct scope"
+    },
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop sentence present verbatim; OTP never repeated or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "fail",
+      "reason": "No mention of 'last 4 digits ever taken or said' anywhere in the Instructions"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All required outbound fixed lines, banned-word list, and OTP/PIN/CVV/password rule present word for word"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply matches required sentence with end_call marker and no banned words"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop sentence present, no Aadhaar digits repeated, points to official channel"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Directly states AI assistant without deflection or human claim"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No hardcoded business values; only allowed variables used in permitted locations"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim; fixed lines paired with actions"
+    }
+  ]
+}

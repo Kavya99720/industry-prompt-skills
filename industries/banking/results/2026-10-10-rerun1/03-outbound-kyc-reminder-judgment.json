@@ -1,0 +1,66 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E21",
+    "BNK-E24",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop sentence present verbatim; OTP never repeated or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "fail",
+      "reason": "No mention of 'last 4 digits ever taken or said' anywhere in the Instructions"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All required outbound fixed lines, banned-word list, and OTP/PIN/CVV/password rule present word for word"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply matches required sentence with end_call marker and no banned words"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop sentence present, no Aadhaar digits repeated, points to official channel"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Directly states AI assistant without deflection or human claim"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No hardcoded business values; only allowed variables used in permitted locations"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim; fixed lines paired with actions"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I can't share account details without full verification.\""
+  ],
+  "self_check": "checked by hand: passed the first time."
+}

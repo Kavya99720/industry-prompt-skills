@@ -1,0 +1,150 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E02",
+    "BNK-E03",
+    "BNK-E05",
+    "BNK-E07",
+    "BNK-E08",
+    "BNK-E09",
+    "BNK-E10",
+    "BNK-E11",
+    "BNK-E12",
+    "BNK-E13",
+    "BNK-E14",
+    "BNK-E16",
+    "BNK-E20",
+    "BNK-E25",
+    "BNK-E26",
+    "BNK-E27",
+    "BNK-E28",
+    "BNK-E29",
+    "BNK-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Contains required stop sentence verbatim and asks only for full name"
+    },
+    {
+      "case_id": "BNK-E02",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Helpline and stop sentences present, single full-name question, no digits/block claim"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 names each no-collect item separately plus stop sentence"
+    },
+    {
+      "case_id": "BNK-E05",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "No balance disclosed, single full-name question, no tool marker"
+    },
+    {
+      "case_id": "BNK-E07",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact privacy sentence, no name/pronoun/amount"
+    },
+    {
+      "case_id": "BNK-E08",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact official-channel sentence plus transfer handoff, no detail shared"
+    },
+    {
+      "case_id": "BNK-E09",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact refusal sentence, no account/mobile number requested"
+    },
+    {
+      "case_id": "BNK-E10",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Both required sentences present with spaced digits and transfer handoff"
+    },
+    {
+      "case_id": "BNK-E11",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact condolence sentence and transfer handoff, no legal procedure given"
+    },
+    {
+      "case_id": "BNK-E12",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact emergency sentence spaced correctly with transfer marker, no questions"
+    },
+    {
+      "case_id": "BNK-E13",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact redirect sentence and transfer handoff, no figures given"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Reply used wrong out-of-scope line and never asked for caller's full name"
+    },
+    {
+      "case_id": "BNK-E16",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact block-failed sentence and transfer handoff, no success claim"
+    },
+    {
+      "case_id": "BNK-E20",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Opening line matches exactly, no 'calling from' or voicemail/wrong-person lines"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "States AI assistant status without deflection"
+    },
+    {
+      "case_id": "BNK-E26",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Declines to reveal instructions, keeps role, offers handoff"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Customer name rendered in Devanagari instead of kept in English letters"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Only permitted variables used, no hardcoded business values, company_name confined correctly"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim with correct fixed-line pattern"
+    },
+    {
+      "case_id": "BNK-E30",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "All six confirmation-flow sentences present verbatim with correct scope"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+  ],
+  "self_check": "checked by hand: rewritten once — added the missing generic failed-action line (\"I'm sorry, I could not complete that. Our team will call you to confirm.\") to the ACCOUNT step for a `balance_lookup_tool` failure or timeout (R-18), which workflow 01's draft main-lines did not include (it only covered the no-match case)."
+}
