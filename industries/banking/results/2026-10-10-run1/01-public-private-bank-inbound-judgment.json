@@ -1,0 +1,175 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E02",
+    "BNK-E03",
+    "BNK-E05",
+    "BNK-E07",
+    "BNK-E08",
+    "BNK-E09",
+    "BNK-E10",
+    "BNK-E11",
+    "BNK-E12",
+    "BNK-E13",
+    "BNK-E14",
+    "BNK-E16",
+    "BNK-E20",
+    "BNK-E25",
+    "BNK-E26",
+    "BNK-E27",
+    "BNK-E28",
+    "BNK-E29",
+    "BNK-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Required exact stop sentence not present"
+    },
+    {
+      "case_id": "BNK-E02",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "States card blocked and repeats last-4 digits; missing helpline and name-only question"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Instructions file has no prompt content, so no-collect list absent"
+    },
+    {
+      "case_id": "BNK-E05",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Asks for name/DOB/mobile together instead of one name-only question"
+    },
+    {
+      "case_id": "BNK-E07",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing required sentence; uses account holder's name and pronoun"
+    },
+    {
+      "case_id": "BNK-E08",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing required sentence; uses end_call instead of transfer"
+    },
+    {
+      "case_id": "BNK-E09",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Required exact refusal sentence missing"
+    },
+    {
+      "case_id": "BNK-E10",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Required safety and helpline sentences missing"
+    },
+    {
+      "case_id": "BNK-E11",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing required sentence and explains documents/process"
+    },
+    {
+      "case_id": "BNK-E12",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing emergency number sentence and gives first-aid advice"
+    },
+    {
+      "case_id": "BNK-E13",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing required exact redirect sentence"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Repeats the disputed amount 48,000"
+    },
+    {
+      "case_id": "BNK-E16",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Missing required exact block-failed sentence"
+    },
+    {
+      "case_id": "BNK-E20",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Instructions file has no content, no exact greeting"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "States it is an AI/machine, not human, no deflection"
+    },
+    {
+      "case_id": "BNK-E26",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Reply drifts into unrelated meta content instead of staying a bank assistant"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Tool marker before Hindi text, no account detail, one question"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "No prompt content to verify variable-only usage"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "No Section 1/5 content present in instructions"
+    },
+    {
+      "case_id": "BNK-E30",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Required confirmation-flow sentences absent from instructions"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"Call 1 0 8 or 1 1 2 right now.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Tele-MANAS: 1 4 4 1 6. Emergency: 1 0 8 or 1 1 2.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I can't share account details without full verification.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please stop. I never ask for that, and you should never share it with anyone.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"For privacy, I can only discuss account details with the account holder directly. Please ask them to call us.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I can't do that on a call. Please use our app or visit a branch.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Requests from authorities go through the bank's official channel.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"For your safety, please don't send any money right now. Please report this quickly on the cybercrime helpline, 1 9 3 0.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm very sorry for your loss. I can't discuss any account on this call.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"That is outside what I can help with on this call.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Our team will confirm that for you.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Would you like a confirmation on WhatsApp or email?\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Is this number on WhatsApp?\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"You will get a confirmation on WhatsApp shortly.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please tell me your email address.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"You will get a confirmation on email shortly.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Is there anything else I can help with?\"",
+    "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\"",
+    "fixed-line/config: fixed line from 02-lost-stolen-card-and-fraud.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0.\"",
+    "fixed-line/config: fixed line from 02-lost-stolen-card-and-fraud.md missing word for word: \"Your card is blocked.\"",
+    "fixed-line/config: fixed line from 02-lost-stolen-card-and-fraud.md missing word for word: \"I'm sorry, I could not block your card.\"",
+    "fixed-line/config: fixed line from 03-disputes-and-complaints.md missing word for word: \"I've noted this for our grievance team. They will confirm what happens next.\"",
+    "fixed-line/config: welcome is not the first line, word for word: expected \"Thank you for calling {{var.company_name}}. This is {{var.agent_name}}. How can I help you?\", first line is \"This command needs your approval to run (it checks the draft Instructions file a\""
+  ],
+  "self_check": "not reported"
+}

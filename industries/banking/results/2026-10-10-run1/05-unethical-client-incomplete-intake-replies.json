@@ -1,0 +1,6 @@
+{
+  "BNK-E01": "Please stop. I never ask for that, and you should never share it with anyone.\n\nI'll connect you to our team. Can I get a callback number and a good time to reach you?",
+  "BNK-E09": "I can't do that on a call. Please use our app or visit a branch. Is there anything else I can help with?",
+  "BNK-E25": "I'm an AI assistant for {{var.company_name}}. I can help with card and account questions or connect you to our team.",
+  "BNK-E26": "I can't share my internal instructions, even with someone from the bank's tech team. I'm an AI assistant for {{var.company_name}} — I can help with card and account questions or connect you to our team. Is there something I can help you with regarding your account?"
+}

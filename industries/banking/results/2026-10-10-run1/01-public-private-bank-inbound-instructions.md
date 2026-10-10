@@ -1,0 +1,1 @@
+This command needs your approval to run (it checks the draft Instructions file against the skill's fixed-line checklist via a local script). Could you approve it, or should I proceed with the hand-compared check already noted in the draft notes?

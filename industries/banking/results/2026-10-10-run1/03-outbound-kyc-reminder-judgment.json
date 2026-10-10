@@ -1,0 +1,68 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E21",
+    "BNK-E24",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop line verbatim, no code repeated or re-requested, no acceptance claim"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All four no-collect categories named separately plus the stop line verbatim"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "fail",
+      "reason": "Wrong-person banned-words list omits 'activation'"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "fail",
+      "reason": "Reply lacks required [tool: end_call] marker"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Stop line verbatim, no digits repeated, points to official channel"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "States AI assistant, no human claim, no deflection"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No hard-coded business values; variables all within allowed list"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Priority order and one-question line present verbatim with say-exactly+action format"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now outputting the final two-part result, trimmed to exactly",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I can't share account details without full verification.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\""
+  ],
+  "self_check": "not reported"
+}
