@@ -626,3 +626,60 @@ def test_timeouts_are_saved_in_the_results_file(repo):
     run(repo, ["--industry", "healthcare", "--date", "2026-10-09"], FakeLlm())
     assert json.loads((repo / "industries/healthcare/results/2026-10-09.json").read_text(encoding="utf-8"))["timeouts"] == []
 
+
+def _marker_skill(repo):
+    skill = repo / ".claude" / "skills" / "healthcare-prompt-writer" / "SKILL.md"
+    skill.write_text("Output starts with the line === INSTRUCTIONS === then the welcome.", encoding="utf-8")
+
+
+GOOD_OUT = "=== INSTRUCTIONS ===\nWelcome\n\n## 1. Role & Identity\nbody\n=== DRAFT NOTES ===\nnotes"
+
+
+def test_output_problem_needs_the_marker_line_and_a_first_section():
+    f = run_evals.output_problem
+    assert f(GOOD_OUT, "Welcome\n## 1. Role", True) is None
+    assert f("anything", "", True) == "the Instructions part is empty after splitting"
+    assert "no === INSTRUCTIONS ===" in f("Welcome\n## 1. Role\n=== DRAFT NOTES ===\nn", "Welcome\n## 1. Role", True)
+    assert "I mention === INSTRUCTIONS === here" and "no === INSTRUCTIONS ===" in f("I mention === INSTRUCTIONS === here\n## 1. Role", "I mention === INSTRUCTIONS === here\n## 1. Role", True)
+    assert 'no "## 1." section' in f("=== INSTRUCTIONS ===\nThis command needs your approval to run.", "This command needs your approval to run.", True)
+    # a skill whose format has no marker is not held to it
+    assert f("Welcome\n## 1. Role", "Welcome\n## 1. Role", False) is None
+    assert f("just text", "just text", False) is None
+
+
+class _BadThenGood(FakeLlm):
+    def __init__(self, bad_times):
+        super().__init__()
+        self.bad_times, self.generated = bad_times, 0
+
+    def run(self, prompt, system=None, agent=None, tools=None):
+        if agent is None and system is None:
+            self.calls.append((agent, system, prompt))
+            self.generated += 1
+            if self.generated <= self.bad_times:
+                return "This command needs your approval to run. Could you approve it?"
+            return GOOD_OUT
+        return super().run(prompt, system=system, agent=agent, tools=tools)
+
+
+def test_a_non_instructions_output_is_regenerated_once(repo):
+    _marker_skill(repo)
+    llm = _BadThenGood(bad_times=1)
+    code, out = run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--profiles", "01"], llm)
+    assert "harness error: 01-a" in out and "regenerating once" in out
+    assert llm.generated == 2 and code == 0
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert len(saved["summary"]["harness_regenerations"]) == 1 and saved["summary"]["harness_errors"] == []
+    assert {r["profile"] for r in saved["results"]} == {"01-a"}
+
+
+def test_a_second_bad_output_stops_the_profile_as_a_harness_error(repo):
+    _marker_skill(repo)
+    llm = _BadThenGood(bad_times=2)
+    code, out = run(repo, ["--industry", "healthcare", "--date", "2026-10-08", "--profiles", "01"], llm)
+    assert code == 2 and "on both tries" in out
+    assert llm.generated == 2 and not [c for c in llm.calls if c[0] == "eval-judge"]
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert len(saved["summary"]["harness_errors"]) == 1 and saved["results"] == []
+    assert (repo / "industries/healthcare/results/2026-10-08/01-a-raw-output.md").is_file()
+

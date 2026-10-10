@@ -423,6 +423,31 @@ def self_check_statement(notes):
     return m.group(1).strip().strip("*") if m else "not reported"
 
 
+def skill_uses_instructions_marker(industry, root):
+    """True when the industry's skill says its output starts with the INSTRUCTIONS marker (so a missing marker is an error)."""
+    skill = Path(root) / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
+    try:
+        return INSTRUCTIONS_MARKER in skill.read_text(encoding="utf-8")
+    except OSError:
+        return False
+
+
+SECTION_ONE_RE = re.compile(r"^#{1,3}\s*1\.", re.M)
+
+
+def output_problem(full, instructions, require_marker):
+    """Why a generated output is not a real Instructions output (a harness error, not a skill failure), or None.
+    Checked only for skills whose format uses the marker: the INSTRUCTIONS marker alone on its own line, and a '## 1.' section."""
+    if not instructions.strip():
+        return "the Instructions part is empty after splitting"
+    if require_marker:
+        if not INSTRUCTIONS_RE.search(full):
+            return "no === INSTRUCTIONS === marker alone on its own line"
+        if not SECTION_ONE_RE.search(instructions):
+            return 'no "## 1." section in the Instructions'
+    return None
+
+
 def load_judgment(path, wanted):
     """A saved per-profile judgment, or None when it is missing, unreadable or for different cases."""
     try:
@@ -451,7 +476,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
     out_dir = d / "results"
     work = out_dir / date
     work.mkdir(parents=True, exist_ok=True)
-    rows, lint, harness_errors, selfchecks = [], {}, [], {}
+    rows, lint, harness_errors, selfchecks, harness_regenerations = [], {}, [], {}, []
     for pf in profile_files(d):
         if profiles and pf.stem.split("-")[0] not in profiles:
             continue
@@ -487,7 +512,8 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
         else:
             if resume:
                 print(f"resume {name}: not complete, regenerating", file=out)
-            full = llm.run(
+            require_marker = skill_uses_instructions_marker(industry, root)
+            prompt = (
                 f"Use the {industry}-prompt-writer skill for this test business. Output exactly two parts. "
                 f"Part 1: the Instructions (welcome note, sections 1 to 6, variables in the platform syntax); "
                 f"if the skill's output format starts with a line containing only {INSTRUCTIONS_MARKER} , keep that line. "
@@ -496,10 +522,21 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                 f"with a one-line reason each, open items, the section 6 word count). Output nothing else. "
                 f"Do not open eval.json files or results folders.\n\n"
                 + visible_profile(profile_text))
-            instructions, notes, outside = split_marked(full)
-            if not instructions.strip():
-                message = (f"harness error: {name}: the Instructions part is empty after splitting the skill output "
-                           f"(not a skill failure); profile stopped, nothing judged")
+            problem = None
+            for generation in (1, 2):
+                full = llm.run(prompt)
+                instructions, notes, outside = split_marked(full)
+                problem = output_problem(full, instructions, require_marker)
+                if not problem:
+                    break
+                if generation == 1:
+                    note = f"harness error: {name}: {problem} (not a skill failure); regenerating once"
+                    print(note, file=out)
+                    harness_regenerations.append(note)
+                    (work / f"{name}-raw-output-1.md").write_text(full, encoding="utf-8")
+            if problem:
+                message = (f"harness error: {name}: {problem} on both tries (not a skill failure); "
+                           f"profile stopped, nothing judged")
                 print(message, file=out)
                 harness_errors.append(message)
                 (work / f"{name}-raw-output.md").write_text(full, encoding="utf-8")
@@ -547,7 +584,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
     summary = {"industry": industry, "date": date, "total": len(rows), "passed": passed,
                "failed": len(rows) - passed,
                "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0,
-               "harness_errors": harness_errors}
+               "harness_errors": harness_errors, "harness_regenerations": harness_regenerations}
     (out_dir / f"{date}.json").write_text(
         json.dumps({"summary": summary, "lint": lint, "self_check": selfchecks,
                     "timeouts": list(getattr(llm, "timeout_log", []) or []), "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")

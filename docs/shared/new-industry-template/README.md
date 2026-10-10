@@ -45,11 +45,12 @@ One commit per industry; the message starts with the industry name.
 13. Variables only from docs/shared/variables.json or industries/<x>/variables.json. The company name only where the caller hears it: welcome, closing, AI-disclosure answer, voicemail line.
 14. Word budget: section 6 (Main prompt) at most 595 words (20 under the 615 allowance); universal behaviour goes to sections 1, 4 and 5, and a long how-to can sit in section 5.
 15. Evals: at most 5 checks map only to baseline rules; the rest test the industry's own critical risks. A critical rule without a check fails `validate_eval.py`, so a wording-only rule is major and its critical behaviour stays under the parent rule. Never loosen an eval; if one conflicts with a rule, show the owner the case text first.
+17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
 
-## Fixed-line self-check
+## Fixed-line check
 
-`check_fixed_lines.py` in this folder is the skill's own check. Copy it to `.claude/skills/<industry>-prompt-writer/scripts/`; the skill runs it on its output (every `say exactly` line and fixed block from core and the selected workflows must appear verbatim), rewrites once if lines are missing, and records `Fixed-line self-check: passed the first time | rewritten once | could not run` in the draft notes. The runner only verifies (its lint) and records what the notes say.
+A skill never needs a tool approval during non-interactive generation: it runs no command and no script (a prompt for approval cannot be answered, and the skill then ends its turn with a question instead of the Instructions; banking profile 01, DECISIONS 63). The skill checks its fixed lines BY HAND against a checklist and records `Fixed-line self-check: checked by hand, passed the first time | rewritten once` in the draft notes. `scripts/check_fixed_lines.py` is the verifier and is for the runner and CI only: it reads an industry's references and fails when a `say exactly` line or fixed block is missing from the output (`python scripts/check_fixed_lines.py OUTPUT.md --industry <x> --workflows 01 02`).
 
 ## Harness facts to remember
 

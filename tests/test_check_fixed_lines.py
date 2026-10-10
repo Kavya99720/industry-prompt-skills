@@ -5,8 +5,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SKILL_SCRIPT = ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts" / "check_fixed_lines.py"
-TEMPLATE_SCRIPT = ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py"
+SKILL_SCRIPT = ROOT / "scripts" / "check_fixed_lines.py"  # runner and CI only; no skill runs it
 spec = importlib.util.spec_from_file_location("check_fixed_lines", SKILL_SCRIPT)
 cfl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cfl)
@@ -67,8 +66,13 @@ def test_the_command_line_exit_codes(tmp_path):
     assert usage.returncode == 2
 
 
-def test_the_template_copy_is_identical_to_the_skill_copy():
-    assert SKILL_SCRIPT.read_text(encoding="utf-8") == TEMPLATE_SCRIPT.read_text(encoding="utf-8")
+def test_no_skill_or_template_runs_or_ships_the_script():
+    assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
+    assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()
+    for rel in (".claude/skills/banking-prompt-writer/SKILL.md", "docs/shared/new-industry-template/skill.template.md"):
+        text = (ROOT / rel).read_text(encoding="utf-8")
+        assert "python .claude/skills" not in text and "check_fixed_lines.py <file>" not in text
+        assert "run no command" in text.lower() or "no commands" in text.lower()
 
 
 def test_the_banking_script_finds_the_fixed_blocks_in_the_real_references():

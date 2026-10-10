@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-"""Fixed-line self-check for a prompt-writer skill. Standard library only.
+"""Fixed-line check for generated Instructions. Standard library only. For the runner and CI only: a skill never runs
+this during generation (it would need a tool approval, which cannot be given in a non-interactive run; DECISIONS 63).
 
-Every `say exactly "..."` line (and every fixed block, which is one quoted string) in references/core.md and the
-selected workflows must appear verbatim in the skill's output. Run it on your own output before you finish:
+Every `say exactly "..."` line (and every fixed block, which is one quoted string) in the skill's references/core.md and
+the selected workflows must appear verbatim in the generated output:
 
-  python check_fixed_lines.py OUTPUT.md --workflows 01 02 03 --tool card_block_tool=on --tool balance_lookup_tool=off
+  python scripts/check_fixed_lines.py OUTPUT.md --industry banking --workflows 01 02 03 --tool card_block_tool=on --tool balance_lookup_tool=off
 
   OUTPUT.md        the whole output, starting with the === INSTRUCTIONS === marker (or only the Instructions part)
   --workflows      workflow numbers you selected (default: every written workflow of the output's direction;
@@ -13,10 +14,10 @@ selected workflows must appear verbatim in the skill's output. Run it on your ow
   --tool name=on|off
                    an optional config tool or setting. A line that only appears in rules mentioning one that is OFF is not
                    required. confirmation_channels is OFF unless you pass --tool confirmation_channels=on
-  --references DIR the references folder (default: ../references next to this script)
+  --industry NAME  use .claude/skills/NAME-prompt-writer/references (default when --references is not given: banking)
+  --references DIR the references folder, instead of --industry
 
-Exit code 0: nothing missing. Exit code 1: lines are missing; each is printed. If lines are missing, add exactly those
-lines (with their action) where their rule says, and run the check once more. Rewrite only once, then output.
+Exit code 0: nothing missing. Exit code 1: lines are missing; each is printed.
 Exit code 2: usage error.
 """
 import argparse
@@ -98,8 +99,11 @@ def main(argv=None):
     ap.add_argument("--workflows", nargs="*", default=[])
     ap.add_argument("--direction", choices=("inbound", "outbound"))
     ap.add_argument("--tool", action="append", default=[], help="name=on|off")
-    ap.add_argument("--references", default=str(Path(__file__).resolve().parent.parent / "references"))
+    ap.add_argument("--industry", default="banking")
+    ap.add_argument("--references")
     args = ap.parse_args(argv)
+    if not args.references:
+        args.references = str(Path(__file__).resolve().parent.parent / ".claude" / "skills" / f"{args.industry}-prompt-writer" / "references")
     path = Path(args.output)
     if not path.is_file():
         print(f"cannot read {path}", file=sys.stderr)
