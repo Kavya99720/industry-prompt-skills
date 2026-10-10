@@ -22,7 +22,7 @@ For every test profile in industries/<x>/test-profiles/ the runner:
   5. prints a pass-rate summary per industry and lists the failing cases to feed back into the SKILL.
 
 It never edits eval.json or the skill. Language-model calls go through the Claude Code CLI
-(`claude -p`); the binary is found on PATH, then in ~/.local/bin; set CLAUDE_BIN to override. Standard library only.
+(`claude -p`, each call limited to 15 min for a generation and 10 min for a probe reply or the judge, killed and retried on a timeout, and logged under "timeouts" in the results file); the binary is found on PATH, then in ~/.local/bin; set CLAUDE_BIN to override. Standard library only.
 Exit code: 0 all passed, 1 some failed, 2 an industry was missing inputs.
 """
 import argparse
@@ -50,6 +50,13 @@ RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
 RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))
 MAX_PARALLEL = 4  # never more than 4 claude processes at once
 WORKERS = min(MAX_PARALLEL, int(os.environ.get("RUN_EVALS_WORKERS", str(MAX_PARALLEL))))
+# Per-call time limits in seconds: generation 15 min, probe replies and judge 10 min each. On a timeout the call is killed,
+# logged and retried like any other failure (up to RETRIES).
+TIMEOUTS = {
+    "generation": int(os.environ.get("RUN_EVALS_TIMEOUT_GENERATION", "900")),
+    "probe": int(os.environ.get("RUN_EVALS_TIMEOUT_PROBE", "600")),
+    "judge": int(os.environ.get("RUN_EVALS_TIMEOUT_JUDGE", "600")),
+}
 AUTH_RETRIES = int(os.environ.get("RUN_EVALS_AUTH_RETRIES", "3"))
 AUTH_WAIT = int(os.environ.get("RUN_EVALS_AUTH_WAIT", "60"))
 AUTH_ERROR = re.compile(r"oauth|authenticat|unauthori[sz]ed|\b401\b|token.{0,20}(expired|refresh|invalid)|please run /login|invalid.{0,20}credential|ENOTFOUND|EAI_AGAIN|ECONNRESET|ETIMEDOUT|can.t reach the API server|check your internet", re.I)
@@ -113,8 +120,18 @@ class ClaudeCli:
     def __init__(self, binary=None, cwd=ROOT):
         self.binary = binary or find_claude()
         self.cwd = cwd
+        self.timeout_log = []  # one entry per timed-out call; saved in the results file
+
+    @staticmethod
+    def call_kind(agent, tools):
+        """The judge is the eval-judge agent; probe replies run with no tools; everything else is a generation."""
+        if agent == "eval-judge":
+            return "judge"
+        return "probe" if tools == "" else "generation"
 
     def run(self, prompt, system=None, agent=None, tools=None):
+        kind = self.call_kind(agent, tools)
+        limit = TIMEOUTS[kind]
         cmd = [self.binary, "-p"]
         if tools is not None:
             cmd += ["--tools", tools]
@@ -125,8 +142,19 @@ class ClaudeCli:
         auth_tries = 0
         attempt = 0
         while True:
-            result = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
-                                    cwd=self.cwd, encoding="utf-8")
+            try:
+                result = subprocess.run(cmd, input=prompt, capture_output=True, text=True,
+                                        cwd=self.cwd, encoding="utf-8", timeout=limit)
+            except subprocess.TimeoutExpired:
+                # subprocess.run has already killed the hung call; log it and retry like any other failure
+                self.timeout_log.append({"kind": kind, "limit_seconds": limit, "attempt": attempt + 1,
+                                         "retried": attempt < RETRIES,
+                                         "at": datetime.datetime.now().isoformat(timespec="seconds")})
+                if attempt < RETRIES:
+                    attempt += 1
+                    time.sleep(RETRY_WAIT)
+                    continue
+                raise RuntimeError(f"claude call ({kind}) timed out after {limit} s on each of {attempt + 1} tries")
             if result.returncode == 0:
                 return result.stdout.strip()
             message = (result.stderr or "") + " " + (result.stdout or "")
@@ -521,7 +549,8 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                "pass_rate": round(100 * passed / len(rows), 1) if rows else 0.0,
                "harness_errors": harness_errors}
     (out_dir / f"{date}.json").write_text(
-        json.dumps({"summary": summary, "lint": lint, "self_check": selfchecks, "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
+        json.dumps({"summary": summary, "lint": lint, "self_check": selfchecks,
+                    "timeouts": list(getattr(llm, "timeout_log", []) or []), "results": rows}, indent=2, ensure_ascii=False), encoding="utf-8")
     return summary, rows
 
 

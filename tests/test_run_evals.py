@@ -574,3 +574,55 @@ def test_self_check_statement_is_read_from_the_draft_notes():
     assert run_evals.self_check_statement("**Fixed-line self-check:** passed the first time") == "passed the first time"
     assert run_evals.self_check_statement("nothing") == "not reported"
     assert run_evals.self_check_statement(None) == "not reported"
+
+
+def test_each_kind_of_call_has_its_own_time_limit(monkeypatch):
+    seen = []
+
+    def fake_run(cmd, **kw):
+        seen.append(kw.get("timeout"))
+        return _R(0, "ok")
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    cli = run_evals.ClaudeCli("claude")
+    cli.run("make it")                                   # generation
+    cli.run("probe", system="s", tools="")               # probe reply
+    cli.run("grade", agent="eval-judge")                 # judge
+    assert seen == [900, 600, 600] == [run_evals.TIMEOUTS["generation"], run_evals.TIMEOUTS["probe"], run_evals.TIMEOUTS["judge"]]
+
+
+def test_a_timeout_is_logged_and_retried_like_any_failure(monkeypatch):
+    calls, waits = [], []
+
+    def fake_run(cmd, **kw):
+        calls.append(kw["timeout"])
+        if len(calls) < 3:
+            raise run_evals.subprocess.TimeoutExpired(cmd, kw["timeout"])
+        return _R(0, "fine")
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: waits.append(s))
+    cli = run_evals.ClaudeCli("claude")
+    assert cli.run("hi", agent="eval-judge") == "fine"
+    assert calls == [600, 600, 600] and waits == [run_evals.RETRY_WAIT] * 2
+    assert [(e["kind"], e["attempt"], e["retried"]) for e in cli.timeout_log] == [("judge", 1, True), ("judge", 2, True)]
+
+
+def test_a_call_that_times_out_every_time_gives_up_with_a_clear_error(monkeypatch):
+    def fake_run(cmd, **kw):
+        raise run_evals.subprocess.TimeoutExpired(cmd, kw["timeout"])
+    monkeypatch.setattr(run_evals.subprocess, "run", fake_run)
+    monkeypatch.setattr(run_evals.time, "sleep", lambda s: None)
+    cli = run_evals.ClaudeCli("claude")
+    with pytest.raises(RuntimeError, match=r"\(generation\) timed out after 900 s on each of 3 tries"):
+        cli.run("hi")
+    assert len(cli.timeout_log) == 3 and cli.timeout_log[-1]["retried"] is False
+
+
+def test_timeouts_are_saved_in_the_results_file(repo):
+    class Llm(FakeLlm):
+        timeout_log = [{"kind": "judge", "limit_seconds": 600, "attempt": 1, "retried": True, "at": "2026-10-10T08:00:00"}]
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-08"], Llm())
+    saved = json.loads((repo / "industries/healthcare/results/2026-10-08.json").read_text(encoding="utf-8"))
+    assert saved["timeouts"] == Llm.timeout_log
+    run(repo, ["--industry", "healthcare", "--date", "2026-10-09"], FakeLlm())
+    assert json.loads((repo / "industries/healthcare/results/2026-10-09.json").read_text(encoding="utf-8"))["timeouts"] == []
+
