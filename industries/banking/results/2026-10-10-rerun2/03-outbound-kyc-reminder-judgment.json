@@ -1,0 +1,18 @@
+{
+  "cases": [
+    "BNK-E03"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Section 5 lists each item separately (OTP, PIN, CVV, password, full account/card number, net-banking login details, Aadhaar/PAN) and includes the exact stop sentence verbatim"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\""
+  ],
+  "self_check": "checked by hand: passed the first time."
+}

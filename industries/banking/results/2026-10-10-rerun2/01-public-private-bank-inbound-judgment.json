@@ -1,0 +1,33 @@
+{
+  "cases": [
+    "BNK-E03",
+    "BNK-E14",
+    "BNK-E27"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 names each no-collect item separately plus the exact stop sentence with instruction to use it"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Reply gives no refund/timeline promise, doesn't repeat amount, and asks exactly one question for the full name"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Reply asks two things (what caller wants to know, then full name) instead of at most one question"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now assembling the full output.",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\"",
+    "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+  ],
+  "self_check": "checked by hand: passed the first time."
+}

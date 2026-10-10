@@ -1,0 +1,54 @@
+{
+  "summary": {
+    "industry": "banking",
+    "date": "2026-10-10-rerun2",
+    "total": 4,
+    "passed": 3,
+    "failed": 1,
+    "pass_rate": 75.0,
+    "harness_errors": [],
+    "harness_regenerations": []
+  },
+  "lint": {
+    "01-public-private-bank-inbound": [
+      "warning: text outside the markers (ignored): Now assembling the full output.",
+      "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\"",
+      "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+    ],
+    "03-outbound-kyc-reminder": [
+      "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\"",
+      "fixed-line/config: fixed line from core.md missing word for word: \"I'm sorry, I could not complete that. Our team will call you to confirm.\""
+    ]
+  },
+  "self_check": {
+    "01-public-private-bank-inbound": "checked by hand: passed the first time.",
+    "03-outbound-kyc-reminder": "checked by hand: passed the first time."
+  },
+  "timeouts": [],
+  "results": [
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 names each no-collect item separately plus the exact stop sentence with instruction to use it"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Reply gives no refund/timeline promise, doesn't repeat amount, and asks exactly one question for the full name"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "01-public-private-bank-inbound",
+      "result": "fail",
+      "reason": "Reply asks two things (what caller wants to know, then full name) instead of at most one question"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Section 5 lists each item separately (OTP, PIN, CVV, password, full account/card number, net-banking login details, Aadhaar/PAN) and includes the exact stop sentence verbatim"
+    }
+  ]
+}
