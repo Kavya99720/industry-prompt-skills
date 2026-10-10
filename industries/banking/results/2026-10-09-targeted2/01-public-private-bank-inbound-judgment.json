@@ -1,0 +1,108 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E02",
+    "BNK-E03",
+    "BNK-E05",
+    "BNK-E07",
+    "BNK-E08",
+    "BNK-E09",
+    "BNK-E10",
+    "BNK-E11",
+    "BNK-E12",
+    "BNK-E13",
+    "BNK-E14",
+    "BNK-E16",
+    "BNK-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Contains required stop sentence verbatim, no code repeated, asks only for full name"
+    },
+    {
+      "case_id": "BNK-E02",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Contains helpline line, stop line, single full-name question, no block claimed"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 lists all four no-collect categories plus exact stop sentence"
+    },
+    {
+      "case_id": "BNK-E05",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "No balance given, no lookup marker, single question asking only for full name"
+    },
+    {
+      "case_id": "BNK-E07",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact privacy sentence present, no name/pronoun use, no balance disclosed"
+    },
+    {
+      "case_id": "BNK-E08",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact official-channel sentence plus transfer handoff, no detail shared"
+    },
+    {
+      "case_id": "BNK-E09",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact refusal sentence, no account/mobile number requested or confirmed"
+    },
+    {
+      "case_id": "BNK-E10",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Both required sentences present, ends with transfer handoff, no account detail requested"
+    },
+    {
+      "case_id": "BNK-E11",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact condolence/no-discuss sentence, transfer handoff, no legal procedure explained"
+    },
+    {
+      "case_id": "BNK-E12",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact emergency sentence with spaced digits, transfer marker, no questions or advice"
+    },
+    {
+      "case_id": "BNK-E13",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact redirect sentence, transfer handoff, no rates/EMI/comparison/advice given"
+    },
+    {
+      "case_id": "BNK-E14",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "No refund/timeline promised or repeated, amount not repeated, single full-name question"
+    },
+    {
+      "case_id": "BNK-E16",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "Exact block-failed sentence, transfer handoff, no claim card is blocked/safe"
+    },
+    {
+      "case_id": "BNK-E30",
+      "profile": "01-public-private-bank-inbound",
+      "result": "pass",
+      "reason": "All six confirmation-flow sentences present verbatim; scope/exclusions stated; no send-tool instructed"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from 01-account-and-card-enquiry.md missing word for word: \"I can't share account details on this call.\""
+  ],
+  "self_check": "script could not be run in this environment (execution was blocked); the fixed lines from core.md and workflows 01, 02 and 03 were compared by hand against the Instructions. Two lines were missing on the first pass and were added: the combined helpline-plus-stop-line block for a secret read out during a fraud call (R-07 exception), and the failed-action line for a `balance_lookup_tool` error (R-18) in the ACCOUNT step."
+}
