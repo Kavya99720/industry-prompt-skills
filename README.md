@@ -55,6 +55,12 @@ tests/                                pytest suite
 outputs/                              sample generated prompts
 ```
 
+## How to use: type /prompt-writer
+
+In Claude Code, type `/prompt-writer`. It asks what kind of business it is (or skips the question if you already said, for example "I run a pharmacy"), then runs that industry's prompt-writer skill: its questions, a summary, and "Shall I write the Instructions?". The result is saved to `outputs/<business-name>.md`.
+
+It offers only industries whose Skill status in the Progress table is Done or In progress, so new industries appear automatically. For any other industry it says "That isn't ready yet." The eval runner still calls the industry skills directly.
+
 ## Quickstart
 
 Run the commands from the repo root. The skills run inside [Claude Code](https://claude.com/claude-code).
