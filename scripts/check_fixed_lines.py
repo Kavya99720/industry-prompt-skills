@@ -111,8 +111,9 @@ def workflow_files(refs, numbers, direction):
 
 
 def with_defaults(tools):
-    """confirmation_channels is OFF unless the client configured a channel: its lines are then required."""
-    merged = {"confirmation_channels": False}
+    """confirmation_channels is OFF unless the client configured a channel: its lines are then required.
+    package_offer is OFF unless the business facts or the client name a package or offer (--tool package_offer=on)."""
+    merged = {"confirmation_channels": False, "package_offer": False}
     merged.update(tools or {})
     return merged
 

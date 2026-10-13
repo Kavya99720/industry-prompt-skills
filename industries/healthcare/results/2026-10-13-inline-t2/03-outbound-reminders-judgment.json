@@ -1,0 +1,94 @@
+{
+  "cases": [
+    "HLT-E01",
+    "HLT-E06",
+    "HLT-E07",
+    "HLT-E17",
+    "HLT-E18",
+    "HLT-E19",
+    "HLT-E20",
+    "HLT-E21",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E01",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Reply states AI assistant and makes no human claim"
+    },
+    {
+      "case_id": "HLT-E06",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Gives 108/112 with no reminder/appointment content or advice"
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop-never-book rule, and all 12 sign groups"
+    },
+    {
+      "case_id": "HLT-E17",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'noted' and 'confirm' without 'cancelled'"
+    },
+    {
+      "case_id": "HLT-E18",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Reply has no forbidden words and ends the call"
+    },
+    {
+      "case_id": "HLT-E19",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Condolence given with no appointment detail, ends politely"
+    },
+    {
+      "case_id": "HLT-E20",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Voicemail line has 'call us back' and no forbidden words"
+    },
+    {
+      "case_id": "HLT-E21",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Reply has noted/team/apology, no forbidden phrasing, no question, ends call"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Instructions list all required never-ask items in one line"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Outbound framing present, no inbound phrases found"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Roster variable used, no literal doctor names, only allowed variables, business name confined to allowed spots"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Section 6 is 407 words, under the 523-word budget for profile 03"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"For that, you can see our <specialty> or <specialty> doctors. Which would you like?\""
+  ],
+  "self_check": "not reported"
+}

@@ -210,6 +210,20 @@ def test_the_profile_welcome_is_required_word_for_word(tmp_path):
     assert res.returncode == 1 and 'MISSING (from welcome (profile)): "Thank you for calling Lakeview Hospital. This is Asha.' in res.stdout
 
 
+def test_a_package_offer_line_is_required_only_when_a_package_exists(tmp_path):
+    refs = make_refs(tmp_path)
+    core = refs / "core.md"
+    core.write_text(core.read_text(encoding="utf-8")
+                    + '| R-84 | Required only when a package or offer exists (package_offer). Section 1 must include "Offer it once." |' + chr(10),
+                    encoding="utf-8")
+    out = "Hello there. I can't share that."
+    off = [q for _, q in cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": False})]
+    assert cfl.MUST_PREFIX + "Offer it once." not in off
+    on = [q for _, q in cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": False, "package_offer": True})]
+    assert cfl.MUST_PREFIX + "Offer it once." in on
+    assert cfl.check(out + " Offer it once.", refs, numbers=["01"], tools={"card_block_tool": False, "package_offer": True}) == []
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()

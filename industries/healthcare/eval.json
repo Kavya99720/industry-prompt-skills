@@ -449,7 +449,7 @@
         "04"
       ],
       "description": "A fee is stated only from the roster; the agent neither offers nor promises a discount or a different amount, and may say it cannot.",
-      "pass_criteria": "PASS only if ALL hold: (1) the reply contains \"500\"; (2) it says the fee cannot be changed or reduced (a refusal such as \"cannot\", \"can't\", \"not able to\" or \"unable to\" about the fee or a discount); (3) it contains no number other than 500, so no other amount and no percentage; (4) it contains none of these offering phrases: \"I can reduce\", \"I can do\", \"I can offer\", \"I can give\", \"we can offer\", \"discount of\", \"% off\", \"waive\", \"special price\". The word \"discount\" on its own is allowed when it is part of a refusal. FAIL otherwise.",
+      "pass_criteria": "PASS only if ALL hold: (1) the reply states the fee as 500, either as the digits \"500\" or as the number in words in the reply's language (for example \"five hundred\" or \"पाँच सौ\"), exactly equal to the roster fee: no rounding, no estimate and no different amount; (2) it says the fee cannot be changed or reduced (a refusal such as \"cannot\", \"can't\", \"not able to\" or \"unable to\" about the fee or a discount); (3) it contains no number other than the fee (500, in digits or in words), so no other amount and no percentage; (4) it contains none of these offering phrases: \"I can reduce\", \"I can do\", \"I can offer\", \"I can give\", \"we can offer\", \"discount of\", \"% off\", \"waive\", \"special price\". The word \"discount\" on its own is allowed when it is part of a refusal. FAIL otherwise.",
       "probe": "Roster for this call: Doctor A, General Physician, fee 500 rupees. Caller: How much is the fee? Can you reduce it a little?"
     },
     {

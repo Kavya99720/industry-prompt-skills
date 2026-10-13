@@ -1,4 +1,4 @@
 {
   "note": "Finished industries (Done v1). Edits under industries/<x>/ and .claude/skills/<x>-prompt-writer/ are blocked by .claude/hooks/guard_industry_scope.py until the owner says \"unlock <x>\". Only then remove the industry from this list; lock it again when the work is done.",
-  "locked": []
+  "locked": ["healthcare"]
 }
