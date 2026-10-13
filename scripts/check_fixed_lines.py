@@ -27,6 +27,12 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
 A rule ID such as "R-41" or "S-37" anywhere in the Instructions (the part before the === DRAFT NOTES === marker; the
 whole text when there is no marker) is reported as a problem: rule IDs belong to the sources, never to the prompt.
 
+  --profile FILE   a test profile (industries/<x>/test-profiles/NN-*.md) of an industry that prints its business facts
+                   (inline_values). The expected welcome is built from the profile's Business name, Assistant and
+                   Direction rows ("Thank you for calling <name>. This is <agent>. How can I help you?"; the "This is
+                   <agent>." part is dropped when no assistant name is given; no business name gives the neutral
+                   word of the Business type row) and must appear word for word.
+
 Exit code 0: nothing missing. Exit code 1: lines are missing; each is printed.
 Exit code 2: usage error.
 """
@@ -55,6 +61,31 @@ def norm(text):
 def norm_text(text):
     """Case-insensitive, punctuation-free form used for must-include lines."""
     return " ".join(re.sub(r"[^\w\s]", "", norm(text).lower()).split())
+
+
+def profile_value(profile_text, label):
+    """The value cell of a `| label | value |` row of a test profile, or None."""
+    m = re.search(r"^\|\s*" + re.escape(label) + r"\s*\|\s*(.+?)\s*\|\s*$", profile_text, re.M | re.I)
+    return m.group(1).strip() if m else None
+
+
+def welcome_from_profile(profile_text):
+    """The welcome an inline-values Instructions set must start with, from a test profile's own values."""
+    def given(v):
+        return v is not None and not re.match(r"(not given|not provided|not stated|none)", v, re.I)
+    biz = profile_value(profile_text, "Business name")
+    if not given(biz):
+        kind = profile_value(profile_text, "Business type") or ""
+        m = re.search(r'says "([^"]+)"', kind)
+        biz = m.group(1) if m else "our clinic"
+    agent = profile_value(profile_text, "Assistant")
+    agent = re.sub(r"\s*\([^)]*\)\s*$", "", agent).strip() if given(agent) else None
+    direction = (profile_value(profile_text, "Direction") or "inbound").lower()
+    if direction.startswith("out"):
+        return (f"Hello, this is {agent} calling from {biz}. Is this a good time to talk?" if agent
+                else f"Hello, I am calling from {biz}. Is this a good time to talk?")
+    return (f"Thank you for calling {biz}. This is {agent}. How can I help you?" if agent
+            else f"Thank you for calling {biz}. How can I help you?")
 
 
 def workflow_files(refs, numbers, direction):
@@ -129,7 +160,7 @@ def required_text(refs, numbers, direction, tools):
     return [(v[0], v[1]) for v in found.values() if v[2]]
 
 
-def check(output_text, refs, numbers=(), direction=None, tools=None):
+def check(output_text, refs, numbers=(), direction=None, tools=None, welcome=None):
     tools = with_defaults(tools)
     head = output_text.split("\n", 12)
     if direction is None:
@@ -139,6 +170,8 @@ def check(output_text, refs, numbers=(), direction=None, tools=None):
     text = norm_text(output_text)
     missing += [(src, MUST_PREFIX + q) for src, q in required_text(Path(refs), set(numbers), direction, tools)
                 if norm_text(q) not in text]
+    if welcome and norm(welcome) not in body:
+        missing.append(("welcome (profile)", welcome))
     missing += rule_id_problems(output_text)
     return missing
 
@@ -161,6 +194,7 @@ def main(argv=None):
     ap.add_argument("--tool", action="append", default=[], help="name=on|off")
     ap.add_argument("--industry", default="banking")
     ap.add_argument("--references")
+    ap.add_argument("--profile")
     args = ap.parse_args(argv)
     if not args.references:
         args.references = str(Path(__file__).resolve().parent.parent / ".claude" / "skills" / f"{args.industry}-prompt-writer" / "references")
@@ -178,7 +212,8 @@ def main(argv=None):
             print(f"--tool needs name=on or name=off, got {item}", file=sys.stderr)
             return 2
         tools[name] = state.lower() == "on"
-    missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools)
+    welcome = welcome_from_profile(Path(args.profile).read_text(encoding="utf-8")) if args.profile else None
+    missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome)
     for src, q in missing:
         if q.startswith(RULE_ID_PREFIX):
             print(f"RULE ID in the Instructions ({src}): {q[len(RULE_ID_PREFIX):]}")
@@ -188,7 +223,8 @@ def main(argv=None):
             print(f'MISSING (from {src}): "{q}"')
     direction = args.direction or ("outbound" if "calling from" in path.read_text(encoding="utf-8")[:900] else "inbound")
     required = (len(required_lines(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
-                + len(required_text(Path(args.references), set(args.workflows), direction, with_defaults(tools))))
+                + len(required_text(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
+                + (1 if welcome else 0))
     print(f"fixed lines: {required} required, {len(missing)} missing")
     return 1 if missing else 0
 

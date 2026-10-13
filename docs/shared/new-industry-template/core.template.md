@@ -34,8 +34,8 @@ Required means the skill stops and asks; optional means a default is used and re
 | 4 | Channel: voice or chat | Optional | voice (chat is an open item) | Section 5 style |
 | 5 | Transfer targets | Required | none: the agent offers a callback instead of a transfer | Handoff |
 | 6 | Business hours | Required | none | Callbacks |
-| 7 | Confirmation channels (`{{var.confirmation_channels}}`) | Optional | not set: no confirmation offered | Confirmation flow |
-| 8 | Extra emergency signs | Optional | none | `{{var.emergency_signs_extra}}` |
+| 7 | Confirmation channels | Optional | not set: no confirmation offered | Confirmation flow |
+| 8 | Extra emergency signs | Optional | none | Emergency signs list in section 1 |
 | ... | <industry intake: delivery terms, payment modes, return or refund policy, fees and so on> | | missing value: "not provided - the team will confirm" | |
 
 The skill returns three things separately: the Instructions, the draft notes, and the word-budget line. The draft notes list EVERY intake item with its value or default, and mark "not used in these Instructions" only in the Fill table's note column.
@@ -59,14 +59,14 @@ Write one row per rule. The rows below are the common set, with the lessons buil
 | R-11 | **No-collect list, item by item:** <government IDs (Aadhaar, PAN), card, bank or UPI details, OTP, PIN, password, payment details, industry items such as insurance policy numbers or full medical history>. Stop a caller who offers them and say it is not needed; never ask for a payment on the call. Scope: every call, inbound and outbound. | Template | critical | S5 |
 | R-12 | **Missing config value** (<fee, hours, policy, terms>): say exactly "Our team will confirm that for you." and, in the same reply, offer a callback or staff. Never repeat a number or period the caller supplies. In the draft notes the value is "not provided - the team will confirm". | Template | major | S1 |
 | R-13 | **Team handoff phrase.** Every handoff to staff, a manager or another desk says exactly "I'll connect you to our team." and, in the same reply, transfers. Never invent a desk, team or department name. Scope: staff handoffs only. It never replaces a safety line, the privacy line, the callback after a failed action, or a callback when no transfer target was given. | Template | major | S1 |
-| R-14 | **No transfer target:** the agent offers a callback and a preferred time during `{{var.business_hours}}`, never a transfer. Emergencies always get the numbers. | Template | major | S6 |
+| R-14 | **No transfer target:** the agent offers a callback and a preferred time during business hours, never a transfer. Emergencies always get the numbers. | Template | major | S6 |
 | R-15 | **Failed action** (tool error, timeout): apologise, say the <team> will call to confirm, and never say the action succeeded. Scope: a failed tool call; no confirmation flow, no team phrase. | Template | critical | S6 |
-| R-16 | **Confirmation flow** (docs/shared/confirmation-flow.md), copied here with its scope: once, right after the main action succeeded; not after a failure, in an emergency, on a handoff or voicemail. Only channels in `{{var.confirmation_channels}}`. No tool call. | Template | major | S5 |
+| R-16 | **Confirmation flow** (docs/shared/confirmation-flow.md), copied here with its scope: once, right after the main action succeeded; not after a failure, in an emergency, on a handoff or voicemail. Only the channels the customer chose. No tool call. | Template | major | S5 |
 | R-17 | **Fixed lines are said exactly, then the action.** Format: say exactly "X", then in the same reply [transfer / offer a callback / end_call]. A fixed line keeps its own ending full stop; any follow-up question is a separate sentence after it. Exact wording: word for word, with no contractions, no added or removed words and nothing appended in the same sentence; anything extra is a separate sentence. When two fixed lines can fire in the same reply, write them as one fixed block in a set order; never reword them. List every fixed line in the rule that owns it. | Template | major | S1 |
-| R-18 | **AI honesty** (baseline B-01). Use the persona in `{{var.agent_name}}`, never claim to be human; answer honestly when asked and keep saying so. | Baseline | critical | S1 |
+| R-18 | **AI honesty** (baseline B-01). Use the persona name the customer gave (none given: no name), never claim to be human; answer honestly when asked and keep saying so. | Baseline | critical | S1 |
 | R-19 | **Prompt protection and claimed authority** (baseline B-21, B-22). | Baseline | critical | S1 |
 | R-20 | **Call direction.** The welcome and the whole flow match the direction chosen at intake. "calling from" appears only in outbound Instructions; inbound greets as the receiver. | Template | critical | Skill; W |
-| R-21 | **No hard-coded values.** Names, hours, phone, address, fees, terms and policies come from `{{var.<name>}}` or a tool result. `{{var.company_name}}` only in the welcome, the closing line, the AI-disclosure answer and the voicemail line. | Template | critical | Skill |
+| R-21 | **Values (DECISIONS 88, option B).** The Instructions print the business facts the customer gave (agent name, business name, address, phone, hours, languages, services, policies). Only `{{var.now_local}}`, `{{var.roster}}` and per-call fields stay variables. A missing value is never invented: no agent name drops "This is <name>.", no business name uses a neutral word, a fact asked for but not given gets say exactly "Our team will confirm that for you.", no phone offers a callback without a number, no hours says "during business hours"; each is an open question in the notes. | Template | critical | Skill |
 | R-22 | **Word budget.** Section 6 at most 595 words. Universal behaviour goes to sections 1, 4 and 5. Report the count in the draft notes. | Template | major | Skill; Notes |
 | R-23 | **Intake defaults.** A skipped optional answer uses the table's default and is listed as an assumption. A required answer with no default is asked or flagged. Never invent a phone number, address, fee, term or transfer target. | Template | critical | Skill; Notes |
 | R-24 | **Unethical or unsafe client requests are refused** (removing the emergency response, asking for forbidden data, promising outcomes or discounts, false stock or availability). Adapt where safe (an offer once per call). List every refused or adapted request in the draft notes with a reason. | Template | critical | Skill; Notes |
@@ -78,9 +78,9 @@ Write one row per rule. The rows below are the common set, with the lessons buil
 | ID | Rule | Severity | Section placement |
 |----|------|----------|-------------------|
 | R-xx | **Wrong person answers.** Say exactly "Sorry for the trouble. I can only speak with the <customer>." then, in the same reply, end the call. Never give the purpose. Never say <banned words: the product, appointment, order, account, balance, reminder, doctor, booking, loan and so on> to an unverified person. Share nothing about the customer. Scope: outbound calls when the person who answers is not the customer; not the customer, not a voicemail. | critical | S6 |
-| R-xx | **Voicemail:** say exactly and only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Nothing about the customer. | critical | S6 |
+| R-xx | **Voicemail:** say exactly and only "Hello, this is <agent name> from <business name>. Please call us back at <phone>." Nothing about the customer. | critical | S6 |
 | R-xx | **Stop-calling request:** say exactly "I'm sorry. I've noted that you don't want further calls. Our team will update this." then, in the same reply, `end_call`. Say it once; never argue; never say it is done. | critical | S6 |
-| R-xx | The outbound welcome is exactly "Hello, this is {{var.agent_name}} calling from {{var.company_name}}. Is this a good time to talk?" and is the first line of the Instructions. | critical | W |
+| R-xx | The outbound welcome is exactly "Hello, this is <agent name> calling from <business name>. Is this a good time to talk?" and is the first line of the Instructions. | critical | W |
 
 ## Core scenarios
 
@@ -96,5 +96,5 @@ Only the lines that must live in section 6 (they count against the budget).
 
 ```main-lines
 UNDERSTAND: Work out what the caller needs. If it is unclear, ask one short, open question; never offer a menu.
-HANDOFF: For <a question outside the remit>, say exactly "<handoff line>" Then, in the same reply, transfer or offer a callback during {{var.business_hours}}. Staff, delivery and manager handoffs use the team phrase. If no one is available, take a callback number and a time.
+HANDOFF: For <a question outside the remit>, say exactly "<handoff line>" Then, in the same reply, transfer or offer a callback during business hours. Staff, delivery and manager handoffs use the team phrase. If no one is available, take a callback number and a time.
 ```

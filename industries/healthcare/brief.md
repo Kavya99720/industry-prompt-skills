@@ -41,7 +41,7 @@ Every S-xx and R-xx ID from the original brief is kept and lives in exactly one 
 - Call recording and data retention periods (out of scope for now).
 
 **Overlap boundaries**
-- Pharmacy: the agent transfers, or offers a callback during `{{var.business_hours}}`. It never handles stock, dispensing, medicine availability or medication questions.
+- Pharmacy: the agent transfers, or offers a callback during business hours. It never handles stock, dispensing, medicine availability or medication questions.
 - Insurance and finance: the agent never confirms coverage or claims, and never quotes amounts. It transfers, or offers a callback. Loans and EMI go to finance.
 - Billing: the agent never quotes a bill and never collects card, UPI or bank details. It transfers, or offers a callback.
 
@@ -57,7 +57,7 @@ Full text and reasons are in docs/DECISIONS.md. Where each landed:
 | 4 | Never check availability; if a time is taken, repeat the timing range and ask for another time; never list times | R-21, S-82, S-43, S-44, S-04, S-60 |
 | 5 | Symptoms: specialties only, caller chooses, never pick a doctor | R-37, S-59 |
 | 6 | Reports: never interpret or give status; transfer or callback | R-14, S-06 |
-| 7 | Closing line in Output Format with `{{var.company_name}}`, then `end_call` | R-68 |
+| 7 | Closing line in Output Format with <business name>, then `end_call` | R-68 |
 | 8 | No cancel tool: note the request, never say cancelled | R-52, S-05 |
 | 9 | Pharmacy, billing, insurance: transfer or callback; never quote | R-25 |
 | 10 | No "log the failure"; booking failure is apologise plus reception will call | R-22, S-62 |
@@ -257,7 +257,7 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 - **Specialty**: the doctor's field (for example General Physician, Paediatrics). The agent says specialties, never a condition and never picks a doctor.
 - **Booked number**: the booking number the patient was given. With the patient's name it is the verification (R-12).
 - **Call direction**: inbound (the caller phoned the business) or outbound (the business calls the patient).
-- **Custom detail**: an extra business setting added on the platform ("Add a detail"): `{{var.emergency_signs_extra}}`, `{{var.minors_may_book_alone}}`, `{{var.business_info}}`, `{{var.emergency_department}}`.
+- **Business detail**: an extra business fact the customer gives (extra emergency signs, whether minors may book alone, business info, emergency department). Since DECISIONS 88 these are printed in the Instructions, not passed as variables.
 - **TPA** (third-party administrator): handles insurance claims for insurers. The agent never confirms coverage.
 - **Token**: a queue number. The agent states only what the system provides and never estimates waiting time.
 - **Follow-up (review) visit**: a repeat visit to the same doctor for the same issue. Fee and validity come only from configuration.
@@ -269,10 +269,10 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 - **Emergency signs (default list, plus any the client adds):** stop the task, never book, say "1 0 8" or "1 1 2" and to go to the nearest emergency (the business's own emergency department only if it has one), then transfer to on-duty staff.
 - **Self-harm statements:** stop, share Tele-MANAS 14416, connect to on-duty staff. Immediate danger: 108 or 112 first, then 14416.
 - **Clinical questions:** transfer to a nurse or doctor.
-- **Reports, pharmacy, billing, insurance, complaints, angry callers:** transfer, or offer a callback during `{{var.business_hours}}`.
+- **Reports, pharmacy, billing, insurance, complaints, angry callers:** transfer, or offer a callback during business hours.
 - **Caller asks for a human:** transfer to on-duty staff.
 - **Verification fails:** share nothing and offer a callback.
-- **No human available:** take a callback number and preferred time and say the call will come during `{{var.business_hours}}`. Emergencies always get 108 or 112.
+- **No human available:** take a callback number and preferred time and say the call will come during business hours. Emergencies always get 108 or 112.
 - **Stop-calling request:** note it, say the team will update this, end the call (R-73).
 - **Mechanism:** transfers go to "on-duty staff" through the `transfer` tool. There is no tool to log a failure, flag staff or cancel.
 
@@ -282,7 +282,7 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 - **Must not collect:** Aadhaar, PAN, card, bank or UPI details, insurance policy numbers, OTPs, payments, full medical history.
 - **Verification:** patient name plus booked number, before sharing or changing an existing booking. If it fails, share nothing and offer a callback.
 - **Notice:** say why a detail is needed when asked. Read back email addresses and alternate WhatsApp numbers.
-- **AI disclosure:** persona from `{{var.agent_name}}`, never claims to be human.
+- **AI disclosure:** persona from <agent name>, never claims to be human.
 - **Confirmations:** doctor, date and time only.
 - **Outbound and voicemail:** nothing about the patient, doctor, appointment or health on a voicemail or to a wrong person.
 - **Out of scope:** call recording and data retention periods.
@@ -292,7 +292,7 @@ Not adopted from the reference Starter: the tool's two nearest free times, the f
 Resolved 2026-10-08: "both directions" means two separate Instructions sets (R-72); in-patient and ward questions are out of Phase 1 and are transferred to staff (R-79, S-90). The remaining open questions are grouped under "Questions for lead" in docs/shared/platform-contract.md.
 
 1. **How the closing combines with the platform's "How it ends" templates** (Warm, Brief, Formal). The closing line is kept in Output Format (R-68) until this is answered.
-2. **Can a custom detail hold a list?** Needed for `{{var.emergency_signs_extra}}`. Fallback: the default list in core is always in the prompt, and the client's additions are listed in the draft notes for manual entry.
+2. **Can a custom detail hold a list?** No longer needed (DECISIONS 88): the extra emergency signs are printed after the default list. The default list in core is always in the prompt.
 3. **Does the platform support voicemail?** R-45 assumes the platform can tell the agent it reached a voicemail.
 4. **Is there a do-not-call tool?** None is confirmed, so R-73 never says the request is done.
 5. **Legal or lead decision:** must outbound calls say "an AI assistant" up front? Default if confirmed: add it to the outbound welcome.

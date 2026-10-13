@@ -10,10 +10,10 @@ Copy to industries/<industry>/test-profiles/NN-<slug>.md. Synthetic business onl
 | Direction | Inbound / Outbound |
 | Channel | Voice |
 | Tools | <the industry's tools>, change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = 9 AM to 9 PM, Monday to Saturday |
+| Hours | 9 AM to 9 PM, Monday to Saturday (printed in the Instructions) |
 | Transfer targets | <named targets, or NOT given> |
-| <Policy, terms, fees> | `{{var.<name>}}` = <synthetic value>, or "not provided" |
-| Confirmation channels | whatsapp, email (`{{var.confirmation_channels}}`), or leave out |
+| <Policy, terms, fees> | <synthetic value>, or "not provided" |
+| Confirmation channels | whatsapp, email, or leave out |
 | Languages | English start, <expected switches> |
 | Custom details | <extra emergency signs, business info> |
 

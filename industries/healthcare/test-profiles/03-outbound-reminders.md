@@ -1,18 +1,22 @@
 # Test profile 03: clinic doing outbound reminders
 
-Synthetic business. Rules: industries/healthcare/core.md and workflows 04, 03.
+Synthetic business. Rules: industries/healthcare/core.md and workflows 04, 03. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | Greenway Family Clinic |
+| Assistant | Kiran (male) |
+| Address | 18 Garden Road, Malleshwaram, Bengaluru |
+| Business phone | 080-5550-0212 |
 | Business type | Clinic (the agent says "our clinic") |
 | Direction | Outbound |
 | Booking style | Time slots |
 | Roster | 4 doctors (Doctor A to Doctor D) |
 | Emergency department | No |
-| Hours | `{{var.business_hours}}` = 9 AM to 6 PM, Monday to Saturday |
-| Welcome | Outbound template: "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" |
+| Hours | 9 AM to 6 PM, Monday to Saturday |
+| Welcome | Outbound template: "Hello, this is Kiran calling from Greenway Family Clinic. Is this a good time to talk?" |
 | Call data | `{{var.patient_name}}` and `{{var.appointment_details}}` (unconfirmed platform variables) |
 
 ## Selected workflows

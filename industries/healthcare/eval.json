@@ -535,7 +535,7 @@
         "05"
       ],
       "description": "The welcome note and flow match the call direction: inbound profiles are never outbound, the outbound profile is never inbound.",
-      "pass_criteria": "For profiles 01, 02, 04 and 05 (inbound): PASS only if the Instructions greet the caller as the receiver (contain \"Thank you for calling\" or the platform inbound welcome note) and contain neither \"calling from\" nor \"good time to talk\" as the agent's own greeting. For profile 03 (outbound): PASS only if the Instructions treat the agent as the caller (\"You called them\" or the outbound welcome note) and contain neither \"Thank you for calling\" nor \"first point of contact for callers\". FAIL otherwise."
+      "pass_criteria": "For profiles 01, 02, 04 and 05 (inbound): PASS only if the Instructions greet the caller as the receiver (contain \"Thank you for calling\" followed by the business name, or a neutral word such as \"our clinic\" when no name was given, or the platform inbound welcome note) and contain neither \"calling from\" nor \"good time to talk\" as the agent's own greeting. For profile 03 (outbound): PASS only if the Instructions treat the agent as the caller (\"You called them\" or the outbound welcome note) and contain neither \"Thank you for calling\" nor \"first point of contact for callers\". FAIL otherwise."
     },
     {
       "id": "HLT-E27",
@@ -555,8 +555,8 @@
         "04",
         "05"
       ],
-      "description": "No hard-coded doctors or business values, and the company-name variable appears only where the caller hears the name.",
-      "pass_criteria": "PASS only if ALL hold: the Instructions contain the variable {{var.roster}} and no literal doctor name (no \"Doctor A\" through \"Doctor H\"), no literal fee amount, phone number, address or business hours; every {{var.company_name}} occurrence is in the welcome note, the closing line, the AI-disclosure answer or the voicemail line; elsewhere the business is called by a plain word (the hospital, our clinic, the lab, the centre); and every variable used is listed in docs/shared/variables.json. FAIL otherwise."
+      "description": "No doctor details, invented values or leftover variables and slots; the profile's business facts are printed, and the business name is spoken only where the caller hears it and in the Business facts block of section 1.",
+      "pass_criteria": "PASS only if ALL hold: the Instructions contain the variable {{var.roster}} and no literal doctor name (no \"Doctor A\" through \"Doctor H\"), no literal fee amount or roster timing; the only variables used are {{var.now_local}}, {{var.roster}}, {{var.patient_name}} and {{var.appointment_details}}, and no unresolved slot such as <business name>, <agent name>, <address>, <phone> or <hours> remains; every business fact the profile gives (business name, assistant name, address, phone, hours) is printed as given and no business fact the profile did not give appears; the business name is spoken only in the welcome note, the closing line, the AI-disclosure answer, the voicemail line or the section 1 Business facts block, and elsewhere the business is called by a plain word (the hospital, our clinic, the lab, the centre). FAIL otherwise."
     },
     {
       "id": "HLT-E28",
@@ -616,8 +616,8 @@
       "profiles": [
         "05"
       ],
-      "description": "With no languages and no emergency transfer number given, the skill uses the intake defaults, lists them as assumptions in the draft notes, and invents nothing in the Instructions.",
-      "pass_criteria": "PASS only if ALL hold: (1) the draft notes list as assumptions that the start language is the platform default ({{var.default_language}}) because no languages were given, and that no emergency transfer number was given (a callback is offered instead of a transfer, or the item is flagged as open); (2) the Instructions contain no phone number other than 108, 112 and 14416, no literal doctor name, no fee amount, no street address or PIN code, and no list of languages beyond what the platform handles; (3) the Instructions do not tell the agent to transfer to a number. FAIL if any part is missing."
+      "description": "With no languages, assistant name, phone, address or emergency transfer number given, the skill uses the missing-value rules, lists each as an open question or assumption in the draft notes, and invents nothing in the Instructions.",
+      "pass_criteria": "PASS only if ALL hold: (1) the draft notes list that the start language was not given (English assumed) and all 11 platform languages are kept, that no emergency transfer number was given (a callback is offered instead of a transfer, or the item is flagged as open), and that the address, phone number and assistant name were not given, each as an open question; (2) the Instructions contain no phone number other than 108, 112 and 14416, no literal doctor name, no fee amount, no street address or PIN code, and no list of languages beyond the 11 platform languages; the welcome has no \"This is <name>.\"; directions use exactly \"Our team will confirm that for you.\"; (3) the Instructions do not tell the agent to transfer to a number. FAIL if any part is missing."
     }
   ]
 }

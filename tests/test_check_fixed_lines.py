@@ -171,6 +171,45 @@ def test_rule_ids_inside_the_instructions_are_reported_but_not_in_the_notes(tmp_
     assert res.returncode == 1 and "RULE ID in the Instructions (Instructions line 3)" in res.stdout
 
 
+PROFILE = """| Item | Value |
+|---|---|
+| Business name | Lakeview Hospital |
+| Assistant | Asha (female) |
+| Business type | Hospital (the agent says "the hospital") |
+| Direction | Inbound |
+"""
+
+
+def test_welcome_is_built_from_the_profile_values():
+    assert cfl.welcome_from_profile(PROFILE) == "Thank you for calling Lakeview Hospital. This is Asha. How can I help you?"
+    no_agent = PROFILE.replace("| Assistant | Asha (female) |", "| Assistant | NOT given |")
+    assert cfl.welcome_from_profile(no_agent) == "Thank you for calling Lakeview Hospital. How can I help you?"
+    no_name = PROFILE.replace("| Business name | Lakeview Hospital |", "| Business name | NOT given |")
+    assert cfl.welcome_from_profile(no_name) == "Thank you for calling the hospital. This is Asha. How can I help you?"
+    outbound = PROFILE.replace("| Direction | Inbound |", "| Direction | Outbound |")
+    assert cfl.welcome_from_profile(outbound) == "Hello, this is Asha calling from Lakeview Hospital. Is this a good time to talk?"
+    assert cfl.welcome_from_profile(outbound.replace("| Assistant | Asha (female) |", "| Assistant | not provided |")) == \
+        "Hello, I am calling from Lakeview Hospital. Is this a good time to talk?"
+
+
+def test_the_profile_welcome_is_required_word_for_word(tmp_path):
+    refs = make_refs(tmp_path)
+    profile = tmp_path / "profile.md"
+    profile.write_text(PROFILE, encoding="utf-8")
+    good = tmp_path / "good.md"
+    good.write_text("=== INSTRUCTIONS ===\nThank you for calling Lakeview Hospital. This is Asha. How can I help you?\n"
+                    "Hello there. I can't share that.\n", encoding="utf-8")
+    bad = tmp_path / "bad.md"
+    bad.write_text("=== INSTRUCTIONS ===\nThank you for calling Lakeview Hospital. How can I help you?\n"
+                   "Hello there. I can't share that.\n", encoding="utf-8")
+    cmd = [sys.executable, str(SKILL_SCRIPT), "--references", str(refs), "--workflows", "01", "--tool", "card_block_tool=off",
+           "--profile", str(profile)]
+    ok = subprocess.run(cmd[:2] + [str(good)] + cmd[2:], capture_output=True, text=True)
+    assert ok.returncode == 0 and "0 missing" in ok.stdout
+    res = subprocess.run(cmd[:2] + [str(bad)] + cmd[2:], capture_output=True, text=True)
+    assert res.returncode == 1 and 'MISSING (from welcome (profile)): "Thank you for calling Lakeview Hospital. This is Asha.' in res.stdout
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()

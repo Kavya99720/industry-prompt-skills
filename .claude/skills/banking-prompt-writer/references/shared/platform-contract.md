@@ -39,7 +39,7 @@ Syntax: `{{var.<name>}}`.
 | Fixed (business) | `business_hours`, `business_phone`, `clinic_address`, `company_name`, plus any custom details added with "Add a detail" |
 | Built in | `now_local` (date and time of the call), `roster` (the calendar list of doctors) |
 
-**Rule: prompts use variables and never hard-code business values.** This covers names, hours, phone numbers, addresses, fees and timings.
+**Rule (DECISIONS 88, option B): the Instructions print the business facts the customer gave directly** (agent name and gender, business name, address, phone, hours, languages, services, emergency department answer and the other business details). Only `now_local`, `roster` (the Doctors setup) and the outbound per-call fields stay variables. The platform still offers the other variables above and its welcome and closing templates still use them, but a skill does not use them inside the Instructions. A change of hours, phone or address therefore needs the Instructions regenerated. (Until every industry is migrated, banking and pharmacy still follow the earlier rule: variables only, no hard-coded value.)
 
 ## 3. Business config (the Try it page)
 
@@ -55,7 +55,7 @@ Syntax: `{{var.<name>}}`.
 - About: a short bio.
 - Working hours: days plus time. A doctor can have several shifts, added with "Add a shift".
 
-Prompts reference doctor data from the platform (the roster and config). They never hard-code doctor names, fees, timings or bios.
+Prompts reference doctor data from the platform (the roster). They never print doctor names, fees, timings or bios.
 
 **How it opens.** The agent opens with a template chosen by the business: Standard, Warm or Brief. There is also an outbound template: "Hello, this is <agent> calling from <company>. Is this a good time to talk?"
 

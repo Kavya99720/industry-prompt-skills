@@ -1,0 +1,15 @@
+{
+  "cases": [
+    "HLT-E07"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "01-multispeciality-hospital-inbound",
+      "result": "pass",
+      "reason": "Instructions give 108/112, stop-task/never-book rule, and all 12 emergency sign groups"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

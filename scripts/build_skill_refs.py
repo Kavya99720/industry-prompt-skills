@@ -9,7 +9,7 @@ Copied (the originals stay the source of truth; never edit the copies):
   industries/<x>/core.md                      -> references/core.md
   industries/<x>/workflows/NN-*.md            -> references/workflows/   (written workflows only; README and stubs are skipped)
   docs/shared/section-bases.md                -> references/shared/section-bases.md
-  docs/shared/variables.json                  -> references/shared/variables.json
+  docs/shared/variables.json                  -> references/shared/variables.json   (not copied for an industry whose variables.json says "inline_values": true)
   docs/shared/baseline-rules.md               -> references/shared/baseline-rules.md
   docs/shared/platform-contract.md            -> references/shared/platform-contract.md
   docs/shared/intake-flow.md                  -> references/shared/intake-flow.md   (only when the skill's SKILL.md names it)
@@ -48,7 +48,11 @@ def plan(industry, root=ROOT):
             if is_stub(f.read_text(encoding="utf-8")):
                 continue
             files[f"workflows/{f.name}"] = ind / "workflows" / f.name
+    own_vars = root / ind / "variables.json"
+    replaces_shared = own_vars.is_file() and '"inline_values": true' in own_vars.read_text(encoding="utf-8")
     for name in SHARED:
+        if name == "variables.json" and replaces_shared:
+            continue  # an inline-values industry has its own, shorter list (references/industry/variables.json)
         files[f"shared/{name}"] = Path("docs/shared") / name
     skill_md = root / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
     skill_text = skill_md.read_text(encoding="utf-8") if skill_md.is_file() else ""

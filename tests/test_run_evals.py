@@ -272,7 +272,8 @@ def lint_root(tmp_path):
 
 def test_profile_facts_reads_direction_workflows_and_upload_method():
     facts = run_evals.profile_facts(FIXED_PROFILE)
-    assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store", "confirmation": False}
+    assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store", "confirmation": False,
+                     "inline_welcome": None}
 
 
 def test_fixed_line_lint_reports_a_missing_line(tmp_path):
@@ -526,6 +527,22 @@ def test_the_runner_requires_only_the_upload_branch_the_profile_uses(tmp_path):
     for other in ("in_store", "not set"):
         got = lines(other)
         assert "Is this number on WhatsApp?" not in got and "Please tell me your email address." not in got
+
+
+def test_an_inline_values_industry_takes_its_welcome_from_the_profile(tmp_path):
+    root = lint_root(tmp_path)
+    (root / "industries" / "demo" / "variables.json").write_text(
+        json.dumps({"inline_values": True, "variables": []}), encoding="utf-8")
+    profile = FIXED_PROFILE.replace("| Direction | Inbound |",
+                                    "| Business name | Lakeview Hospital |\n| Assistant | Asha (female) |\n| Direction | Inbound |")
+    welcome = "Thank you for calling Lakeview Hospital. This is Asha. How can I help you?"
+    assert ("welcome", welcome) in run_evals.fixed_lines("demo", run_evals.profile_facts(profile), root)
+    ok = welcome + "\n" + GOOD + OOS
+    assert run_evals.lint_fixed_and_config("demo", ok, profile, root) == []
+    wrong = "Thank you for calling Lakeview Hospital. How can I help you?\n" + GOOD + OOS
+    problems = run_evals.lint_fixed_and_config("demo", wrong, profile, root)
+    assert len(problems) == 1 and "welcome is not the first line, word for word" in problems[0]
+    assert run_evals.profile_facts(FIXED_PROFILE)["inline_welcome"] is None  # a profile without business values keeps the old behaviour
 
 
 def test_outbound_only_workflows_depend_on_the_industry():

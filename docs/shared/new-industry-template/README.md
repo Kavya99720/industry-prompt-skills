@@ -20,7 +20,7 @@ Everything below comes from building healthcare and pharmacy (docs/DECISIONS.md 
 
 1. grill-me, saved to industries/<x>/grill-me.md before the next industry starts. The agent reads only its own grill-me.md.
 2. brainstorm, then the brief (spec-first): scope, scenarios S-xx, rules R-xx, vocabulary, escalation, data handling. Plan approved by the owner.
-3. The industry agent builds core.md, workflows/, variables.json (custom details only), section-bases.md, test-profiles/.
+3. The industry agent builds core.md, workflows/, variables.json (the remaining variables only), section-bases.md, test-profiles/ (with synthetic business values: name, address, phone, hours, agent name).
 4. write-evals (20 to 30 checks), approved by the owner, then frozen.
 5. The skill, then `python scripts/build_skill_refs.py --industry <x>`.
 6. Targeted reruns first (`--profiles`, `--cases`), fix the SKILL for failures, never the eval. One full run at the end with `--resume`.
@@ -42,7 +42,7 @@ One commit per industry; the message starts with the industry name.
 10. The handoff phrase "I'll connect you to our team." is for staff handoffs only. No transfer target means a callback, never a transfer.
 11. Confirmations and links follow docs/shared/confirmation-flow.md: sent by the After-the-call trigger, no in-call tool, only channels enabled in config.
 12. "calling from" appears only in outbound Instructions. The welcome matches the call direction.
-13. Variables only from docs/shared/variables.json or industries/<x>/variables.json. The company name only where the caller hears it: welcome, closing, AI-disclosure answer, voicemail line.
+13. Business facts printed directly (DECISIONS 88, option B); variables only for now_local, roster and per-call fields. The business name only where the caller hears it: welcome, closing, AI-disclosure answer, voicemail line.
 14. Word budget: section 6 (Main prompt) at most 595 words (20 under the 615 allowance); universal behaviour goes to sections 1, 4 and 5, and a long how-to can sit in section 5.
 15. Evals: at most 5 checks map only to baseline rules; the rest test the industry's own critical risks. A critical rule without a check fails `validate_eval.py`, so a wording-only rule is major and its critical behaviour stays under the parent rule. Never loosen an eval; if one conflicts with a rule, show the owner the case text first.
 17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.

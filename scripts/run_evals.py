@@ -39,6 +39,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_fixed_lines  # noqa: E402
 import check_variables  # noqa: E402
 import validate_eval  # noqa: E402
 
@@ -241,7 +242,9 @@ def profile_facts(profile_text):
     method = u.group(1).lower() if u and u.group(1).lower() in ("whatsapp", "email", "in_store") else "not set"
     confirmation = bool(re.search(r"confirmation_channels\W{0,6}=\s*(whatsapp|email)", profile_text, re.I)
                         or re.search(r"\|\s*Confirmation channels\s*\|\s*(whatsapp|email)", profile_text, re.I))
-    return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation}
+    return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation,
+            "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text)
+            if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None}
 
 
 VARIABLE_LABELS = {
@@ -355,7 +358,9 @@ def fixed_lines(industry, facts, root=ROOT):
                 if _norm(q) not in [_norm(x[1]) for x in lines]:
                     lines.append((f.name, q))
     bases = d / "section-bases.md"
-    if bases.is_file():
+    if check_variables.industry_inline(industry, root) and facts.get("inline_welcome"):
+        lines.append(("welcome", facts["inline_welcome"]))  # printed values: built from the profile's own business facts
+    elif bases.is_file():
         for kind, q in WELCOME_LINE.findall(bases.read_text(encoding="utf-8")):
             if kind.lower() == facts["direction"]:
                 lines.append(("welcome", q))
@@ -395,10 +400,10 @@ def lint_instructions(path, root):
     vars_path = Path(root) / "docs" / "shared" / "variables.json"
     if not vars_path.is_file():
         return []
-    known = check_variables.load_variables(vars_path) | check_variables.industry_variables(
-        check_variables.industry_of(path, root), root)
+    industry = check_variables.industry_of(path, root)
+    known, inline = check_variables.known_for(industry, root, check_variables.load_variables(vars_path))
     denylist = check_variables.load_denylist(Path(root) / "scripts" / "denylist.txt")
-    issues, _ = check_variables.scan_file(Path(path), known, denylist, Path(root))
+    issues, _ = check_variables.scan_file(Path(path), known, denylist, Path(root), inline)
     return [f"line {i.line}: {i.level} {i.problem}" for i in issues]
 
 

@@ -1,19 +1,23 @@
 # Test profile 02: single-doctor clinic, walk-in or token OPD, no time slots
 
-Synthetic business. Rules: industries/healthcare/core.md and workflow 01 (with the token line).
+Synthetic business. Rules: industries/healthcare/core.md and workflow 01 (with the token line). Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | Care Plus Family Clinic |
+| Assistant | Meera (female) |
+| Address | 7 Temple Street, Basavanagudi, Bengaluru |
+| Business phone | 080-5550-0177 |
 | Business type | Single-doctor clinic (the agent says "our clinic") |
 | Direction | Inbound |
 | Booking style | Tokens and walk-in. No timed bookings |
 | Roster | 1 doctor (Doctor A, General Physician), fee in the roster |
-| Emergency department | No (`{{var.emergency_department}}` = no) |
-| Hours | OPD in the morning and evening, in `{{var.business_hours}}` |
+| Emergency department | No |
+| Hours | OPD 9 AM to 1 PM and 5 PM to 8 PM, Monday to Saturday |
 | Languages | Hindi start; callers speak Hindi |
-| Custom details | `{{var.business_info}}` explains the token system |
+| Business info | Tokens are given at the front desk from 8:30 AM and 4:30 PM; patients are seen in token order |
 
 ## Selected workflows
 

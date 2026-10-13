@@ -26,7 +26,7 @@ Cancel
 
 ## Data and variables
 
-`{{var.roster}}`, `{{var.now_local}}`, `{{var.business_hours}}`. Collected: patient name, doctor, booked day, booked number, new day and time.
+`{{var.roster}}`, `{{var.now_local}}`. Collected: patient name, doctor, booked day, booked number, new day and time.
 
 ## Tools
 

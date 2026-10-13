@@ -30,7 +30,7 @@ Order: welcome message, then sections 1 to 6, then the Prompt Variables table.
 
 Fixed lines: where the references say `say exactly "X"`, copy the quoted line word for word and write it in this form: say exactly "X", then in the same reply [transfer / offer a callback / end_call]. A fixed line keeps its own full stop; a follow-up question is a separate sentence. Never rewrite a fixed line. A fixed phrase never overrides a safety rule or a required line.
 
-Variable rules: only names in the two variables.json files, written `{{var.<name>}}`. `{{var.company_name}}` only in the welcome, the closing line, the AI-disclosure answer and the voicemail line. "calling from" appears only in outbound Instructions.
+Value rules (DECISIONS 88, option B): print the business facts the customer gave; the only variables are `{{var.now_local}}`, `{{var.roster}}` and the outbound per-call fields, written `{{var.<name>}}`. The business name is spoken only in the welcome, the closing line, the AI-disclosure answer and the voicemail line. "calling from" appears only in outbound Instructions.
 
 ## 4. Word budget
 
@@ -43,15 +43,15 @@ Apply the client's config and flow changes when they do not touch a critical rul
 ## 6. Self-check before output
 
 1. Every critical rule is present in the section its placement names.
-2. Every variable is in a variables.json; the company name only in the four allowed lines.
-3. No hard-coded value anywhere.
+2. Every `{{var.*}}` is one of the remaining variables; no unresolved slot such as <business name>; the business name only in the four allowed lines.
+3. Every business fact the customer gave is printed (once, in section 1); none is invented; a missing one is an open question in the notes.
 4. The welcome and the whole flow match the call direction; inbound has no "calling from".
 5. Every "say exactly" line and fixed block is in the Instructions word for word with its action, checked BY HAND one by one against the references. Run no command and no script during generation (a tool approval cannot be given); the runner verifies.
 6. Section 1 has the priority order; section 5 has the one-question rule word for word and the item-by-item no-collect list.
 7. The first line of the output is `=== INSTRUCTIONS ===` and the next is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
 8. The Fill table, its notes and everything for the client are below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table.
 9. With no transfer target the Instructions and the notes say a callback is offered, never a transfer.
-10. In the draft notes a missing value is "not provided - the team will confirm"; the Fill table has a row for every variable used AND every intake item ("not used in these Instructions" only in its note column).
+10. In the draft notes a missing value is an open question; the Fill table lists only what is set on the platform (Voice settings, Doctors setup, transfer numbers); the notes carry "If your hours, phone or address change, regenerate these Instructions."
 11. Word counts computed for every section and for section 6.
 
 ## 7. Output format (exact)
@@ -77,10 +77,10 @@ Apply the client's config and flow changes when they do not touch a critical rul
 **Word counts**
 - Welcome: N. Section 1: N. ... Section 6: N words. Allowance: 615 (aim 595). Status: within budget / OVER by X.
 **Fill these in the platform**
-| Variable or intake item | Value you gave | Where to set it |
+| Set on the platform | Value you gave | Where to set it |
 |---|---|---|
-| `{{var.agent_name}}` | <value from intake, or "not provided"> | Voice settings |
-(one row for every variable the Instructions use, PLUS one row for EVERY intake item with its value or default)
+| Agent name | <value from intake, or "not provided"> | Voice settings |
+(one row for each platform setting: Voice settings, the Doctors setup, transfer numbers)
 ```
 
 Real values appear only in the Fill block of the draft notes, never in the Instructions.

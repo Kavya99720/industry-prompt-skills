@@ -23,6 +23,12 @@ banking file) is reported. Mode 'report' prints the hits and never fails; mode '
 'allow' list an error. `--leakage` runs only this check, report-only.
 Industry custom details: an industry may define extra variables in industries/<x>/variables.json (same format as
 docs/shared/variables.json). They are valid only in that industry's files.
+Inline values (DECISIONS 88): an industry whose variables.json says "inline_values": true prints the customer's business
+facts directly. Its allowed variables are ONLY the ones listed in its own variables.json (the shared list does not apply).
+In a generated Instructions set of such an industry (a *-instructions.md file, or a file whose first line is the === INSTRUCTIONS ===
+marker; only the part before === DRAFT NOTES === is read) any other {{var.*}} is an error, and so is an unresolved
+slot such as <business name> or <address>; the phone, address, denylist and company-name rules do not apply to it. They
+still apply to the skill sources of that industry and to every other industry.
 Standard library only.
 """
 import argparse
@@ -51,6 +57,22 @@ def is_sentence_test(path):
 
 
 IGNORE_MARK = "check_variables: ignore"
+INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
+NOTES_MARKER = "=== DRAFT NOTES ==="
+# A slot for a business fact that must have been filled in before the Instructions are printed. Runtime slots such as
+# <name>, <specialty>, <start>, <end>, <amount>, <day>, <month>, <hour> are fine.
+SLOT_RE = re.compile(
+    r"<(?:business[ _]name|company[ _]name|agent[ _]name|assistant[ _]name|agent[ _]gender|address|location|phone|"
+    r"business[ _]phone|hours|business[ _]hours|start[ _]language|languages|services|business[ _]facts|"
+    r"emergency[ _]department|extra[ _]emergency[ _]signs|confirmation[ _]channels)>", re.IGNORECASE)
+
+
+def is_generated_instructions(path, text):
+    """A generated Instructions file: *-instructions.md, or a file whose first line is the === INSTRUCTIONS === marker."""
+    if Path(path).name.endswith("-instructions.md"):
+        return True
+    first = next((l.strip() for l in text.splitlines() if l.strip()), "")
+    return first == INSTRUCTIONS_MARKER
 
 # Old or wrong names and the variable that replaces them. Only these are auto-fixed.
 OLD_NAMES = {
@@ -151,6 +173,26 @@ def industry_variables(industry, root):
     return load_variables(p) if p.is_file() else set()
 
 
+def industry_inline(industry, root):
+    """True when industries/<x>/variables.json says "inline_values": true (the industry prints business facts directly)."""
+    if not industry:
+        return False
+    p = Path(root) / "industries" / industry / "variables.json"
+    if not p.is_file():
+        return False
+    try:
+        return json.loads(p.read_text(encoding="utf-8")).get("inline_values") is True
+    except (OSError, ValueError):
+        return False
+
+
+def known_for(industry, root, base_known):
+    """(allowed variable names, inline flag) for one industry."""
+    if industry_inline(industry, root):
+        return industry_variables(industry, root), True
+    return base_known | industry_variables(industry, root), False
+
+
 def collect_files(targets, root):
     files = []
     for t in targets:
@@ -205,12 +247,19 @@ def check_line(line, known):
     return found
 
 
-def scan_file(path, known, denylist, root):
+def scan_file(path, known, denylist, root, inline=False):
     issues, fixes = [], []
     try:
         lines = path.read_text(encoding="utf-8").splitlines()
     except (OSError, UnicodeDecodeError):
         return issues, fixes
+    generated = inline and is_generated_instructions(path, "\n".join(lines))
+    if generated:
+        # Only the Instructions part is read; the draft notes are for the customer.
+        for k, l in enumerate(lines):
+            if l.strip() == NOTES_MARKER:
+                lines = lines[:k]
+                break
     try:
         rel = path.relative_to(root).as_posix()
     except ValueError:
@@ -222,6 +271,14 @@ def scan_file(path, known, denylist, root):
             issues.append(Issue(rel, n, level, problem, fix))
             if span:
                 fixes.append((n, span[0].start(), span[0].end(), span[1]))
+        if generated:
+            for m in SLOT_RE.finditer(line):
+                issues.append(Issue(rel, n, "ERROR", f"unresolved placeholder {m.group(0)} in the Instructions",
+                                    "print the customer's value, or the neutral wording for a missing value"))
+            if PERSON_RE.search(line):
+                issues.append(Issue(rel, n, "ERROR", "example person name in text",
+                                    "use a placeholder such as Doctor <name> or <patient_name>"))
+            continue  # phone, address, denylist and company-name rules do not apply to printed business facts
         if denylist:
             for rx in denylist:
                 if rx.search(line):
@@ -266,13 +323,13 @@ def run(root, targets, variables_path, denylist_path, fix=False, out=sys.stdout)
     for f in files:
         ind = industry_of(f, root)
         if ind not in industry_known:
-            industry_known[ind] = base_known | industry_variables(ind, root)
-        known = industry_known[ind]
-        issues, fixes = scan_file(f, known, denylist, root)
+            industry_known[ind] = known_for(ind, root, base_known)
+        known, inline = industry_known[ind]
+        issues, fixes = scan_file(f, known, denylist, root, inline)
         if fix and fixes:
             apply_fixes(f, fixes)
             fixed += len(fixes)
-            issues, _ = scan_file(f, known, denylist, root)
+            issues, _ = scan_file(f, known, denylist, root, inline)
         all_issues.extend(issues)
     errors = [i for i in all_issues if i.level == "ERROR"]
     warns = [i for i in all_issues if i.level == "WARN"]

@@ -1,0 +1,27 @@
+{
+  "summary": {
+    "industry": "healthcare",
+    "date": "2026-10-13-inline-hc",
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "harness_errors": [],
+    "harness_regenerations": []
+  },
+  "lint": {
+    "01-multispeciality-hospital-inbound": []
+  },
+  "self_check": {
+    "01-multispeciality-hospital-inbound": "not reported"
+  },
+  "timeouts": [],
+  "results": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "01-multispeciality-hospital-inbound",
+      "result": "pass",
+      "reason": "Instructions give 108/112, stop-task/never-book rule, and all 12 emergency sign groups"
+    }
+  ]
+}

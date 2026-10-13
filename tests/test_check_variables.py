@@ -174,6 +174,66 @@ def test_sentence_tests_folders_are_skipped_but_a_named_file_is_still_checked(re
     assert named >= 1 and any("sentence-tests" in i.path for i in named_issues)
 
 
+def make_inline_industry(repo, name="demo"):
+    d = repo / "industries" / name
+    d.mkdir(parents=True, exist_ok=True)
+    (d / "variables.json").write_text(json.dumps({
+        "inline_values": True,
+        "variables": [{"name": n, "source": "Built in", "description": "d", "example": "e", "industries": [name]}
+                      for n in ("now_local", "roster")]}), encoding="utf-8")
+    (repo / "outputs" / name).mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def run_on(repo, rel):
+    out = io.StringIO()
+    errors, warns, _, issues = cv.run(repo, [rel], repo / "docs/shared/variables.json", repo / "scripts/denylist.txt", out=out)
+    return errors, issues
+
+
+GOOD_OUTPUT = (
+    "=== INSTRUCTIONS ===\n"
+    "Thank you for calling Sunrise Clinic. This is Asha. How can I help you?\n"
+    "The clinic is at 12 Park Road, Indiranagar, Bengaluru 560038 and the phone is 9876543210. Open 9 AM to 8 PM.\n"
+    "Say Doctor <name> is available from <start> to <end>. Today is {{var.now_local}}.\n"
+    "{{var.roster}}\n"
+    "=== DRAFT NOTES ===\n"
+    "- Ask the customer about <business name> and {{var.business_hours}}; call 9876543211.\n"
+)
+
+
+def test_generated_instructions_of_an_inline_industry_may_print_business_facts(repo):
+    make_inline_industry(repo)
+    (repo / "outputs" / "demo" / "t.md").write_text(GOOD_OUTPUT, encoding="utf-8")
+    errors, issues = run_on(repo, "outputs/demo/t.md")
+    assert errors == 0, [str(i) for i in issues]
+
+
+def test_inline_industry_instructions_reject_other_variables_and_unresolved_slots(repo):
+    make_inline_industry(repo)
+    bad = GOOD_OUTPUT.replace("Open 9 AM to 8 PM.", "Open {{var.business_hours}}. Call <phone>. Welcome to <business name>.")
+    (repo / "outputs" / "demo" / "t.md").write_text(bad, encoding="utf-8")
+    errors, issues = run_on(repo, "outputs/demo/t.md")
+    problems_ = problems(issues)
+    assert errors == 3
+    assert any("unknown variable {{var.business_hours}}" in p_ for p_ in problems_)
+    assert any("unresolved placeholder <phone>" in p_ for p_ in problems_)
+    assert any("unresolved placeholder <business name>" in p_ for p_ in problems_)
+
+
+def test_inline_industry_still_checks_its_skill_sources_and_other_industries(repo):
+    d = make_inline_industry(repo)
+    (d / "core.md").write_text("Call 9876543210 and use {{var.agent_name}}.\n", encoding="utf-8")
+    errors, issues = run_on(repo, "industries/demo/core.md")
+    assert errors == 2 and any("phone number" in p_ for p_ in problems(issues)) and any("unknown variable" in p_ for p_ in problems(issues))
+    other = repo / "industries" / "plain"
+    other.mkdir()
+    (repo / "outputs" / "plain").mkdir()
+    (repo / "outputs" / "plain" / "t.md").write_text(GOOD_OUTPUT.replace("{{var.roster}}", "{{var.agent_name}}"), encoding="utf-8")
+    errors, issues = run_on(repo, "outputs/plain/t.md")
+    assert errors >= 1 and any("phone number" in p_ for p_ in problems(issues))
+
+
 @pytest.mark.parametrize("line", ["Say Doctor Rao, is that right?", "Ask Dr. Shah first.", "Dr Kumar is in."])
 def test_example_person_names_fail(repo, line):
     (errors, _, _, issues), _, _ = scan(repo, line + chr(10))

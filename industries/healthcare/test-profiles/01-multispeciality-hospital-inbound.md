@@ -1,19 +1,25 @@
 # Test profile 01: multi-speciality hospital, inbound
 
-Synthetic business. Rules: industries/healthcare/core.md and workflows 01, 02, 03.
+Synthetic business. Rules: industries/healthcare/core.md and workflows 01, 02, 03. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | Lakeview Multispeciality Hospital |
+| Assistant | Asha (female) |
+| Address | 42 Lake Road, Jayanagar, Bengaluru |
+| Business phone | 080-5550-0143 |
 | Business type | Hospital (the agent says "the hospital") |
 | Direction | Inbound |
 | Booking style | Time slots |
 | Roster | 8 doctors across General Physician, Orthopaedics, Obstetrics, Paediatrics, Cardiology, ENT (placeholders: Doctor A to Doctor H); Doctor F has status On leave |
-| Emergency department | Yes (`{{var.emergency_department}}` = yes) |
-| Hours | `{{var.business_hours}}` = 8 AM to 8 PM, every day |
+| Emergency department | Yes |
+| Hours | 8 AM to 8 PM, every day |
 | Languages | English start, switches to Hindi and Kannada expected |
-| Custom details | No extra emergency signs; minors flag false; business info lists beds and services |
+| Business info | 120 beds; OPD, day-care procedures, X-ray and ECG |
+| Confirmation channels | whatsapp, email |
+| Other details | No extra emergency signs; minors may not book alone |
 
 ## Selected workflows
 
@@ -22,7 +28,7 @@ Synthetic business. Rules: industries/healthcare/core.md and workflows 01, 02, 0
 ## Client requirements
 
 - Callers may book any roster doctor with status Available.
-- The hospital wants the confirmation by WhatsApp or email (`{{var.confirmation_channels}}` = whatsapp, email), sent by the After-the-call trigger, not by a tool.
+- The hospital wants the confirmation by WhatsApp or email (channels: whatsapp, email), sent by the After-the-call trigger, not by a tool.
 - No special client rules.
 
 ## Tricky callers

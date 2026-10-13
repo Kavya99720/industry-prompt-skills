@@ -12,11 +12,11 @@ Read with docs/shared/new-industry-template/. Sources: what failed and was fixed
 6. **Never say back a sensitive detail** the caller mentions. Acknowledge only with "I understand." then hand off.
 7. **Wrong person on an outbound call.** A fixed line, a banned-words list, never the purpose, then end the call. Voicemail: only the callback line.
 8. **No-collect list, item by item.** Name each item for the industry (government IDs, card, bank or UPI details, OTP, PIN, password, payment details, industry items). A general phrase ("insurance details") fails where a list is needed.
-9. **Missing configuration.** A business value that was not provided is "not provided - the team will confirm". The agent says exactly "Our team will confirm that for you." and never repeats a figure the caller supplies. The draft notes list every intake item with its value or default.
+9. **Missing configuration.** A business value that was not provided is an open question in the draft notes. The agent says exactly "Our team will confirm that for you." (a shared fixed line) and never repeats a figure the caller supplies. No agent name: no "This is <name>." in the welcome; no business name: a neutral word; no phone: a callback without a number; no hours: "during business hours".
 10. **Handoffs.** "I'll connect you to our team." for staff, manager or delivery handoffs only. No transfer target means a callback, never a transfer. A failed action says the team will call to confirm.
 11. **Confirmations and links** follow docs/shared/confirmation-flow.md: ask once, WhatsApp or email, only configured channels, no in-call tool (the After-the-call trigger sends it), the agent states the channel and reads an email back.
 12. **Direction.** "calling from" only in outbound Instructions; the welcome matches the call direction; both directions are two separate Instructions sets.
-13. **Variables.** Only names from variables.json; no hard-coded business value; the company name only in the welcome, the closing line, the AI-disclosure answer and the voicemail line.
+13. **Values and variables (DECISIONS 88, option B).** The Instructions print the business facts the customer gave; only `now_local`, `roster` and the outbound per-call fields are variables. No unresolved slot (<business name>) and no other `{{var.*}}` in an Instructions set. The business name is spoken in the welcome, the closing line, the AI-disclosure answer and the voicemail line; elsewhere use the plain word.
 14. **Budget.** Section 6 at most 595 words. Move universal behaviour to sections 1, 4 and 5.
 
 ## 2. Risk and tone by industry
