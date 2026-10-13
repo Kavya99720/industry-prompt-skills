@@ -19,6 +19,11 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
   --industry NAME  use .claude/skills/NAME-prompt-writer/references (default when --references is not given: banking)
   --references DIR the references folder, instead of --industry
 
+  --tool prescription_upload_method=whatsapp|email|in_store|not_set
+                   the prescription upload method the client chose. Rows marked [upload: whatsapp] or [upload: email] are
+                   required only for the matching method (none for in_store or not_set). Without this option every marked
+                   row is required, as before.
+
 Exit code 0: nothing missing. Exit code 1: lines are missing; each is printed.
 Exit code 2: usage error.
 """
@@ -29,6 +34,9 @@ from pathlib import Path
 
 SAY_EXACTLY = re.compile(r'say exactly(?: and only)?(?: this block\b[^"]{0,50})?\s*"([^"]+)"', re.I)
 MUST_PREFIX = "must include: "
+UPLOAD_BRANCH = re.compile(r"\[upload:\s*(whatsapp|email)\]", re.I)
+UPLOAD_TOOL = "prescription_upload_method"
+UPLOAD_VALUES = ("whatsapp", "email", "in_store", "not_set")
 MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
 
@@ -83,8 +91,11 @@ def required_lines(refs, numbers, direction, tools):
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example, not a real line
-                mentioned = [t for t in tools if t in row]
+                mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
                 needed = (not mentioned) or any(tools[t] for t in mentioned)
+                branch = UPLOAD_BRANCH.search(row)
+                if branch and isinstance(tools.get(UPLOAD_TOOL), str):
+                    needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
                 key = norm(q)
                 if key not in found:
                     found[key] = [f.name, q, needed]
@@ -102,7 +113,7 @@ def required_text(refs, numbers, direction, tools):
             continue
         for row in f.read_text(encoding="utf-8").splitlines():
             for q in MUST_INCLUDE.findall(row):
-                mentioned = [t for t in tools if t in row]
+                mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
                 needed = (not mentioned) or any(tools[t] for t in mentioned)
                 key = norm_text(q)
                 if key not in found:
@@ -143,6 +154,9 @@ def main(argv=None):
     tools = {}
     for item in args.tool:
         name, _, state = item.partition("=")
+        if name == UPLOAD_TOOL and state.lower() in UPLOAD_VALUES:
+            tools[name] = state.lower()
+            continue
         if state.lower() not in ("on", "off"):
             print(f"--tool needs name=on or name=off, got {item}", file=sys.stderr)
             return 2

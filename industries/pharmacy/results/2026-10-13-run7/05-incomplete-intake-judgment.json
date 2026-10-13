@@ -1,0 +1,44 @@
+{
+  "cases": [
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27",
+    "PHA-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "All business values use variables; company_name confined to allowed lines; variables table has no values"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome contains 'Thank you for calling'; no outbound phrases present"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 well under 615-word budget and draft notes state the count"
+    },
+    {
+      "case_id": "PHA-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes list all required missing-intake items as assumptions/open items; instructions invent nothing; fill-in table marks values not provided"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Our team will confirm that for you.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\"",
+    "fixed-line/config: fixed line from 02-order-prescription.md missing word for word: \"Is this number on WhatsApp?\"",
+    "fixed-line/config: fixed line from 02-order-prescription.md missing word for word: \"You will get the upload link on WhatsApp shortly.\"",
+    "fixed-line/config: fixed line from 02-order-prescription.md missing word for word: \"Please tell me your email address.\"",
+    "fixed-line/config: fixed line from 02-order-prescription.md missing word for word: \"You will get the upload link on email shortly.\""
+  ],
+  "self_check": "not reported"
+}

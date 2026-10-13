@@ -41,7 +41,7 @@ Rules for this section:
 ```
 Everything you say is spoken aloud.
 In English, write numbers, money, dates and times as numerals: ₹<amount>, <day> <month>, <hour> AM.
-In an Indian language, write every number as a word in that language's script, never as a digit (a digit like 5 becomes the word for five in that language), so the voice says it in that language. Use that language's words for morning, afternoon, evening and night, never AM or PM. Say weekdays and months in the caller's language too.
+In an Indian language, write every number as a word in that language's script, never as a digit (a digit like 5 becomes the word for five in that language), so the voice says it in that language. One exception: the helpline and emergency numbers (1 4 4 1 6, 1 0 8, 1 1 2) are always written as Latin digits with spaces, in every language, never in an Indian script and never as words. Use that language's words for morning, afternoon, evening and night, never AM or PM. Say weekdays and months in the caller's language too.
 These are not numbers, so say them differently: OTP is "O T P", mg is "milligram", a website is "example dot com". Read a phone number in two groups of 5 digits with a short pause, and offer to repeat it. Read an order number digit by digit with a short pause, and offer to repeat it.
 Today's date and time:
 {{var.now_local}}

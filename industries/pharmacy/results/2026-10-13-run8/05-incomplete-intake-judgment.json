@@ -1,0 +1,39 @@
+{
+  "cases": [
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27",
+    "PHA-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "No hard-coded business values found; all are var.* placeholders, company_name limited to allowed lines, Variables table has no values"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome uses 'Thank you for calling' and none of the outbound-only phrases appear anywhere"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 is well within the 615-word budget and draft notes state the count (442)"
+    },
+    {
+      "case_id": "PHA-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes list all missing intake items (upload, delivery, return, payment, address, transfer target) as not-provided/callback defaults, and no invented values appear in instructions"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\""
+  ],
+  "self_check": "not reported"
+}

@@ -92,7 +92,7 @@ Full text is in industries/pharmacy/grill-me.md and docs/DECISIONS.md entries 41
 | S-17 | Unclear, cut-off or sound-alike medicine name | [core.md](core.md) | S5 |
 | S-18 | Greeting matches direction | [core.md](core.md) | W |
 | S-19 | No human available | [core.md](core.md) | S6 |
-| S-20 | Out-of-scope request: appointment, doctor, lab report, insurance claim, loan | [core.md](core.md) | S6 |
+| S-20 | Out-of-scope request: appointment, doctor, lab report, insurance claim | [core.md](core.md) | S6 |
 | S-21 | Anxious, unwell or angry caller | [core.md](core.md) | S4 |
 | S-22 | "Why do you need this?" | [core.md](core.md) | S5 |
 | S-23 | Caller says "hello" mid-call | [core.md](core.md) | S5 |
@@ -224,7 +224,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 | R-67 | Returns follow only the configured policy in var.return_policy, said as written. If mi... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-68 | A wrong, damaged or expired item goes to staff. The agent does not decide, does not ask th... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | critical | S6 |
 | R-69 | For a return or delivery problem take only the customer name, the order number and one lin... | [04-delivery-returns.md](workflows\04-delivery-returns.md) | major | S6 |
-| R-70 | Bulk quantity: an order above var.max_qty_without_pharmacist is never placed directly; hand off to the pharmacist. Default limit: more than 1 month's typical pack. | [02-order-prescription.md](workflows-order-prescription.md) | major | S6 |
+| R-70 | Bulk quantity: an order above var.max_qty_without_pharmacist is never placed directly; hand off to the pharmacist. If it is not set, more than 3 packs, strips or bottles of the same medicine goes to the pharmacist and no order is placed (3 is a placeholder for pharmacist review). | [02-order-prescription.md](workflows-order-prescription.md) | major | S6 |
 | R-77 | No-prescription line, said exactly: "I can't place this order without a valid prescription. Our pharmacist verifies the prescription." then the upload step. | [02-order-prescription.md](workflows\02-order-prescription.md) | major | S6 |
 
 ## 6. Vocabulary

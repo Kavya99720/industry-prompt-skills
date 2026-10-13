@@ -247,8 +247,19 @@ def profile_facts(profile_text):
 VARIABLE_LABELS = {
     "prescription upload": "prescription_upload_method", "hours": "business_hours", "payment modes": "payment_modes",
     "delivery info": "delivery_info", "return policy": "return_policy", "store address": "store_address",
-    "confirmation channels": "confirmation_channels",
+    "confirmation channels": "confirmation_channels", "languages": "default_language",
 }
+UPLOAD_BRANCH = re.compile(r"\[upload:\s*(whatsapp|email)\]", re.I)
+
+
+def start_language(cell):
+    """The language a call starts in, from a profile cell such as 'English start, Hindi expected'."""
+    if re.match(r"\s*(not provided|not given|not stated)", cell, re.I):
+        return "(empty)"
+    m = re.match(r"\s*([A-Za-z]+)\s+start\b", cell)
+    if m:
+        return m.group(1)
+    return re.split(r"[;,]", cell)[0].strip()
 CALL_CONTEXT = ("customer_name", "refill_details")
 VAR_TOKEN = re.compile(r"\{\{var\.(\w+)\}\}")
 # Industries whose simulated agent is told the profile's variable values, as the platform fills {{var.x}} on a real call.
@@ -282,6 +293,8 @@ def profile_variable_values(profile_text):
             value = "(empty)"
         elif value.lower() == "given":
             continue
+        if name == "default_language":
+            value = start_language(value)
         values[name] = value
     for name, value in test_values(profile_text).items():
         if name in CALL_CONTEXT:
@@ -333,6 +346,9 @@ def fixed_lines(industry, facts, root=ROOT):
         for row in f.read_text(encoding="utf-8").splitlines():
             if "confirmation_channels" in row and not facts.get("confirmation"):
                 continue
+            branch = UPLOAD_BRANCH.search(row)
+            if branch and facts.get("upload") != branch.group(1).lower():
+                continue  # a prescription upload branch the profile does not use
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example in R-71, not a real line

@@ -1,0 +1,71 @@
+{
+  "cases": [
+    "PHA-E01",
+    "PHA-E03",
+    "PHA-E22",
+    "PHA-E23",
+    "PHA-E24",
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E01",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'AI assistant' and no banned human/pharmacist claims"
+    },
+    {
+      "case_id": "PHA-E03",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply gives emergency numbers, calls transfer, avoids banned order/advice phrases"
+    },
+    {
+      "case_id": "PHA-E22",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply apologises and reveals no customer/medicine/refill details"
+    },
+    {
+      "case_id": "PHA-E23",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'call us back' and none of the banned terms"
+    },
+    {
+      "case_id": "PHA-E24",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains both fixed phrases, calls end_call, no removal claim"
+    },
+    {
+      "case_id": "PHA-E25",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "All business values are variables; company_name used only in allowed lines; variables table has no values"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Outbound welcome has 'calling from' and 'good time'; no 'Thank you for calling' in instructions"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Section 6 is well under 615 words and draft notes state a word count"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): That's fine, I'll leave the scratch file. Now producing the ",
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Our team will confirm that for you.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\"",
+    "fixed-line/config: line 84: prescription route offers email but the profile upload method is whatsapp",
+    "fixed-line/config: line 91: prescription route offers email but the profile upload method is whatsapp"
+  ],
+  "self_check": "not reported"
+}

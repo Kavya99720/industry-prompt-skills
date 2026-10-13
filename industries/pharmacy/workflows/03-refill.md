@@ -84,7 +84,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 Inbound set:
 
 ```main-lines
-REFILL (also "my usual medicine", "same as last time", "repeat my order"): Ask which medicine first; that reveals nothing, so it comes before verification. Then, one at a time, ask the customer's name and the earlier order number. Until both are given, confirm nothing about past orders, prescriptions or refills; if either is missing, offer a callback. An earlier prescription is never assumed valid. Then follow STOCK and ORDER.
+REFILL (also "my usual medicine", "same as last time", "repeat my order"): Ask which medicine first; that reveals nothing, so it comes before verification. Then, one at a time, ask the customer's name and the earlier order number. Until both are given, confirm nothing about past orders, prescriptions or refills; if either is missing, offer a callback. An earlier prescription is never assumed valid: when you ask for a prescription, say exactly "Our pharmacist verifies the prescription." in the same reply. Then follow STOCK and ORDER.
 ```
 
 Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02, and the STOCK line of workflow 01):

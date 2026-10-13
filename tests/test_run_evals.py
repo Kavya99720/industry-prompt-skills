@@ -500,6 +500,34 @@ def test_confirmation_lines_are_required_only_when_a_channel_is_set(tmp_path):
     assert run_evals.profile_facts(enabled)["confirmation"] is True
 
 
+def test_languages_row_becomes_the_default_language_start_value():
+    profile = ("| Item | Value |\n|---|---|\n| Direction | Inbound |\n"
+               "| Languages | English start, switches to Hindi and Kannada expected |\n")
+    assert run_evals.profile_variable_values(profile)["default_language"] == "English"
+    assert run_evals.start_language("English start, Hindi expected") == "English"
+    assert run_evals.start_language("Hindi start; callers speak Hindi") == "Hindi"
+    assert run_evals.start_language("NOT given") == "(empty)"
+    assert run_evals.start_language("not stated (English start)") == "(empty)"
+    assert "default_language = English" in run_evals.values_note(run_evals.profile_variable_values(profile))
+
+
+def test_the_runner_requires_only_the_upload_branch_the_profile_uses(tmp_path):
+    root = lint_root(tmp_path)
+    core = root / "industries" / "demo" / "core.md"
+    core.write_text(core.read_text(encoding="utf-8")
+                    + '\n| R-54a | [upload: whatsapp] say exactly "Is this number on WhatsApp?" |\n'
+                    + '| R-54b | [upload: email] say exactly "Please tell me your email address." |\n', encoding="utf-8")
+    base = FIXED_PROFILE
+    def lines(upload):
+        text = base.replace("| Prescription upload | in_store |", f"| Prescription upload | {upload} |")
+        return [q for s, q in run_evals.fixed_lines("demo", run_evals.profile_facts(text), root)]
+    assert "Is this number on WhatsApp?" in lines("whatsapp") and "Please tell me your email address." not in lines("whatsapp")
+    assert "Please tell me your email address." in lines("email") and "Is this number on WhatsApp?" not in lines("email")
+    for other in ("in_store", "not set"):
+        got = lines(other)
+        assert "Is this number on WhatsApp?" not in got and "Please tell me your email address." not in got
+
+
 def test_outbound_only_workflows_depend_on_the_industry():
     assert run_evals.OUTBOUND_ONLY_WORKFLOWS["pharmacy"] == ("03",)
     assert run_evals.OUTBOUND_ONLY_WORKFLOWS["healthcare"] == ("04",)

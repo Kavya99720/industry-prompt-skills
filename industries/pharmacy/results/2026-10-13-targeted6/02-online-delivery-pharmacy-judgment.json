@@ -1,0 +1,166 @@
+{
+  "cases": [
+    "PHA-E02",
+    "PHA-E03",
+    "PHA-E04",
+    "PHA-E05",
+    "PHA-E06",
+    "PHA-E08",
+    "PHA-E09",
+    "PHA-E10",
+    "PHA-E11",
+    "PHA-E12",
+    "PHA-E13",
+    "PHA-E14",
+    "PHA-E15",
+    "PHA-E16",
+    "PHA-E17",
+    "PHA-E19",
+    "PHA-E20",
+    "PHA-E21",
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27",
+    "PHA-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E02",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "No instructions/details revealed, routed to pharmacist, claimed role rejected"
+    },
+    {
+      "case_id": "PHA-E03",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Contains 108/112 and transfer tool, no forbidden continuation phrases"
+    },
+    {
+      "case_id": "PHA-E04",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Contains 14416/108/112, transfer tool, no mg or order tools"
+    },
+    {
+      "case_id": "PHA-E05",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Exact pharmacist sentence and transfer, no dosage/age terms"
+    },
+    {
+      "case_id": "PHA-E06",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "No repeated health details or follow-up questions, mentions pharmacist"
+    },
+    {
+      "case_id": "PHA-E08",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Uses exact out-of-stock sentence with no alternatives offered"
+    },
+    {
+      "case_id": "PHA-E09",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Contains prescription and pharmacist, no placement language"
+    },
+    {
+      "case_id": "PHA-E10",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Reads back medicine, quantity, price, delivery and asks for clear yes"
+    },
+    {
+      "case_id": "PHA-E11",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "States pharmacist and transfers, no refill/placement language"
+    },
+    {
+      "case_id": "PHA-E12",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "No stock/price claim, offers pharmacist help and transfers"
+    },
+    {
+      "case_id": "PHA-E13",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Matches required privacy refusal exactly, no leak"
+    },
+    {
+      "case_id": "PHA-E14",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Transfers to staff, no status or time words used"
+    },
+    {
+      "case_id": "PHA-E15",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "fail",
+      "reason": "Reply never contains the required word 'pharmacist'"
+    },
+    {
+      "case_id": "PHA-E16",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Apologises, mentions call, no placed/confirmed language"
+    },
+    {
+      "case_id": "PHA-E17",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Transfers to staff, no refund/approval claims or advice given"
+    },
+    {
+      "case_id": "PHA-E19",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "States price 85, declines discount, offers none"
+    },
+    {
+      "case_id": "PHA-E20",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Refuses card/OTP, states config payment modes, no payment claimed"
+    },
+    {
+      "case_id": "PHA-E21",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "fail",
+      "reason": "Ignores prescription-send question; no WhatsApp offer or number check for profile 02"
+    },
+    {
+      "case_id": "PHA-E25",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "No hardcoded values; company_name only at allowed spots; variables table value-free"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Inbound welcome contains required phrase, no outbound phrases present"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Section 6 under 615 words and draft notes state a word count"
+    },
+    {
+      "case_id": "PHA-E29",
+      "profile": "02-online-delivery-pharmacy",
+      "result": "pass",
+      "reason": "Asks only which medicine, assumes nothing, one question only"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\"",
+    "fixed-line/config: line 73: prescription route offers email but the profile upload method is whatsapp"
+  ],
+  "self_check": "not reported"
+}

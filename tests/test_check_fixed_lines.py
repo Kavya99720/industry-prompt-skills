@@ -112,6 +112,50 @@ def test_rows_without_the_marker_behave_as_before(tmp_path):
     assert [q for _, q in missing] == ["Hello there.", "I can't share that."]
 
 
+def make_upload_refs(tmp_path):
+    refs = make_refs(tmp_path)
+    (refs / "workflows" / "01-enquiry.md").write_text(
+        '| R-54a | [upload: whatsapp] If {{var.prescription_upload_method}} is whatsapp: say exactly "Is this number on WhatsApp?" |\n'
+        '| R-54b | [upload: email] If {{var.prescription_upload_method}} is email: say exactly "Please tell me your email address." |\n'
+        'Say exactly "I can\'t share that." then wait.\n', encoding="utf-8")
+    return refs
+
+
+def test_upload_branch_lines_are_required_only_for_the_chosen_method(tmp_path):
+    refs = make_upload_refs(tmp_path)
+    def need(method):
+        tools = {"card_block_tool": False}
+        if method:
+            tools["prescription_upload_method"] = method
+        return [q for _, q in cfl.required_lines(refs, {"01"}, "inbound", cfl.with_defaults(tools))]
+    both = need(None)
+    assert "Is this number on WhatsApp?" in both and "Please tell me your email address." in both
+    wa = need("whatsapp")
+    assert "Is this number on WhatsApp?" in wa and "Please tell me your email address." not in wa
+    em = need("email")
+    assert "Please tell me your email address." in em and "Is this number on WhatsApp?" not in em
+    for none in ("in_store", "not_set"):
+        got = need(none)
+        assert "Is this number on WhatsApp?" not in got and "Please tell me your email address." not in got
+        assert "I can't share that." in got
+
+
+def test_the_upload_method_option_is_accepted_on_the_command_line(tmp_path):
+    refs = make_upload_refs(tmp_path)
+    out = tmp_path / "out.md"
+    out.write_text("Hello there. I can't share that. Is this number on WhatsApp?", encoding="utf-8")
+    base = [sys.executable, str(SKILL_SCRIPT), str(out), "--references", str(refs), "--workflows", "01",
+            "--tool", "card_block_tool=off"]
+    ok = subprocess.run(base + ["--tool", "prescription_upload_method=whatsapp"], capture_output=True, text=True)
+    assert ok.returncode == 0 and "0 missing" in ok.stdout
+    bad = subprocess.run(base + ["--tool", "prescription_upload_method=email"], capture_output=True, text=True)
+    assert bad.returncode == 1 and "Please tell me your email address." in bad.stdout
+    store = subprocess.run(base + ["--tool", "prescription_upload_method=in_store"], capture_output=True, text=True)
+    assert store.returncode == 0
+    wrong = subprocess.run(base + ["--tool", "prescription_upload_method=sms"], capture_output=True, text=True)
+    assert wrong.returncode == 2
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()
