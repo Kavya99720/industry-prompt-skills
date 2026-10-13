@@ -273,7 +273,7 @@ def lint_root(tmp_path):
 def test_profile_facts_reads_direction_workflows_and_upload_method():
     facts = run_evals.profile_facts(FIXED_PROFILE)
     assert facts == {"direction": "inbound", "workflows": ["01", "02"], "upload": "in_store", "confirmation": False,
-                     "inline_welcome": None}
+                     "inline_welcome": None, "slots": None}
 
 
 def test_fixed_line_lint_reports_a_missing_line(tmp_path):

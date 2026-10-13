@@ -1,20 +1,24 @@
 # Test profile 03: pharmacy chain, outbound refill reminders
 
-Synthetic business. Rules: industries/pharmacy/core.md and workflows 03 (outbound), 02, 01 (stock lines).
+Synthetic business. Rules: industries/pharmacy/core.md and workflows 03 (outbound), 02, 01 (stock lines). Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; pharmacy DECISIONS 94); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | Sunrise Pharmacy |
+| Assistant | Kiran (male) |
+| Address | 21 Station Road, Malleshwaram, Bengaluru |
+| Business phone | 080-5550-0166 |
 | Business type | Pharmacy chain (the agent says "our pharmacy") |
 | Direction | Outbound |
 | Channel | Voice |
 | Tools | Stock and price check, place order, change_language, transfer, end_call |
-| Prescription upload | whatsapp (`{{var.prescription_upload_method}}`) |
-| Hours | `{{var.business_hours}}` = 9 AM to 7 PM, Monday to Saturday |
+| Prescription upload | whatsapp |
+| Hours | 9 AM to 7 PM, Monday to Saturday |
 | Transfer targets | Pharmacist on duty |
-| Payment modes | `{{var.payment_modes}}` = cash on delivery and UPI on delivery |
-| Welcome | Outbound template: "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" |
+| Payment modes | cash on delivery and UPI on delivery |
+| Welcome | Outbound template: "Hello, this is Kiran calling from Sunrise Pharmacy. Is this a good time to talk?" |
 | Call data | `{{var.customer_name}}` and `{{var.refill_details}}` (unconfirmed platform variables) |
 
 ## Selected workflows

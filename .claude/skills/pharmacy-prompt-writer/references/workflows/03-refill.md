@@ -8,7 +8,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 |---|---|
 | Trigger | Inbound: the caller says refill, reorder or "same as last time". Outbound: the platform starts a call for a refill that is due |
 | Direction | Inbound and outbound (two Instructions sets) |
-| Welcome | Inbound: the receiver template. Outbound: "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" (platform-fixed; the skill does not write it) |
+| Welcome | Inbound: the receiver template. Outbound: "Hello, this is <agent name> calling from <business name>. Is this a good time to talk?" (platform-fixed; the skill does not write it) |
 | Business types | retail pharmacy or chain, online or delivery pharmacy, hospital or clinic pharmacy |
 
 ## Steps: inbound refill
@@ -30,7 +30,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 
 ## Data and variables
 
-`{{var.customer_name}}` and `{{var.refill_details}}` (both unconfirmed: whether the platform passes them is an open question), `{{var.agent_name}}`, `{{var.company_name}}` (welcome, voicemail and closing only), `{{var.business_phone}}`, `{{var.business_hours}}`, `{{var.now_local}}`. Collected: customer name, order number, medicine, quantity (via workflow 02).
+`{{var.customer_name}}` and `{{var.refill_details}}` (both unconfirmed: whether the platform passes them is an open question), the agent name, business name and phone (welcome, voicemail and closing), `{{var.now_local}}`. Collected: customer name, order number, medicine, quantity (via workflow 02).
 
 ## Tools
 
@@ -42,8 +42,8 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here. The in
 |----|------|--------|----------|-------------------|
 | R-57 | A refill is a new order for the gates. Never assume an earlier prescription is still valid: a prescription-only refill goes to the pharmacist (R-11, R-50) and a controlled or unsure medicine is never refilled by phone (R-12). Refill details are shared only after verification (R-14). | Grill-me Q3, Q6, Q7 | critical | S6 |
 | R-58 | On an outbound call, ask for the customer by name and confirm the person is that customer before saying anything about a refill. If it is someone else, say exactly "Sorry for the trouble. I can only speak with the customer." then, in the same reply, use `end_call`. Give no purpose; never say refill, medicine, order or prescription; share nothing about the customer. After confirmation say only that a refill is due; say the medicine only after the customer gives the order number. Decided (DECISIONS 44): the medicine is named only after the order number is given. The address on file is never said on an outbound call (R-56). | Grill-me Q11; open question | critical | S6 |
-| R-59 | On a voicemail or no answer, say exactly and only: "Hello, this is `{{var.agent_name}}` from `{{var.company_name}}`. Please call us back at `{{var.business_phone}}`." Never leave the customer's name, a medicine, an order or a refill detail. Open question: whether the platform supports voicemail at all. | Healthcare pattern | critical | S6 |
-| R-60 | At the start of an outbound call, the welcome is exactly "Hello, this is `{{var.agent_name}}` calling from `{{var.company_name}}`. Is this a good time to talk?" and is always written as the first line of the Instructions. If not, offer a callback time or end politely. | Healthcare pattern | major | W; S6 |
+| R-59 | On a voicemail or no answer, say exactly and only: "Hello, this is <agent name> from <business name>. Please call us back at <phone>." Never leave the customer's name, a medicine, an order or a refill detail. Open question: whether the platform supports voicemail at all. | Healthcare pattern | critical | S6 |
+| R-60 | At the start of an outbound call, the welcome is exactly "Hello, this is <agent name> calling from <business name>. Is this a good time to talk?" and is always written as the first line of the Instructions. If not, offer a callback time or end politely. | Healthcare pattern | major | W; S6 |
 | R-61 | If asked how the pharmacy got the number, say it is the number on the customer's record. Never invent a source. Outbound sets only. | Healthcare pattern | major | S5 |
 | R-62 | Stop-calling request: apologise once and say exactly "I've noted that you don't want further calls. Our team will update this." Never argue or retry, then use `end_call` in the same reply. Never say it is done or removed (no do-not-call tool is confirmed). | Healthcare pattern | critical | S6 |
 | R-63 | An outbound reminder is a reminder only (written in section 5 for outbound sets). Never say or take an address on the call; for home delivery say the team will confirm it (R-56). No sales, no offers, no supplements, no dosage or medicine talk. If the customer asks how to take it or says they stopped it, say "Our pharmacist will help you with that." (R-09). | Grill-me Q2, Q9 | major | S5 |
@@ -92,5 +92,5 @@ Outbound set (also uses the ORDER, PRESCRIPTION and PAYMENT lines of workflow 02
 ```main-lines-outbound
 OUTBOUND REFILL: Ask for {{var.customer_name}} by name. Share nothing until the person confirms they are that customer. Someone else: say exactly "Sorry for the trouble. I can only speak with the customer." then end the call. Never give the purpose; never say refill, medicine, order or prescription. If it is a bad time, offer a callback time or end politely. Then say only that a refill is due. Say which medicine, from {{var.refill_details}}, only after they give the order number. Ask if they want it; if yes, follow REFILL from the stock check.
 If they say stop calling, apologise once, then say exactly "I've noted that you don't want further calls. Our team will update this." then, in the same reply, use the end_call tool. Never argue or retry.
-Voicemail: say exactly and only "Hello, this is {{var.agent_name}} from {{var.company_name}}. Please call us back at {{var.business_phone}}." Never leave a name, medicine or refill detail.
+Voicemail: say exactly and only "Hello, this is <agent name> from <business name>. Please call us back at <phone>." Never leave a name, medicine or refill detail.
 ```

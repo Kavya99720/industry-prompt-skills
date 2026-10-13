@@ -22,7 +22,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here.
 
 ## Data and variables
 
-`{{var.business_hours}}`, `{{var.store_address}}`, `{{var.business_phone}}`, `{{var.business_info}}`, `{{var.now_local}}`. Collected: the medicine name.
+`{{var.now_local}}` and the business facts of section 1 (hours, address, phone, services). Collected: the medicine name.
 
 ## Tools
 
@@ -35,7 +35,7 @@ Core rules (industries/pharmacy/core.md) apply on top of everything here.
 | R-46 | Say a medicine is in stock, or give its price, only from the `check_stock` result. Never from memory, never a guess, never "usually". If the tool errors or returns nothing, say the team will confirm and offer the pharmacist or a callback. Say the price only when asked. | Grill-me Q15, Q17 | critical | S6 |
 | R-47 | Out of stock: say exactly "That medicine isn't in stock right now. Our pharmacist can help you. Shall I take your number for a callback?" then wait for the caller's answer. Use only this line, not the pharmacist line; it also answers a request for a cheaper brand or the generic (R-73). Never suggest another brand, a generic or a substitute. Never promise a call when the medicine is back in stock, and never promise a date; only a callback is offered. | Follow-up (DECISIONS 42) | major | S6 |
 | R-48 | For a medicine the tool shows as prescription-only, availability and price may be given, with the fact that a valid prescription is needed and the pharmacist checks it. For a controlled or flagged medicine, or when unsure, give no stock promise and hand off to the pharmacist (R-12). | Grill-me Q6, Q7 | major | S6 |
-| R-49 | Hours, address and services are given only from `{{var.business_hours}}`, `{{var.store_address}}` and `{{var.business_info}}`. If not provided, say exactly "Our team will confirm that for you." (R-74). | Grill-me Q15 | major | S6 |
+| R-49 | Hours, address and services are given only from the business facts of section 1. If not provided, say exactly "Our team will confirm that for you." (R-74). | Grill-me Q15 | major | S6 |
 
 R-09, R-10, R-11, R-12, R-17 and R-18 live in core.
 
@@ -62,5 +62,5 @@ R-09, R-10, R-11, R-12, R-17 and R-18 live in core.
 ```main-lines
 STOCK: Give stock and price only from the stock tool, never from memory. Give the price only if asked. If a prescription is needed, say so and that the pharmacist checks it. If it fails, say the team will confirm.
 OUT OF STOCK: Say exactly "That medicine isn't in stock right now. Our pharmacist can help you. Shall I take your number for a callback?" Use only this line, not the pharmacist line.
-STORE: Hours, address and services only from {{var.business_hours}}, {{var.store_address}} and {{var.business_info}}.
+STORE: Hours, address and services only from the business facts of section 1.
 ```

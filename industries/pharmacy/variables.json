@@ -1,70 +1,14 @@
 {
   "syntax": "{{var.<name>}}",
-  "note": "Pharmacy custom details and call context. Same format as docs/shared/variables.json; valid only in pharmacy files. The shared variables (agent_name, agent_gender, default_language, business_hours, business_phone, company_name, now_local) are used as defined there. The healthcare-only variables roster and clinic_address are NOT used by pharmacy. Example values are neutral placeholders. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "note": "Pharmacy prints the customer's business facts directly in the Instructions (DECISIONS 88, option B; pharmacy since DECISIONS 94). These are the only variables a pharmacy Instructions set may use. Any other {{var.*}} is an error; so is an unresolved slot such as <business name>. This list replaces docs/shared/variables.json for pharmacy. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "inline_values": true,
   "variables": [
     {
-      "name": "store_address",
-      "source": "Custom detail",
-      "description": "The street address of the store or collection point. Used only when the caller asks for directions or location. Online pharmacies may leave it empty.",
-      "example": "<store_address>",
-      "industries": ["pharmacy"],
-      "default": "empty"
-    },
-    {
-      "name": "business_info",
-      "source": "Custom detail",
-      "description": "Free text about the business that is safe to say aloud: services offered, branches, pickup counter, home delivery yes or no. Never typed into the prompt itself. If empty, the agent says the team will confirm.",
-      "example": "<services_list>, <branches>",
-      "industries": ["pharmacy"],
-      "default": "empty"
-    },
-    {
-      "name": "prescription_upload_method",
-      "source": "Custom detail",
-      "description": "How a customer sends a prescription: whatsapp, email or in_store. For whatsapp or email the agent says the upload link will arrive shortly on that channel; the platform's After-the-call trigger sends it. For in_store, or when not set, the agent asks the customer to bring the prescription to the store, or offers a staff callback. The agent never takes a prescription by voice.",
-      "example": "whatsapp",
-      "industries": ["pharmacy"],
-      "default": "not set (bring it to the store, or a staff callback)"
-    },
-    {
-      "name": "return_policy",
-      "source": "Custom detail",
-      "description": "The client's return policy, said only as written: window, conditions, who handles it. If empty, the agent says the team will confirm. The agent never says a return or refund is approved.",
-      "example": "<return_window_and_conditions>",
-      "industries": ["pharmacy"],
-      "default": "empty"
-    },
-    {
-      "name": "delivery_info",
-      "source": "Custom detail",
-      "description": "Delivery areas, charges and the usual delivery timing, said only as written. If empty, the agent says the team will confirm. The agent never promises a delivery time.",
-      "example": "<delivery_areas>, <delivery_charges>, <usual_timing>",
-      "industries": ["pharmacy"],
-      "default": "empty"
-    },
-    {
-      "name": "payment_modes",
-      "source": "Custom detail",
-      "description": "The payment modes the business accepts, said only as written (for example cash on delivery, UPI at the counter). The agent never takes card, bank or UPI details or an OTP on the call. If empty, the agent says the team will confirm.",
-      "example": "<payment_modes>",
-      "industries": ["pharmacy"],
-      "default": "empty"
-    },
-    {
-      "name": "max_qty_without_pharmacist",
-      "source": "Custom detail",
-      "description": "The largest quantity the agent may order without the pharmacist, said in the client's own units (for example strips or bottles). An order above it goes to the pharmacist and is never placed directly. If empty, more than 3 packs, strips or bottles of the same medicine goes to the pharmacist and no order is placed.",
-      "example": "<max_quantity>",
-      "industries": ["pharmacy"],
-      "default": "empty (more than 3 packs, strips or bottles of the same medicine goes to the pharmacist)"
-    },
-    {
-      "name": "emergency_signs_extra",
-      "source": "Custom detail",
-      "description": "Extra emergency signs the client ADDS to the default list in core rules. The default list is always in the prompt; this detail can add to it and never remove from it. Open question: whether a custom detail can hold a list.",
-      "example": "<extra_sign_1>, <extra_sign_2>",
-      "industries": ["pharmacy"],
-      "default": "empty"
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["pharmacy"]
     },
     {
       "name": "customer_name",

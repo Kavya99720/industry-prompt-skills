@@ -11,7 +11,6 @@ A test fails when a copy is out of sync.
 | workflows/03-refill.md | industries/pharmacy/workflows/03-refill.md |
 | workflows/04-delivery-returns.md | industries/pharmacy/workflows/04-delivery-returns.md |
 | shared/section-bases.md | docs/shared/section-bases.md |
-| shared/variables.json | docs/shared/variables.json |
 | shared/baseline-rules.md | docs/shared/baseline-rules.md |
 | shared/platform-contract.md | docs/shared/platform-contract.md |
 | shared/intake-flow.md | docs/shared/intake-flow.md |

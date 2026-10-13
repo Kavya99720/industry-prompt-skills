@@ -325,6 +325,8 @@ def run(root, targets, variables_path, denylist_path, fix=False, out=sys.stdout)
         if ind not in industry_known:
             industry_known[ind] = known_for(ind, root, base_known)
         known, inline = industry_known[ind]
+        if "references/shared/" in f.as_posix():
+            known, inline = base_known | industry_variables(ind, root), False  # a copy of a shared doc: the shared variable list applies
         issues, fixes = scan_file(f, known, denylist, root, inline)
         if fix and fixes:
             apply_fixes(f, fixes)

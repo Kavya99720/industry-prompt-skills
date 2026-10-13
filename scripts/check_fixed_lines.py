@@ -69,6 +69,35 @@ def profile_value(profile_text, label):
     return m.group(1).strip() if m else None
 
 
+def _given(v):
+    return v is not None and not re.match(r"(not given|not provided|not stated|none)", v, re.I)
+
+
+def profile_slots(profile_text):
+    """Values a say-exactly line may carry as slots: <agent name>, <business name>, <phone>, from a test profile."""
+    slots = {}
+    biz = profile_value(profile_text, "Business name")
+    if _given(biz):
+        slots["business name"] = biz
+    agent = profile_value(profile_text, "Assistant")
+    if _given(agent):
+        slots["agent name"] = re.sub(r"\s*\([^)]*\)\s*$", "", agent).strip()
+    phone = profile_value(profile_text, "Business phone")
+    if _given(phone):
+        slots["phone"] = phone
+    return slots
+
+
+def fill_slots(quote, slots):
+    """The quote with its slots filled from the profile; None when a slot has no value (then the line is not required)."""
+    if slots is None:
+        return quote
+    try:
+        return re.sub(r"<(agent name|business name|phone)>", lambda m: slots[m.group(1)], quote)
+    except KeyError:
+        return None
+
+
 def welcome_from_profile(profile_text):
     """The welcome an inline-values Instructions set must start with, from a test profile's own values."""
     def given(v):
@@ -118,7 +147,7 @@ def with_defaults(tools):
     return merged
 
 
-def required_lines(refs, numbers, direction, tools):
+def required_lines(refs, numbers, direction, tools, slots=None):
     """Quotes that must be present, as a list of (source file name, quote)."""
     files = [refs / "core.md"] + workflow_files(refs, numbers, direction)
     found = {}
@@ -134,6 +163,9 @@ def required_lines(refs, numbers, direction, tools):
                 branch = UPLOAD_BRANCH.search(row)
                 if branch and isinstance(tools.get(UPLOAD_TOOL), str):
                     needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
+                q = fill_slots(q, slots)
+                if q is None:
+                    continue
                 key = norm(q)
                 if key not in found:
                     found[key] = [f.name, q, needed]
@@ -161,13 +193,13 @@ def required_text(refs, numbers, direction, tools):
     return [(v[0], v[1]) for v in found.values() if v[2]]
 
 
-def check(output_text, refs, numbers=(), direction=None, tools=None, welcome=None):
+def check(output_text, refs, numbers=(), direction=None, tools=None, welcome=None, slots=None):
     tools = with_defaults(tools)
     head = output_text.split("\n", 12)
     if direction is None:
         direction = "outbound" if any("calling from" in l for l in head) else "inbound"
     body = norm(output_text)
-    missing = [(src, q) for src, q in required_lines(Path(refs), set(numbers), direction, tools) if norm(q) not in body]
+    missing = [(src, q) for src, q in required_lines(Path(refs), set(numbers), direction, tools, slots) if norm(q) not in body]
     text = norm_text(output_text)
     missing += [(src, MUST_PREFIX + q) for src, q in required_text(Path(refs), set(numbers), direction, tools)
                 if norm_text(q) not in text]
@@ -213,8 +245,10 @@ def main(argv=None):
             print(f"--tool needs name=on or name=off, got {item}", file=sys.stderr)
             return 2
         tools[name] = state.lower() == "on"
-    welcome = welcome_from_profile(Path(args.profile).read_text(encoding="utf-8")) if args.profile else None
-    missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome)
+    profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
+    welcome = welcome_from_profile(profile_text) if profile_text else None
+    slots = profile_slots(profile_text) if profile_text else None
+    missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome, slots)
     for src, q in missing:
         if q.startswith(RULE_ID_PREFIX):
             print(f"RULE ID in the Instructions ({src}): {q[len(RULE_ID_PREFIX):]}")
@@ -223,7 +257,7 @@ def main(argv=None):
         else:
             print(f'MISSING (from {src}): "{q}"')
     direction = args.direction or ("outbound" if "calling from" in path.read_text(encoding="utf-8")[:900] else "inbound")
-    required = (len(required_lines(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
+    required = (len(required_lines(Path(args.references), set(args.workflows), direction, with_defaults(tools), slots))
                 + len(required_text(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
                 + (1 if welcome else 0))
     print(f"fixed lines: {required} required, {len(missing)} missing")

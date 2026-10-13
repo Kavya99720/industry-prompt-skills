@@ -1,22 +1,26 @@
 # Test profile 02: online and delivery pharmacy, inbound
 
-Synthetic business. Rules: industries/pharmacy/core.md and workflows 01, 02, 03 (inbound), 04.
+Synthetic business. Rules: industries/pharmacy/core.md and workflows 01, 02, 03 (inbound), 04. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; pharmacy DECISIONS 94); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | QuickCare Online Pharmacy |
+| Assistant | Meera (female) |
+| Address | 3 Tech Park Road, Whitefield, Bengaluru |
+| Business phone | 080-5550-0188 |
 | Business type | Online pharmacy with home delivery (the agent says "our online pharmacy" or "the pharmacy") |
 | Direction | Inbound |
 | Channel | Voice |
 | Tools | Stock and price check, place order, change_language, transfer, end_call. No order-status tool |
-| Prescription upload | whatsapp (`{{var.prescription_upload_method}}`) |
+| Prescription upload | whatsapp |
 | Fulfilment | Home delivery |
-| Hours | `{{var.business_hours}}` = 9 AM to 9 PM, Monday to Saturday |
+| Hours | 9 AM to 9 PM, Monday to Saturday |
 | Transfer targets | Pharmacist on duty; store manager; delivery desk |
-| Payment modes | `{{var.payment_modes}}` = cash on delivery and UPI on delivery |
-| Delivery info | `{{var.delivery_info}}` = delivery in the city and nearby areas; charges and usual timing as the business states |
-| Return policy | `{{var.return_policy}}` = unopened, unexpired items can be returned within 7 days with the bill; wrong, damaged or expired items go to staff |
+| Payment modes | cash on delivery and UPI on delivery |
+| Delivery info | delivery in the city and nearby areas; charges and usual timing as the business states |
+| Return policy | unopened, unexpired items can be returned within 7 days with the bill; wrong, damaged or expired items go to staff |
 | Languages | English start, Hindi expected |
 | Custom details | No extra emergency signs |
 

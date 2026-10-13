@@ -522,8 +522,8 @@
       "type": "prompt",
       "method": "llm-judge",
       "target": "instructions",
-      "description": "No business value is hard-coded, and the company-name variable appears only where the caller hears the name.",
-      "pass_criteria": "PASS only if ALL hold: outside the draft notes, the Instructions contain no specific phone number, street address, business hours with real times, rupee amount with a real number (the placeholder \"₹<amount>\" is allowed), delivery charge, return window, payment mode or business name written out; every business value is a {{var.<name>}} variable; every line using {{var.company_name}} is the welcome message, a closing line, the AI-disclosure answer or the voicemail line; the Prompt Variables table lists variable names and sources only, with no value. The emergency numbers 108, 112 and 14416 are allowed. FAIL otherwise."
+      "description": "No invented values or leftover variables and slots; the profile's business facts are printed once, and the business name is spoken only where the caller hears it and in the Business facts block of section 1.",
+      "pass_criteria": "PASS only if ALL hold: outside the draft notes, the only variables the Instructions use are {{var.now_local}}, {{var.customer_name}} and {{var.refill_details}}, and no unresolved slot such as <business name>, <agent name>, <address>, <phone> or <hours> remains; every business fact the profile gives (business name, assistant name, address, phone, hours, payment modes, delivery terms, return policy) is printed as given and no business fact the profile did not give appears (no invented phone number, street address, business hours, rupee amount with a real number other than one printed from the business facts (the placeholder \"₹<amount>\" is allowed), delivery charge, return window or payment mode); the business name is spoken only in the welcome message, a closing line, the AI-disclosure answer, the voicemail line or the section 1 Business facts block; the Prompt Variables table lists variable names and sources only, with no value. The emergency numbers 108, 112 and 14416 are allowed. FAIL otherwise."
     },
     {
       "id": "PHA-E26",
@@ -539,7 +539,7 @@
       "method": "deterministic",
       "target": "instructions",
       "description": "The welcome message and the whole flow match the call direction.",
-      "pass_criteria": "On profiles 01, 02, 04 and 05 (inbound) PASS only if ALL hold: the welcome message contains \"Thank you for calling\"; the Instructions contain neither \"calling from\" nor \"Is this a good time\" nor \"Hello, this is\". On profile 03 (outbound) PASS only if ALL hold: the welcome message contains \"calling from\" and \"good time\"; the Instructions do not contain \"Thank you for calling\" anywhere. FAIL otherwise."
+      "pass_criteria": "On profiles 01, 02, 04 and 05 (inbound) PASS only if ALL hold: the welcome message contains \"Thank you for calling\" followed by the business name, or a neutral word such as \"our store\" when no name was given; the Instructions contain neither \"calling from\" nor \"Is this a good time\" nor \"Hello, this is\". On profile 03 (outbound) PASS only if ALL hold: the welcome message contains \"calling from\" and \"good time\"; the Instructions do not contain \"Thank you for calling\" anywhere. FAIL otherwise."
     },
     {
       "id": "PHA-E27",
@@ -624,8 +624,8 @@
       "profiles": [
         "05"
       ],
-      "description": "With most intake answers missing, the skill uses the stated defaults, lists them as assumptions and invents nothing.",
-      "pass_criteria": "PASS only if ALL hold: the draft notes list as assumptions or open items that prescription upload is not set (customer brings it to the store or gets a staff callback), that delivery info, return policy, payment modes and the store address are not provided (the team will confirm), and that no transfer target was given (the agent offers a callback instead of a transfer); the Instructions contain no invented phone number, address, price, delivery term, payment mode, return window or transfer number; the \"Fill these in the platform\" block shows \"not provided\" for the missing values. FAIL otherwise."
+      "description": "With most intake answers missing, the skill uses the missing-value rules, lists each as an assumption or open question, and invents nothing.",
+      "pass_criteria": "PASS only if ALL hold: the draft notes list as assumptions or open questions that the prescription upload method was not given (the customer brings it to the store or gets a staff callback), that the delivery terms, return policy, payment modes and the address were not given (exactly \"Our team will confirm that for you.\"), that no transfer target was given (the agent offers a callback instead of a transfer), and that the assistant name and phone were not given (no \"This is <name>.\" in the welcome; callbacks offered without a number); the Instructions contain no invented phone number, address, price, delivery term, payment mode, return window or transfer number; the \"Fill these in the platform\" table lists only what is set on the platform. FAIL otherwise."
     }
   ]
 }

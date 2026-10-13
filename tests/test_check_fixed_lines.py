@@ -224,6 +224,27 @@ def test_a_package_offer_line_is_required_only_when_a_package_exists(tmp_path):
     assert cfl.check(out + " Offer it once.", refs, numbers=["01"], tools={"card_block_tool": False, "package_offer": True}) == []
 
 
+def test_slots_in_a_say_exactly_line_are_filled_from_the_profile(tmp_path):
+    refs = make_refs(tmp_path)
+    wf = refs / "workflows" / "01-enquiry.md"
+    wf.write_text(wf.read_text(encoding="utf-8")
+                  + chr(10) + '| R-59 | Voicemail: say exactly "Hello, this is <agent name> from <business name>. Please call us back at <phone>." |' + chr(10),
+                  encoding="utf-8")
+    full = PROFILE + "| Business phone | 080-5550-0121 |" + chr(10)
+    slots = cfl.profile_slots(full)
+    assert slots == {"business name": "Lakeview Hospital", "agent name": "Asha", "phone": "080-5550-0121"}
+    line = "Hello, this is Asha from Lakeview Hospital. Please call us back at 080-5550-0121."
+    ok = cfl.check("Hello there. I can't share that. " + line, refs, numbers=["01"], tools={"card_block_tool": False}, slots=slots)
+    assert ok == []
+    bad = cfl.check("Hello there. I can't share that.", refs, numbers=["01"], tools={"card_block_tool": False}, slots=slots)
+    assert [q for _, q in bad] == [line]
+    no_phone = cfl.profile_slots(PROFILE)
+    assert "phone" not in no_phone
+    skipped = cfl.check("Hello there. I can't share that.", refs, numbers=["01"], tools={"card_block_tool": False}, slots=no_phone)
+    assert skipped == []  # a slot the profile does not give: the line is not required
+    assert cfl.fill_slots("Call <phone>.", None) == "Call <phone>."
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()

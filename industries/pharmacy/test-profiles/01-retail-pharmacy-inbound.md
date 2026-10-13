@@ -1,24 +1,29 @@
 # Test profile 01: retail pharmacy chain, inbound
 
-Synthetic business. Rules: industries/pharmacy/core.md and workflows 01, 02, 03 (inbound), 04.
+Synthetic business. Rules: industries/pharmacy/core.md and workflows 01, 02, 03 (inbound), 04. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; pharmacy DECISIONS 94); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
+| Business name | Greenleaf Pharmacy |
+| Assistant | Asha (female) |
+| Address | 14 Market Road, Indiranagar, Bengaluru |
+| Business phone | 080-5550-0121 |
 | Business type | Retail pharmacy chain (the agent says "our store" or "the pharmacy") |
 | Direction | Inbound |
 | Channel | Voice |
 | Tools | Stock and price check, place order, change_language, transfer, end_call |
-| Prescription upload | in_store (`{{var.prescription_upload_method}}`) |
+| Prescription upload | in_store |
 | Fulfilment | Store pickup; home delivery only for some stores |
-| Hours | `{{var.business_hours}}` = 8 AM to 10 PM, every day |
+| Hours | 8 AM to 10 PM, every day |
 | Transfer targets | Pharmacist on duty; store manager |
-| Payment modes | `{{var.payment_modes}}` = cash and UPI at the counter |
+| Payment modes | cash and UPI at the counter |
 | Delivery info | not provided |
 | Return policy | not provided |
 | Languages | English start, switches to Hindi and Kannada expected |
-| Custom details | No extra emergency signs; business info lists the store services |
+| Business info | Store services: medicines, health devices, blood-pressure checks; open every day |
+| Other details | No extra emergency signs |
 
 ## Selected workflows
 

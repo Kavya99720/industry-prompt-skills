@@ -244,6 +244,8 @@ def profile_facts(profile_text):
                         or re.search(r"\|\s*Confirmation channels\s*\|\s*(whatsapp|email)", profile_text, re.I))
     return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation,
             "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text)
+            if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None,
+            "slots": check_fixed_lines.profile_slots(profile_text)
             if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None}
 
 
@@ -305,6 +307,15 @@ def profile_variable_values(profile_text):
     return values
 
 
+def agent_values(industry, profile_text, root=ROOT):
+    """The variable values the simulated agent is told. An inline-values industry prints its business facts in the
+    Instructions, so only the per-call fields (customer_name, refill_details) remain variables."""
+    values = profile_variable_values(profile_text)
+    if check_variables.industry_inline(industry, root):
+        values = {k: v for k, v in values.items() if k in CALL_CONTEXT}
+    return values
+
+
 def values_note(values):
     if not values:
         return ""
@@ -355,6 +366,9 @@ def fixed_lines(industry, facts, root=ROOT):
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example in R-71, not a real line
+                q = check_fixed_lines.fill_slots(q, facts.get("slots"))
+                if q is None:
+                    continue  # a slot (agent name, business name, phone) the profile does not give
                 if _norm(q) not in [_norm(x[1]) for x in lines]:
                     lines.append((f.name, q))
     bases = d / "section-bases.md"
@@ -579,7 +593,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
             notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
             selfcheck_path.write_text(self_check_statement(notes) + "\n", encoding="utf-8")
             filled = test_values(profile_text)
-            note = values_note(profile_variable_values(profile_text)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
+            note = values_note(agent_values(industry, profile_text, root)) if industry in VARIABLE_VALUE_INDUSTRIES else ""
             system = instructions + tools_note(industry, profile_text) + note
             with concurrent.futures.ThreadPoolExecutor(max_workers=WORKERS) as pool:
                 answers = list(pool.map(lambda c: llm.run(fill_placeholders(c["probe"], filled), system=system, tools=""), probes))

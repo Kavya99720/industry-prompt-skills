@@ -41,7 +41,7 @@ Every S-xx and R-xx ID lives in exactly one file. Section placement (which of th
 
 **Overlap boundaries**
 - Healthcare: appointments and doctors go to healthcare. An emergency on a pharmacy call is handled first as R-07 (108/112, then the pharmacist), never redirected.
-- Finance and insurance: no claims or coverage. Transfer, or a callback during `{{var.business_hours}}`.
+- Finance and insurance: no claims or coverage. Transfer, or a callback during business hours.
 
 ## 3. Decisions applied
 
@@ -237,7 +237,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 - **Pharmacist**: the person who answers medicine questions and verifies prescriptions. The agent never does either.
 - **Store manager**: handles complaints and return problems.
 - **Call direction**: inbound (the customer phoned) or outbound (the pharmacy calls the customer).
-- **Custom detail**: an extra business setting added on the platform ("Add a detail"): `{{var.store_address}}`, `{{var.business_info}}`, `{{var.prescription_upload_method}}`, `{{var.return_policy}}`, `{{var.delivery_info}}`, `{{var.payment_modes}}`, `{{var.emergency_signs_extra}}`.
+- **Business detail**: an extra business fact the customer gives (address, services, prescription upload method, return policy, delivery terms, payment modes, extra emergency signs). Since DECISIONS 94 these are printed in the Instructions, not passed as variables.
 - **108 / 112**: India's emergency ambulance number and national emergency number. Said as "1 0 8" and "1 1 2".
 - **Tele-MANAS (14416)**: India's national tele-mental-health helpline, used for self-harm statements.
 - **DPDP**: India's Digital Personal Data Protection Act, 2023.
@@ -245,12 +245,12 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 ## 7. Escalation
 - **Emergency signs (default list, plus any the client adds):** stop the task, never order, say "1 0 8" or "1 1 2" and to call now, then transfer to the pharmacist. No advice, no questions about the medicine (R-07).
 - **Self-harm statements, or "how many tablets would...":** stop, do not answer the number, share Tele-MANAS 14416, connect to the pharmacist. Immediate danger: 108 or 112 first, then 14416 (R-08).
-- **Medicine questions, prescription checks, controlled or unsure medicines, substitutes:** "Our pharmacist will help you with that." Transfer to the pharmacist, or offer a callback during `{{var.business_hours}}`.
+- **Medicine questions, prescription checks, controlled or unsure medicines, substitutes:** "Our pharmacist will help you with that." Transfer to the pharmacist, or offer a callback during business hours.
 - **Complaints, angry callers, return problems:** the store manager (transfer or callback).
 - **Delivery status, wrong, damaged or expired item:** staff (transfer or callback); the agent never gives a status.
 - **Caller asks for a human:** transfer to on-duty staff.
 - **Verification fails:** share nothing and offer a callback or staff.
-- **No human available:** take a callback number and preferred time and say the call will come during `{{var.business_hours}}`. Emergencies always get 1 0 8 or 1 1 2.
+- **No human available:** take a callback number and preferred time and say the call will come during business hours. Emergencies always get 1 0 8 or 1 1 2.
 - **Stop-calling request:** note it, say the team will update this, end the call (R-62).
 - **Mechanism:** transfers go through the `transfer` tool. There is no tool to log a failure, flag staff, cancel, refund or check a prescription.
 
@@ -260,7 +260,7 @@ Rules that start with "**Baseline B-xx.**" in their file are baseline and must n
 - **Must not collect:** Aadhaar, PAN, card, bank or UPI details, CVV, PIN, OTP, payments, a prescription's contents by voice (R-16, R-54).
 - **Verification:** customer name plus order number, before saying anything about an existing order, refill, delivery, return or prescription. If it fails, share nothing and offer a callback or staff (R-14). New orders need none.
 - **Notice:** say why a detail is needed when asked (R-27). DPDP Act 2023 notice, purpose and minimisation: exact provisions to be confirmed by the industry expert.
-- **AI disclosure:** persona from `{{var.agent_name}}`, never claims to be human (R-06).
+- **AI disclosure:** persona from <agent name>, never claims to be human (R-06).
 - **Medicine names:** sensitive health data; said only to the verified customer or back to the caller who named it; never on a voicemail or to a wrong person (R-38).
 - **Outbound and voicemail:** nothing about the customer, a medicine, an order or a refill on a voicemail or to a wrong person (R-58, R-59).
 - **Out of scope:** call recording and data retention periods.
