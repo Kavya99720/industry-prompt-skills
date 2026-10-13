@@ -728,3 +728,26 @@ def test_a_second_bad_output_stops_the_profile_as_a_harness_error(repo):
     assert len(saved["summary"]["harness_errors"]) == 1 and saved["results"] == []
     assert (repo / "industries/healthcare/results/2026-10-08/01-a-raw-output.md").is_file()
 
+
+
+def _skill_notes_templates():
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    for skill in sorted((root / ".claude" / "skills").glob("*-prompt-writer/SKILL.md")):
+        text = skill.read_text(encoding="utf-8")
+        if "=== DRAFT NOTES ===" in text:
+            yield skill.parent.name, text.split("=== DRAFT NOTES ===")[-1]
+
+
+def test_no_draft_notes_template_claims_a_hand_check():
+    templates = list(_skill_notes_templates())
+    assert templates
+    for name, notes in templates:
+        assert "checked by hand" not in notes.lower(), name
+        assert "fixed-line self-check" not in notes.lower(), name
+
+
+def test_a_generated_draft_notes_block_never_claims_a_hand_check():
+    assert run_evals.notes_claim_problem("**Open questions** - none") is None
+    assert run_evals.notes_claim_problem(None) is None
+    assert run_evals.notes_claim_problem("- Checked by hand: passed the first time")

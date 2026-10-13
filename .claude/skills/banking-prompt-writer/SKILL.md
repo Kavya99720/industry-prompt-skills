@@ -97,9 +97,6 @@ Output exactly this, nothing before or after. The very first characters of your 
 **Open questions**
 - ... (include: the outbound welcome names an AI assistant, which differs from the shared template; legal references and timelines are not quoted; the other call direction needs its own run; chat is not written; every value the customer did not give)
 
-**Fixed-line self-check**
-- checked by hand: passed the first time | rewritten once (list the lines added, in plain words)
-
 **Word counts**
 - Welcome: N. Section 1: N. ... Section 6: N words. Allowance: 615 (aim 595). Status: within budget / OVER by X.
 

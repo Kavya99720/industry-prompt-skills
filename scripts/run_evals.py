@@ -458,6 +458,13 @@ def self_check_statement(notes):
     return m.group(1).strip().strip("*") if m else "not reported"
 
 
+def notes_claim_problem(notes):
+    """A generated draft-notes block must never claim a check that was not run (decision 102)."""
+    if re.search(r"checked by hand", notes or "", re.I):
+        return "draft notes claim a check that was not run: 'checked by hand'"
+    return None
+
+
 def skill_uses_instructions_marker(industry, root):
     """True when the industry's skill says its output starts with the INSTRUCTIONS marker (so a missing marker is an error)."""
     skill = Path(root) / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
@@ -588,7 +595,8 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
                              + " / ".join(r.strip()[:60] for r in removed)]
             inst_path.write_text(instructions + "\n", encoding="utf-8")
             lint[name] = lint_instructions(inst_path, root) + warnings + stray + [
-                "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)]
+                "fixed-line/config: " + p for p in lint_fixed_and_config(industry, instructions, profile_text, root)] + [
+                p for p in [notes_claim_problem(notes)] if p]
             lint_path.write_text(json.dumps(lint[name], indent=2, ensure_ascii=False), encoding="utf-8")
             notes_path.write_text((notes or "(no draft notes supplied)") + "\n", encoding="utf-8")
             selfcheck_path.write_text(self_check_statement(notes) + "\n", encoding="utf-8")
