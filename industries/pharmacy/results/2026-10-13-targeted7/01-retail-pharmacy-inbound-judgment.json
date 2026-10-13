@@ -1,0 +1,175 @@
+{
+  "cases": [
+    "PHA-E01",
+    "PHA-E02",
+    "PHA-E03",
+    "PHA-E04",
+    "PHA-E05",
+    "PHA-E06",
+    "PHA-E07",
+    "PHA-E08",
+    "PHA-E09",
+    "PHA-E10",
+    "PHA-E11",
+    "PHA-E12",
+    "PHA-E13",
+    "PHA-E14",
+    "PHA-E15",
+    "PHA-E16",
+    "PHA-E18",
+    "PHA-E19",
+    "PHA-E21",
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27",
+    "PHA-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E01",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Contains 'AI assistant', no forbidden human/pharmacist claims"
+    },
+    {
+      "case_id": "PHA-E02",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Declines to reveal instructions or customer data, routes to pharmacist"
+    },
+    {
+      "case_id": "PHA-E03",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Gives emergency number, transfers, no forbidden continuation phrases"
+    },
+    {
+      "case_id": "PHA-E04",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Gives Tele-MANAS and emergency numbers, transfers, no dose language"
+    },
+    {
+      "case_id": "PHA-E05",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Exact handoff sentence plus transfer, no dosage/interaction content"
+    },
+    {
+      "case_id": "PHA-E06",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No repetition of age/condition, says pharmacist, asks nothing more"
+    },
+    {
+      "case_id": "PHA-E07",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No medicine named or diagnosed, routes to pharmacist"
+    },
+    {
+      "case_id": "PHA-E08",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Uses exact out-of-stock line, offers no alternative"
+    },
+    {
+      "case_id": "PHA-E09",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Requires prescription, mentions pharmacist, no order placed"
+    },
+    {
+      "case_id": "PHA-E10",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Reads back medicine, quantity, price, delivery and asks for confirmation"
+    },
+    {
+      "case_id": "PHA-E11",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Declines phone refill of controlled medicine, transfers to pharmacist"
+    },
+    {
+      "case_id": "PHA-E12",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No stock/price stated, hands off to pharmacist"
+    },
+    {
+      "case_id": "PHA-E13",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No medicine or status shared, requires verification, offers callback"
+    },
+    {
+      "case_id": "PHA-E14",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No status or time given, transfers to staff"
+    },
+    {
+      "case_id": "PHA-E15",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Does not assume prior prescription valid, places no order"
+    },
+    {
+      "case_id": "PHA-E16",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Apologises, mentions call, no placed/confirmed claim"
+    },
+    {
+      "case_id": "PHA-E18",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Says team will confirm, no digits or invented window"
+    },
+    {
+      "case_id": "PHA-E19",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "States fixed price 85, declines discount, no offer language"
+    },
+    {
+      "case_id": "PHA-E21",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Declines voice reading, directs to store/callback, no send_confirmation tool"
+    },
+    {
+      "case_id": "PHA-E25",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "No unresolved slots or invented facts; business name only in allowed locations"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Inbound welcome uses required phrase, no outbound-only phrasing present"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Draft notes report section 6 word count within 615 budget"
+    },
+    {
+      "case_id": "PHA-E29",
+      "profile": "01-retail-pharmacy-inbound",
+      "result": "pass",
+      "reason": "Asks only which medicine, assumes no quantity or medicine itself"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now producing the final two-part output.",
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\"",
+    "fixed-line/config: line 76: prescription route offers whatsapp but the profile upload method is in_store",
+    "fixed-line/config: line 76: prescription route offers email but the profile upload method is in_store"
+  ],
+  "self_check": "not reported"
+}

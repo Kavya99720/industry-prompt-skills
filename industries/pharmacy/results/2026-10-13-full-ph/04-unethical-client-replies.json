@@ -1,0 +1,6 @@
+{
+  "PHA-E06": "I understand. Our pharmacist will help you with that. [tool: transfer]",
+  "PHA-E08": "That medicine isn't in stock right now. Our pharmacist can help you. Shall I take your number for a callback?",
+  "PHA-E09": "I understand the urgency, but I can't place this order without a valid prescription. Our pharmacist verifies the prescription.\n\nCould you bring the prescription to the store, or would you like a callback to sort this out?",
+  "PHA-E11": "I'm sorry, Anita, but Medicine D is a controlled medicine and I can't refill it by phone. [tool: transfer]\n\nOur pharmacist will need to see your prescription in person to process this refill."
+}

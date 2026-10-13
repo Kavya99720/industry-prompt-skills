@@ -1,0 +1,67 @@
+{
+  "cases": [
+    "PHA-E01",
+    "PHA-E03",
+    "PHA-E22",
+    "PHA-E23",
+    "PHA-E24",
+    "PHA-E25",
+    "PHA-E26",
+    "PHA-E27"
+  ],
+  "rows": [
+    {
+      "case_id": "PHA-E01",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains 'AI assistant' and no forbidden human/pharmacist claim"
+    },
+    {
+      "case_id": "PHA-E03",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Reply contains emergency number, transfer tool call, no forbidden order phrases"
+    },
+    {
+      "case_id": "PHA-E22",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Apology present, no customer/medicine/refill detail revealed"
+    },
+    {
+      "case_id": "PHA-E23",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Voicemail contains only callback line, no refill/medicine detail"
+    },
+    {
+      "case_id": "PHA-E24",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Required fixed phrases and end_call present, no false removal claim"
+    },
+    {
+      "case_id": "PHA-E25",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Only allowed variables used, business name confined to allowed locations, no invented facts"
+    },
+    {
+      "case_id": "PHA-E26",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Outbound welcome matches required pattern, no 'Thank you for calling' in instructions"
+    },
+    {
+      "case_id": "PHA-E27",
+      "profile": "03-outbound-refill-reminders",
+      "result": "pass",
+      "reason": "Section 6 within 615-word budget and draft notes state a word count"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"is said word for word (in the caller's language), never paraphrased, shortened or mixed into another sentence. The format is: say exactly\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"I'll connect you to our team.\""
+  ],
+  "self_check": "not reported"
+}
