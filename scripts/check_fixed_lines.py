@@ -49,6 +49,9 @@ NOTES_MARKER = "=== DRAFT NOTES ==="
 UPLOAD_BRANCH = re.compile(r"\[upload:\s*(whatsapp|email)\]", re.I)
 UPLOAD_TOOL = "prescription_upload_method"
 UPLOAD_VALUES = ("whatsapp", "email", "in_store", "not_set")
+# A row marked "[balance_lookup_tool: off]" or labelled "(lookup off)" / "(block off)" is required only when that tool is not on.
+TOOL_OFF_MARK = re.compile(r"\[(\w+):\s*off\]|\((lookup|block) off\)", re.I)
+TOOL_OFF_LABELS = {"lookup": "balance_lookup_tool", "block": "card_block_tool"}
 MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
 
@@ -98,7 +101,10 @@ def fill_slots(quote, slots):
         return None
 
 
-def welcome_from_profile(profile_text):
+AI_OUTBOUND_INDUSTRIES = ("banking",)  # their outbound welcome names the agent as an AI assistant (DECISIONS 100)
+
+
+def welcome_from_profile(profile_text, industry=None):
     """The welcome an inline-values Instructions set must start with, from a test profile's own values."""
     def given(v):
         return v is not None and not re.match(r"(not given|not provided|not stated|none)", v, re.I)
@@ -110,6 +116,9 @@ def welcome_from_profile(profile_text):
     agent = profile_value(profile_text, "Assistant")
     agent = re.sub(r"\s*\([^)]*\)\s*$", "", agent).strip() if given(agent) else None
     direction = (profile_value(profile_text, "Direction") or "inbound").lower()
+    if direction.startswith("out") and industry in AI_OUTBOUND_INDUSTRIES:
+        return (f"Hello, this is {agent}, an AI assistant calling from {biz}. Is this a good time to talk?" if agent
+                else f"Hello, I am an AI assistant calling from {biz}. Is this a good time to talk?")
     if direction.startswith("out"):
         return (f"Hello, this is {agent} calling from {biz}. Is this a good time to talk?" if agent
                 else f"Hello, I am calling from {biz}. Is this a good time to talk?")
@@ -163,6 +172,10 @@ def required_lines(refs, numbers, direction, tools, slots=None):
                 branch = UPLOAD_BRANCH.search(row)
                 if branch and isinstance(tools.get(UPLOAD_TOOL), str):
                     needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
+                off = TOOL_OFF_MARK.search(row)
+                if off:
+                    name = off.group(1) or TOOL_OFF_LABELS[off.group(2).lower()]
+                    needed = tools.get(name) is not True
                 q = fill_slots(q, slots)
                 if q is None:
                     continue
@@ -246,7 +259,7 @@ def main(argv=None):
             return 2
         tools[name] = state.lower() == "on"
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
-    welcome = welcome_from_profile(profile_text) if profile_text else None
+    welcome = welcome_from_profile(profile_text, args.industry) if profile_text else None
     slots = profile_slots(profile_text) if profile_text else None
     missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome, slots)
     for src, q in missing:

@@ -259,7 +259,9 @@ def test_the_banking_script_finds_the_fixed_blocks_in_the_real_references():
     lines = [q for _, q in cfl.required_lines(refs, {"01", "02", "03"}, "inbound", cfl.with_defaults({"card_block_tool": True, "balance_lookup_tool": True}))]
     assert "Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone." in lines
     assert "For your safety, please don't send any money right now. Please report this quickly on the cybercrime helpline, 1 9 3 0." in lines
-    assert "I can't share account details on this call." in lines
+    assert "I can't share account details on this call." not in lines  # lookup tool on: the account-data line is not required
+    off = [q for _, q in cfl.required_lines(refs, {"01", "02", "03"}, "inbound", cfl.with_defaults({"card_block_tool": False, "balance_lookup_tool": False}))]
+    assert "I can't share account details on this call." in off
     assert "I'm sorry, I could not complete that. Our team will call you to confirm." in lines
 
 
@@ -269,3 +271,28 @@ def test_a_fixed_block_written_as_say_exactly_this_block_is_required(tmp_path):
     (refs / "core.md").write_text('| R-07 | say exactly this block, in this order: "One. Two." then ask the name. |', encoding="utf-8")
     assert [q for _, q in cfl.check("nothing", refs)] == ["One. Two."]
     assert cfl.check("One.  Two.", refs) == []
+
+
+def test_welcome_from_profile_banking_outbound_names_the_ai():
+    outbound = PROFILE.replace("| Direction | Inbound |", "| Direction | Outbound |")
+    assert cfl.welcome_from_profile(outbound, "banking") ==         "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. Is this a good time to talk?"
+    no_agent = outbound.replace("| Assistant | Asha (female) |", "| Assistant | not provided |")
+    assert cfl.welcome_from_profile(no_agent, "banking") ==         "Hello, I am an AI assistant calling from Lakeview Hospital. Is this a good time to talk?"
+    # other industries and inbound keep their forms
+    assert cfl.welcome_from_profile(outbound, "pharmacy") ==         "Hello, this is Asha calling from Lakeview Hospital. Is this a good time to talk?"
+    assert cfl.welcome_from_profile(PROFILE, "banking") ==         "Thank you for calling Lakeview Hospital. This is Asha. How can I help you?"
+
+
+def test_a_lookup_off_line_is_required_only_when_the_lookup_tool_is_not_on(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text("", encoding="utf-8")
+    (refs / "workflows" / "01-enquiry.md").write_text(
+        '| R-41 | [balance_lookup_tool: off] When the tool is OFF say exactly "I can\'t share account details on this call." |\n'
+        'ACCOUNT (lookup off): say exactly "I can\'t share account details on this call." then transfer.\n', encoding="utf-8")
+    quote = "I can't share account details on this call."
+    on = [q for _, q in cfl.check("nothing", refs, numbers=["01"], tools={"balance_lookup_tool": True})]
+    off = [q for _, q in cfl.check("nothing", refs, numbers=["01"], tools={"balance_lookup_tool": False})]
+    unset = [q for _, q in cfl.check("nothing", refs, numbers=["01"])]
+    assert quote not in on
+    assert quote in off and quote in unset

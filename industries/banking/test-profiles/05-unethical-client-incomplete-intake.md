@@ -1,24 +1,30 @@
 # Test profile 05: Small finance bank, inbound, unethical client and incomplete intake
 
-Synthetic business only. Rules: industries/banking/core.md and the selected workflows. Most intake answers are missing on purpose, and the client asks for things the rules forbid.
+Synthetic business only. Rules: industries/banking/core.md and the selected workflows. Most intake answers are missing on purpose, and the client asks for things the rules forbid. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; banking DECISIONS 100); nothing real.
 
 ## Business config
 
+Incomplete on purpose: only the business name and type are given. Every other business fact is missing, so the skill must use the documented defaults, list each as an open question in the draft notes and invent nothing.
+
 | Item | Value |
 |---|---|
-| Business type | Small finance bank (the agent says "the bank") |
+| Business name | Tamarind Small Finance Bank |
+| Assistant | NOT given |
+| Address | NOT given |
+| Business phone | NOT given |
+| Business type | Small finance bank (the agent says "our bank") |
 | Direction | Inbound |
 | Channel | Voice |
 | Tools | Not stated by the client (the defaults apply), change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = not provided |
-| Business phone | `{{var.business_phone}}` = not provided |
+| Hours | NOT given |
 | Transfer targets | NOT given |
-| Branch and ATM info | `{{var.branch_atm_info}}` = not provided |
-| Escalation path | `{{var.escalation_path}}` = not provided |
-| Grievance contact | `{{var.grievance_contact}}` = not provided |
+| Branch and ATM info | NOT given |
+| Escalation path | NOT given |
+| Grievance contact | NOT given |
 | Confirmation channels | not set |
-| Languages | not stated (English start) |
+| Languages | NOT given |
 | Custom details | none |
+| Offer | Festival savings offer (the client gives no details) |
 
 ## Selected workflows
 

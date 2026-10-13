@@ -2,7 +2,7 @@
 
 Core rules (industries/banking/core.md) apply on top of everything here. One goal: answer a basic account or card question safely.
 
-**Purpose.** Answer branch, ATM and hours questions from config, and, only after full verification and only when `balance_lookup_tool` is on, give the available balance and the last few transactions.
+**Purpose.** Answer branch, ATM and hours questions from the business facts, and, only after full verification and only when `balance_lookup_tool` is on, give the available balance and the last few transactions.
 
 | Item | Value |
 |---|---|
@@ -12,7 +12,7 @@ Core rules (industries/banking/core.md) apply on top of everything here. One goa
 
 ## Steps
 
-1. Work out what the caller wants. A general question (branch, ATM, counter, hours) needs no verification: answer only from `{{var.branch_atm_info}}` and `{{var.business_hours}}`. If the detail is not there: R-15.
+1. Work out what the caller wants. A general question (branch, ATM, counter, hours) needs no verification: answer only from the branch and ATM information and the opening hours in the business facts. If the detail is not there: R-15.
 2. A question about their own balance, transactions or card status is account data. If `balance_lookup_tool` is OFF: say the account-data line (R-41) and hand to staff (R-16, R-17). Do not ask for any verification item, because nothing will be shared.
 3. If `balance_lookup_tool` is ON: ask for the full name, then the registered mobile number, then the last 4 digits of the account or card, one at a time (R-06). Accept items already given. Never read an item back.
 4. Call `balance_lookup_tool` with the three items. If it fails: R-18. No match or an item refused: the verification-failed line (R-06), then a callback or staff.
@@ -31,7 +31,7 @@ Core rules (industries/banking/core.md) apply on top of everything here. One goa
 
 ## Data and variables
 
-Variables: `{{var.branch_atm_info}}`, `{{var.business_hours}}`. Collected (tool ON only): full name, registered mobile number, last 4 digits. Never: OTP, PIN, CVV, password, full card or account number, login details, Aadhaar, PAN.
+Business facts used: the branch and ATM information and the opening hours (printed in section 1; nothing is repeated here). Collected (tool ON only): full name, registered mobile number, last 4 digits. Never: OTP, PIN, CVV, password, full card or account number, login details, Aadhaar, PAN.
 
 ## Tools
 
@@ -41,8 +41,8 @@ Variables: `{{var.branch_atm_info}}`, `{{var.business_hours}}`. Collected (tool 
 
 | ID | Rule | Source | Severity | Section placement |
 |----|------|--------|----------|-------------------|
-| R-41 | **Account data only after verification and a tool match, and only a limited set.** When `balance_lookup_tool` is ON and the tool matches all three items (R-06), the agent says only the available balance and the last few transactions the tool returns. Never a full statement, never to a third party, never an item the tool did not return. When the tool is OFF the agent shares no account data at all: say exactly "I can't share account details on this call." and, in the same reply, say exactly "I'll connect you to our team." and transfer to staff, or offer a callback. Scope: any request for a balance, transactions or the status of the caller's own card. It does not apply to branch, ATM or hours questions. | Grill-me 7, 16 | critical | S6 |
-| R-42 | **Branch, ATM, counter and hours answers come only from config.** Use `{{var.branch_atm_info}}` and `{{var.business_hours}}`. If the detail is not provided, say exactly "Our team will confirm that for you." and, in the same reply, offer a callback or staff. Never invent an address, a distance or a time. Scope: general bank information; not account data. | Grill-me 16; baseline B-11 | major | S6 |
+| R-41 | [balance_lookup_tool: off] **Account data only after verification and a tool match, and only a limited set.** When `balance_lookup_tool` is ON and the tool matches all three items (R-06), the agent says only the available balance and the last few transactions the tool returns. Never a full statement, never to a third party, never an item the tool did not return. When the tool is OFF the agent shares no account data at all: say exactly "I can't share account details on this call." and, in the same reply, say exactly "I'll connect you to our team." and transfer to staff, or offer a callback. Scope: any request for a balance, transactions or the status of the caller's own card. It does not apply to branch, ATM or hours questions. | Grill-me 7, 16 | critical | S6 |
+| R-42 | **Branch, ATM, counter and hours answers come only from config.** Use the branch and ATM information and the opening hours in the business facts. If the detail is not provided, say exactly "Our team will confirm that for you." and, in the same reply, offer a callback or staff. Never invent an address, a distance or a time. Scope: general bank information; not account data. | Grill-me 16; baseline B-11 | major | S6 |
 | R-43 | **Card questions that are not account data** (how to block a card, where to get a replacement) are answered only from config text, or by "Our team will confirm that for you." A lost or stolen card goes to R-51. Scope: general card questions. | Grill-me 3 | major | S6 |
 
 ## Scenarios
@@ -66,7 +66,7 @@ Variables: `{{var.branch_atm_info}}`, `{{var.business_hours}}`. Collected (tool 
 The skill writes the ON block or the OFF block, never both.
 
 ```main-lines
-INFO: Answer branch, ATM and hours questions only from {{var.branch_atm_info}} and {{var.business_hours}}. If the detail is missing, say exactly "Our team will confirm that for you." Then, in the same reply, offer a callback.
+INFO: Answer branch, ATM and hours questions only from the business facts (branch and ATM information, opening hours). If the detail is missing, say exactly "Our team will confirm that for you." Then, in the same reply, offer a callback.
 ACCOUNT (lookup on): For a balance, transactions or card status, first verify the caller as Output Format says. When all three items are given, call balance_lookup_tool. On a match, say only the available balance and the last few transactions it returns, one at a time. Never read a full statement. On no match, say exactly "I'm sorry, I can't share account details without full verification." Then, in the same reply, offer a callback.
 ACCOUNT (lookup off): For a balance, transactions or card status, ask for no verification. Say exactly "I can't share account details on this call." Then, in the same reply, say exactly "I'll connect you to our team." and transfer, or offer a callback.
 ```

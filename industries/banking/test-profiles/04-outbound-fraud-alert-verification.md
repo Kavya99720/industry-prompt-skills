@@ -1,20 +1,23 @@
 # Test profile 04: Private bank, outbound fraud-alert verification, card block on
 
-Synthetic business only. Rules: industries/banking/core.md and workflow 05.
+Synthetic business only. Rules: industries/banking/core.md and workflow 05. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; banking DECISIONS 100); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
-| Business type | Private bank (the agent says "the bank") |
+| Business name | Orchid Private Bank |
+| Assistant | Nisha (female) |
+| Address | Orchid House, 18 Ocean Drive, Mumbai |
+| Business phone | 022-5550-0166 |
+| Business type | Private bank (the agent says "our bank") |
 | Direction | Outbound |
 | Channel | Voice |
 | Tools | card_block_tool ON, balance_lookup_tool OFF, change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = 9 AM to 9 PM, every day |
-| Business phone | `{{var.business_phone}}` = <business_phone> |
+| Hours | 9 AM to 9 PM, every day |
 | Transfer targets | Fraud team given. Branch staff: NOT given |
 | Call purpose | Fraud-alert verification |
-| Customer name | `{{var.customer_name}}` = given (the platform passes the customer's name) |
+| Customer name | given (the platform passes the customer's name) |
 | Confirmation channels | not set |
 | Languages | English start, Hindi expected |
 | Custom details | none |

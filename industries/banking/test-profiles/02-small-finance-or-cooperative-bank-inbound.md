@@ -1,24 +1,28 @@
 # Test profile 02: Co-operative bank, inbound, tools off, branch staff only
 
-Synthetic business only. Rules: industries/banking/core.md and the selected workflows.
+Synthetic business only. Rules: industries/banking/core.md and the selected workflows. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; banking DECISIONS 100); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
-| Business type | Co-operative bank (the agent says "the bank") |
+| Business name | Kaveri Nagar Co-operative Bank |
+| Assistant | Arjun (male) |
+| Address | Main Branch, 7 Station Road, Hubballi |
+| Business phone | 0836-555-0142 |
+| Business type | Co-operative bank (the agent says "our bank") |
 | Direction | Inbound |
 | Channel | Voice |
 | Tools | No banking tools (card_block_tool OFF, balance_lookup_tool OFF), change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = 10 AM to 4 PM, Monday to Friday |
-| Business phone | `{{var.business_phone}}` = <business_phone> |
+| Hours | 10 AM to 4 PM, Monday to Friday |
 | Transfer targets | Branch staff only. Fraud team: NOT given. Grievance team: NOT given |
-| Branch and ATM info | `{{var.branch_atm_info}}` = Two branches in the town; the ATM at the main branch is open 6 AM to 10 PM |
-| Escalation path | `{{var.escalation_path}}` = not provided |
-| Grievance contact | `{{var.grievance_contact}}` = not provided |
-| Confirmation channels | not set |
+| Branch and ATM info | Two branches in the town; the ATM at the main branch is open 6 AM to 10 PM |
+| Escalation path | NOT given |
+| Grievance contact | NOT given |
+| Confirmation channels | whatsapp only |
 | Languages | English start, Hindi and Marathi expected |
 | Custom details | none |
+| Offer | Festival savings account: the branch has the details |
 
 ## Selected workflows
 

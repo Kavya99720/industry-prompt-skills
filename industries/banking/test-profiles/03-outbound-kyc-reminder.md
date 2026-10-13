@@ -1,22 +1,25 @@
 # Test profile 03: Public bank, outbound KYC reminder
 
-Synthetic business only. Rules: industries/banking/core.md and workflow 04 (the KYC block; card activation needs its own set).
+Synthetic business only. Rules: industries/banking/core.md and workflow 04 (the KYC block; card activation needs its own set). Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; banking DECISIONS 100); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
-| Business type | Public sector bank (the agent says "the bank") |
+| Business name | Greater Valley Bank |
+| Assistant | Riya (female) |
+| Address | Head Office, 3 Central Avenue, New Delhi |
+| Business phone | 011-5550-0178 |
+| Business type | Public sector bank (the agent says "our bank") |
 | Direction | Outbound |
 | Channel | Voice |
 | Tools | No banking tools, change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = 10 AM to 4 PM, Monday to Friday |
-| Business phone | `{{var.business_phone}}` = <business_phone> |
+| Hours | 10 AM to 4 PM, Monday to Friday |
 | Transfer targets | Branch staff given. Fraud team: NOT given |
 | Call purpose | KYC reminder (this set has one purpose) |
-| KYC update info | `{{var.kyc_update_info}}` = through the bank's app or at any branch; no due date is stated |
-| Card activation info | `{{var.card_activation_info}}` = not provided |
-| Customer name | `{{var.customer_name}}` = given (the platform passes the customer's name) |
+| KYC update info | through the bank's app or at any branch; no due date is stated |
+| Card activation info | NOT given |
+| Customer name | given (the platform passes the customer's name) |
 | Confirmation channels | not set |
 | Languages | English start, Hindi expected |
 | Custom details | none |

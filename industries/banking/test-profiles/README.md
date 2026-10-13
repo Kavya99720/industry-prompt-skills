@@ -25,3 +25,5 @@ Word-budget table (main-lines blocks, whitespace-separated tokens; Main prompt l
 Largest inbound set (01 profile): 466. Largest outbound set (04 profile): 528. Both are under 595.
 
 Notes: profile 05 combines the unethical client (eight forbidden or doubtful requests) with an incomplete intake. Profile 03 covers the KYC purpose; card activation is the same pattern in its own set and is not a separate profile. Test values are the same in every profile because the eval probes use the same placeholders.
+
+Business values (option B, DECISIONS 100): every profile carries synthetic business values (bank name, assistant, address, phone, hours and the other facts), printed in the Instructions. Profile 05 is deliberately incomplete: only the bank name and type are given; every other business fact is missing and must become an open question in the draft notes. Profile 02 has an offer (festival savings) and one confirmation channel (WhatsApp only); profile 05 names an offer with no details.

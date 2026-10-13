@@ -12,8 +12,8 @@ A test fails when a copy is out of sync.
 | workflows/04-outbound-kyc-reminder-and-card-activation.md | industries/banking/workflows/04-outbound-kyc-reminder-and-card-activation.md |
 | workflows/05-outbound-fraud-alert-verification.md | industries/banking/workflows/05-outbound-fraud-alert-verification.md |
 | shared/section-bases.md | docs/shared/section-bases.md |
-| shared/variables.json | docs/shared/variables.json |
 | shared/baseline-rules.md | docs/shared/baseline-rules.md |
 | shared/platform-contract.md | docs/shared/platform-contract.md |
+| shared/intake-flow.md | docs/shared/intake-flow.md |
 | industry/section-bases.md | industries/banking/section-bases.md |
 | industry/variables.json | industries/banking/variables.json |

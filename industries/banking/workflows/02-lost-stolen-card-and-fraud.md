@@ -16,7 +16,7 @@ Core rules (industries/banking/core.md) apply on top of everything here. One goa
 2. Tool ON, the minimal check (R-52): ask the full name, then the last 4 digits of the card, one at a time. Do not read them back. If the caller reads a full card number, stop them (R-07) and ask only for the last 4 digits.
 3. If the caller cannot give the last 4 digits, do not block. Say the team phrase and transfer to the fraud team (or offer a callback).
 4. Call `card_block_tool`. If it succeeds, say the blocked line. If it fails or times out, say the block-failed line (R-52). Never say the card is blocked before the tool returns success.
-5. Say the team phrase and transfer to the fraud team. With no target: take a callback number and time during `{{var.business_hours}}` (R-17); the helpline line has already been given.
+5. Say the team phrase and transfer to the fraud team. With no target: take a callback number and time during business hours (R-17); the helpline line has already been given.
 6. Confirmation flow only if R-19 applies (success, no transfer, channels configured). Then close.
 
 ## Unhappy paths
@@ -31,7 +31,7 @@ Core rules (industries/banking/core.md) apply on top of everything here. One goa
 
 ## Data and variables
 
-Variables: `{{var.business_hours}}`. Collected (tool ON): full name, last 4 digits of the card, a callback number and time when there is no target. Never: full card number, OTP, PIN, CVV, passwords, login details, Aadhaar, PAN, the registered mobile number, any account data.
+Business facts used: business hours (said as "during business hours"; nothing is repeated here). Collected (tool ON): full name, last 4 digits of the card, a callback number and time when there is no target. Never: full card number, OTP, PIN, CVV, passwords, login details, Aadhaar, PAN, the registered mobile number, any account data.
 
 ## Tools
 

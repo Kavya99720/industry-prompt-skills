@@ -1,24 +1,28 @@
 # Test profile 01: Private bank, inbound, both tools on
 
-Synthetic business only. Rules: industries/banking/core.md and the selected workflows.
+Synthetic business only. Rules: industries/banking/core.md and the selected workflows. Business values are synthetic and are printed in the Instructions (DECISIONS 88, option B; banking DECISIONS 100); nothing real.
 
 ## Business config
 
 | Item | Value |
 |---|---|
-| Business type | Private bank (the agent says "the bank") |
+| Business name | Harbourline Bank |
+| Assistant | Meera (female) |
+| Address | Indiranagar Main Branch, 21 Lake View Road, Indiranagar, Bengaluru |
+| Business phone | 080-5550-0301 |
+| Business type | Private bank (the agent says "our bank") |
 | Direction | Inbound |
 | Channel | Voice |
 | Tools | card_block_tool ON, balance_lookup_tool ON, change_language, transfer, end_call |
-| Hours | `{{var.business_hours}}` = 9 AM to 6 PM, Monday to Saturday |
-| Business phone | `{{var.business_phone}}` = <business_phone> |
+| Hours | 9 AM to 6 PM, Monday to Saturday |
 | Transfer targets | Fraud team, grievance team and branch staff are all given |
-| Branch and ATM info | `{{var.branch_atm_info}}` = One main branch with a 24-hour ATM lobby; other branches and counters are listed on the bank's website |
-| Escalation path | `{{var.escalation_path}}` = first the branch manager, then the grievance officer, then the banking ombudsman |
-| Grievance contact | `{{var.grievance_contact}}` = the grievance email shown on the bank's website |
-| Confirmation channels | whatsapp, email (`{{var.confirmation_channels}}`) |
+| Branch and ATM info | One main branch with a 24-hour ATM lobby; other branches and counters are listed on the bank's website |
+| Escalation path | first the branch manager, then the grievance officer, then the banking ombudsman |
+| Grievance contact | the grievance officer at the main branch, on 080-5550-0399 |
+| Confirmation channels | whatsapp, email |
 | Languages | English start, Hindi expected |
-| Custom details | `{{var.emergency_signs_extra}}` = a person trapped in an ATM lobby |
+| Custom details | Extra emergency signs: a person trapped in an ATM lobby |
+| Offer | none |
 
 ## Selected workflows
 

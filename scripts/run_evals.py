@@ -231,7 +231,7 @@ def _norm(text):
     return " ".join(text.split())
 
 
-def profile_facts(profile_text):
+def profile_facts(profile_text, industry=None):
     """Direction, selected workflow numbers and prescription upload method read from a test profile."""
     d = re.search(r"\|\s*Direction\s*\|\s*(\w+)", profile_text)
     direction = d.group(1).lower() if d else "inbound"
@@ -243,7 +243,7 @@ def profile_facts(profile_text):
     confirmation = bool(re.search(r"confirmation_channels\W{0,6}=\s*(whatsapp|email)", profile_text, re.I)
                         or re.search(r"\|\s*Confirmation channels\s*\|\s*(whatsapp|email)", profile_text, re.I))
     return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation,
-            "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text)
+            "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text, industry)
             if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None,
             "slots": check_fixed_lines.profile_slots(profile_text)
             if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None}
@@ -384,7 +384,7 @@ def fixed_lines(industry, facts, root=ROOT):
 def lint_fixed_and_config(industry, instructions, profile_text, root=ROOT):
     """Deterministic checks that need no model: every fixed line is in the Instructions word for word, the welcome is
     the first line, and a prescription route the profile does not enable is not offered. Returns a list of problems."""
-    facts = profile_facts(profile_text)
+    facts = profile_facts(profile_text, industry)
     body = _norm(instructions)
     problems = []
     for source, q in fixed_lines(industry, facts, root):
@@ -579,7 +579,7 @@ def run_industry(industry, llm, root=ROOT, date=None, profiles=None, out=None, c
             warnings = []
             if outside:
                 warnings.append("warning: text outside the markers (ignored): " + " / ".join(o[:60] for o in outside))
-            welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text), root) if source == "welcome"), None)
+            welcome = next((q for source, q in fixed_lines(industry, profile_facts(profile_text, industry), root) if source == "welcome"), None)
             stray = []
             if welcome:
                 instructions, removed = strip_before_welcome(instructions, welcome)

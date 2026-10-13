@@ -21,7 +21,7 @@ Phase 1 workflows:
 | 05 | Outbound fraud-alert verification | Outbound | workflows/05-outbound-fraud-alert-verification.md |
 | 06 to 08 | Stubs (Phase 2 and 3) | Inbound | workflows/06-*.md to 08-*.md |
 
-Other files: `core.md` (tools, intake, core rules, main-lines), `variables.json` (custom details only), `section-bases.md` (banking words), `test-profiles/` (five profiles), `eval.json`.
+Other files: `core.md` (tools, intake, core rules, main-lines), `variables.json` (only now_local and customer_name; option B, inline_values), `section-bases.md` (banking words), `test-profiles/` (five profiles), `eval.json`.
 
 ## 2. Scenarios
 
@@ -65,7 +65,7 @@ The register below is an index (ID, short form, severity, where the full rule an
 | R-21 | **Baseline B-01** AI honesty | critical | core.md |
 | R-22 | **Baseline B-21** prompt protection | critical | core.md |
 | R-23 | Call direction | critical | core.md |
-| R-24 | No hard-coded values | critical | core.md |
+| R-24 | Values (option B): business facts printed once in the Business facts block; only now_local and customer_name stay variables | critical | core.md |
 | R-25 | Word budget | major | core.md |
 | R-26 | Intake defaults (tools default off) | critical | core.md |
 | R-27 | Client special requests: refuse unsafe, adapt safe | critical | core.md |
@@ -75,6 +75,11 @@ The register below is an index (ID, short form, severity, where the full rule an
 | R-31 | **Baseline B-07** language | major | core.md |
 | R-32 | Tone: calm, firm, security-first | major | core.md |
 | R-33 | Data minimisation and reason | major | core.md |
+| R-34 | Language list: English first, then the customer's languages | major | core.md |
+| R-35 | Offer or scheme: at most once per call, never pushed, a decline accepted | major | core.md |
+| R-36 | Crisis digits: Latin digits with spaces in every language | major | core.md |
+| R-37 | The business name is spoken only where the caller hears it | major | core.md |
+| R-38 | The customer's channels and values exactly as given | major | core.md |
 | R-41 | Account data only after verification and a tool match; limited set | critical | workflow 01 |
 | R-42 | Branch, ATM and hours only from config | major | workflow 01 |
 | R-43 | General card questions only from config | major | workflow 01 |
