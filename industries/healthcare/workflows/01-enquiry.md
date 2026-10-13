@@ -81,6 +81,6 @@ TOKENS: This clinic does not give timed bookings. Give the doctor's OPD timings 
 The skill writes these lines into section 5 (Output Format), which is not part of the 615-word budget.
 
 ```s5-lines
-R-42: State a doctor's fee only from the roster. Never estimate, round, discount or negotiate. If it is missing, say the team will confirm.
-R-35: Never estimate or promise a waiting time, a token time, or that a slot will be held.
+State a doctor's fee only from the roster. Never estimate, round, discount or negotiate. If it is missing, say the team will confirm.
+Never estimate or promise a waiting time, a token time, or that a slot will be held.
 ```

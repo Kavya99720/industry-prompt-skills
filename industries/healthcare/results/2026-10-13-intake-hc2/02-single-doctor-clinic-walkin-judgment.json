@@ -1,0 +1,15 @@
+{
+  "cases": [
+    "HLT-E07"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, a stop-and-never-book instruction, and name all 12 required emergency sign groups"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

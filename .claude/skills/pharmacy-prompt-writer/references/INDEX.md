@@ -14,5 +14,6 @@ A test fails when a copy is out of sync.
 | shared/variables.json | docs/shared/variables.json |
 | shared/baseline-rules.md | docs/shared/baseline-rules.md |
 | shared/platform-contract.md | docs/shared/platform-contract.md |
+| shared/intake-flow.md | docs/shared/intake-flow.md |
 | industry/section-bases.md | industries/pharmacy/section-bases.md |
 | industry/variables.json | industries/pharmacy/variables.json |

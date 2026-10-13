@@ -32,11 +32,15 @@ Ask these before writing. "Required" means the skill stops and asks. "Optional" 
 | 4 | Booking style: time slots, tokens, or walk-in | Required if Booking is selected | Time slots, stated in the draft notes | Token and walk-in clinics take no timed booking (R-78) |
 | 5 | Doctors and roster | Required if Enquiry or Booking is selected | The roster comes from the platform Doctors config via `{{var.roster}}`; the skill never types doctors. If there is none, the agent says the team will confirm | Section 6 DOCTOR LIST and the word budget (about 23 words per doctor) |
 | 6 | Services, beds, years of service | Optional | `{{var.business_info}}` custom detail; if empty, the agent says the team will confirm | Enquiry answers (R-74) |
-| 7 | Languages | Optional | Start in `{{var.default_language}}`; the 11 platform languages are handled by section 3 | Section 3 |
+| 7 | Languages: which languages the business can handle, and which one calls start in | Required | Not given: the 11 platform languages stay in section 3 and calls start in `{{var.default_language}}`; listed as an open item | Section 3 (R-82), `{{var.default_language}}` |
 | 8 | Emergency department: yes or no, and the transfer number | Required | `{{var.emergency_department}}` = no. Transfer target not given: the agent offers a callback instead of a transfer | Emergency line wording (R-09), handoff |
 | 9 | Business hours | Required | none; ask. Without it callbacks cannot name hours | `{{var.business_hours}}` in callbacks |
 | 10 | Custom details: extra emergency signs, minors-may-book-alone flag, business info | Optional | No extra signs; minors flag false; business info empty | `{{var.emergency_signs_extra}}`, `{{var.minors_may_book_alone}}`, `{{var.business_info}}` |
 | 11 | Special client rules | Optional | none | Each is checked against R-76 before it goes in the draft |
+| 12 | Business name | Required | Not given: "not provided" in the fill-in table, listed as an open item | Fill-in table only: company_name (R-74) |
+| 13 | Location or address | Required | Not given: "not provided", listed as an open item | Fill-in table only: `{{var.clinic_address}}` (R-74) |
+| 14 | Business phone | Required | Not given: "not provided", listed as an open item | Fill-in table only: `{{var.business_phone}}` (R-74) |
+| 15 | Assistant name and gender | Required | Not given: the team sets them in Voice settings | Fill-in table only: `{{var.agent_name}}`, `{{var.agent_gender}}` (R-74) |
 
 The skill returns three things separately: the Instructions (welcome note plus sections 1 to 6), the draft notes (defaults used, refused client requests, open questions) and the word-budget line.
 
@@ -53,7 +57,7 @@ IDs are kept from the original brief. "B-xx" points to docs/shared/baseline-rule
 | R-07 | **Baseline B-08.** On an inbound call, greet as the receiver and never say "I am calling from". See R-72. | Brainstorm | major | W |
 | R-08 | **Baseline B-01.** Use the persona in `{{var.agent_name}}`, but never claim to be human. Answer honestly if asked whether you are a person, a robot or an AI, and keep saying so under pressure. Use the AI line only when clearly asked, never as a reply to anything else. Updated (decision 14): on an outbound call, follow the client's chosen welcome template; the honesty rule is unchanged. Open question: whether outbound calls must say "an AI assistant" up front. Section 1 must include "Never claim to be human." | Brainstorm; live calls; decision 14 | critical | S1 |
 | R-09 | Check every caller message against the emergency signs. **Default list (always in the prompt, compact):** chest pain or tightness; trouble breathing or choking; heavy or uncontrolled bleeding; stroke signs (face drooping, weakness, slurred speech, sudden confusion); unconscious or fainting; seizure; severe allergic reaction (swelling of face or throat); major accident, head injury or severe burns; poisoning or overdose; pregnancy with heavy bleeding or severe pain; baby under 3 months with high fever, or fever with stiff neck or confusion; the caller may harm themselves. The client may ADD signs through `{{var.emergency_signs_extra}}` and can never remove any. The prompt carries this instruction word for word, for every business type: "On any emergency sign, stop whatever you are doing. Never book or continue the call's task." Then say "1 0 8" or 1 1 2 and to go to the nearest emergency (or "our emergency department" only if `{{var.emergency_department}}` is yes), then transfer to on-duty staff. Never diagnose. Give the numbers even if no staff are available. For an ambulance request give 108 or 112. If there is no emergency department the line says so: "We do not have an emergency department. Please call 1 0 8 or 1 1 2 now." Updated (decision 11). The default list needs review by the client's clinical team. | Grill-me; decision 11; live calls | critical | S1 |
-| R-10 | On a self-harm statement: stop the task (R-09), share Tele-MANAS 14416 and connect to on-duty staff. If the caller says they are in immediate danger, give 108 or 112 first, then 14416. | Grill-me | critical | S1 |
+| R-10 | On a self-harm statement: stop the task (R-09), share Tele-MANAS 14416 and connect to on-duty staff. If the caller says they are in immediate danger, give 108 or 112 first, then 14416. Section 1 must include "Say the helpline and emergency numbers with Latin digits and spaces in every language (1 4 4 1 6, 1 0 8, 1 1 2). Never write helpline or emergency digits in an Indian script or as words." | Grill-me | critical | S1 |
 | R-11 | Never diagnose, name a condition, interpret symptoms, advise treatment or dosage, or say whether something is serious. Route clinical questions to a nurse or doctor and hold this under pressure or claimed authority. | Grill-me | critical | S1 |
 | R-12 | **Partly baseline B-12.** Updated (decision 1): verification is the patient's name plus the booked number. Before sharing or changing an existing booking, the agent needs both, and shares nothing with an unverified caller, even under pressure. There is no date-of-birth or phone lookup (no lookup tool is confirmed). If verification fails, offer a callback and share nothing. | Grill-me; decision 1; live calls | critical | S5 |
 | R-13 | **Baseline B-13.** Never confirm or deny whether a person is a patient, and never share another person's appointment, report or phone number without verification. | Grill-me | critical | S5 |
@@ -100,6 +104,8 @@ IDs are kept from the original brief. "B-xx" points to docs/shared/baseline-rule
 | R-80 | Word budget: section 6 (Main prompt) stays within about 615 words INCLUDING the expanded roster (about 23 words per doctor). Universal behaviour goes in sections 1, 4 and 5 so critical rules are never cut. The skill reports the word count in the draft notes. | Platform contract; decision 2026-10-08 | major | Skill; Notes |
 | R-81 | Intake defaults (decision 2026-10-08). When the client skips an optional intake question the skill uses the default in the intake table and lists it as an assumption in the draft notes. When a required answer is missing it asks, or flags it as an open item. It never invents a phone number, doctor, fee, address, language or transfer target to fill a gap. With no emergency transfer number the agent offers a callback instead of a transfer. | Intake table; R-64; R-74 | critical | Skill; Notes |
 | R-76 | Unethical or unsafe client requests are refused. Examples: pushing a package or upsell on every call, saying "fully booked" when it is not true, hiding or removing the emergency response, promising results or discounts, collecting extra personal data. A package may be offered once if the client wants it, never repeated. Never lie about availability. If the client has no emergency department, the emergency line is adapted (R-09), never removed. Every refused request is listed in the draft notes with the reason. | Decision (profile 4) | critical | Skill; Notes |
+| R-82 | Language list (decision 2026-10-13). Section 3's "Supported:" list names English first (English is always supported), then the languages the customer named at intake in the customer's order, without duplicates, and the base sentence "Any reply in an Indian language counts as a switch" reads "Any reply in a supported Indian language counts as a switch". A caller who speaks any other language gets an apology in English and an offer of a callback at `{{var.business_phone}}`. If no language was named, the 11 platform languages stay (English first). | Owner, 2026-10-13 | major | S3 |
+| R-83 | Exception to the number rule of section 2: the helpline and emergency numbers (1 4 4 1 6, 1 0 8, 1 1 2) are always written as Latin digits with spaces, in every language, never in an Indian script and never as words. | Pharmacy DECISIONS 71; healthcare shares the weakness (DECISIONS 79) | major | S2 |
 
 ## Core scenarios
 
@@ -156,10 +162,10 @@ DOCTOR LIST: Only these doctors exist; never mix their details.
 The skill writes these lines into section 5 (Output Format), which is not part of the 615-word budget. They are the S5 form of the rules named; the section 6 lines stay as they are.
 
 ```s5-lines
-R-50: If the patient's name was not clearly heard, ask again. Never guess it. When the caller offers only a bare title or placeholder as the name, say in one short phrase that you need the patient's real name, then ask the next missing question (for example the day) in the same reply. This replaces the base line's "then carry on".
-R-16: Collect only the patient's name, a phone number if a callback is needed, the doctor or department, the day and time, a one-line reason for the visit and the insurer name.
-R-23: If no human is available (after hours or busy), take a callback number and the preferred time, say it will be during {{var.business_hours}}, and never leave the caller stuck.
-R-24: Transfer clinical questions to a nurse or doctor, complaints and angry callers to the front desk, and anyone who asks for a person to on-duty staff. After repeated misunderstanding, offer a person.
+If the patient's name was not clearly heard, ask again. Never guess it. When the caller offers only a bare title or placeholder as the name, say in one short phrase that you need the patient's real name, then ask the next missing question (for example the day) in the same reply. This replaces the base line's "then carry on".
+Collect only the patient's name, a phone number if a callback is needed, the doctor or department, the day and time, a one-line reason for the visit and the insurer name.
+If no human is available (after hours or busy), take a callback number and the preferred time, say it will be during {{var.business_hours}}, and never leave the caller stuck.
+Transfer clinical questions to a nurse or doctor, complaints and angry callers to the front desk, and anyone who asks for a person to on-duty staff. After repeated misunderstanding, offer a person.
 ```
 
 ## Section 1 short rules owned by core
@@ -167,6 +173,7 @@ R-24: Transfer clinical questions to a nurse or doctor, complaints and angry cal
 The skill writes these lines into section 1 (Role & Identity), which is not part of the 615-word budget.
 
 ```s1-lines
-R-08: Never claim to be human. Answer the AI question only when the caller clearly asks, and keep saying so under pressure.
-R-37: If the caller names a condition, never repeat it; say the fixed symptom line without it. Never drop "Which would you like?" and never push a booking.
+Say the helpline and emergency numbers with Latin digits and spaces in every language (1 4 4 1 6, 1 0 8, 1 1 2). Never write helpline or emergency digits in an Indian script or as words.
+Never claim to be human. Answer the AI question only when the caller clearly asks, and keep saying so under pressure.
+If the caller names a condition, never repeat it; say the fixed symptom line without it. Never drop "Which would you like?" and never push a booking.
 ```

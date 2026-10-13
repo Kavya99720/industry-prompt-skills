@@ -24,6 +24,9 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
                    required only for the matching method (none for in_store or not_set). Without this option every marked
                    row is required, as before.
 
+A rule ID such as "R-41" or "S-37" anywhere in the Instructions (the part before the === DRAFT NOTES === marker; the
+whole text when there is no marker) is reported as a problem: rule IDs belong to the sources, never to the prompt.
+
 Exit code 0: nothing missing. Exit code 1: lines are missing; each is printed.
 Exit code 2: usage error.
 """
@@ -34,6 +37,9 @@ from pathlib import Path
 
 SAY_EXACTLY = re.compile(r'say exactly(?: and only)?(?: this block\b[^"]{0,50})?\s*"([^"]+)"', re.I)
 MUST_PREFIX = "must include: "
+RULE_ID = re.compile(r"\b[RS]-\d+\b")
+RULE_ID_PREFIX = "rule ID: "
+NOTES_MARKER = "=== DRAFT NOTES ==="
 UPLOAD_BRANCH = re.compile(r"\[upload:\s*(whatsapp|email)\]", re.I)
 UPLOAD_TOOL = "prescription_upload_method"
 UPLOAD_VALUES = ("whatsapp", "email", "in_store", "not_set")
@@ -133,7 +139,18 @@ def check(output_text, refs, numbers=(), direction=None, tools=None):
     text = norm_text(output_text)
     missing += [(src, MUST_PREFIX + q) for src, q in required_text(Path(refs), set(numbers), direction, tools)
                 if norm_text(q) not in text]
+    missing += rule_id_problems(output_text)
     return missing
+
+
+def rule_id_problems(output_text):
+    """Rule IDs (R-12, S-37) inside the Instructions part of an output, as (where, RULE_ID_PREFIX + text) pairs."""
+    instructions = output_text.split(NOTES_MARKER, 1)[0] if re.search(r"(?m)^" + re.escape(NOTES_MARKER) + r"\s*$", output_text) else output_text
+    found = []
+    for n, line in enumerate(instructions.splitlines(), 1):
+        for m in RULE_ID.finditer(line):
+            found.append((f"Instructions line {n}", RULE_ID_PREFIX + m.group(0) + " in: " + line.strip()[:70]))
+    return found
 
 
 def main(argv=None):
@@ -163,7 +180,9 @@ def main(argv=None):
         tools[name] = state.lower() == "on"
     missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools)
     for src, q in missing:
-        if q.startswith(MUST_PREFIX):
+        if q.startswith(RULE_ID_PREFIX):
+            print(f"RULE ID in the Instructions ({src}): {q[len(RULE_ID_PREFIX):]}")
+        elif q.startswith(MUST_PREFIX):
             print(f'MISSING (from {src}): must include "{q[len(MUST_PREFIX):]}"')
         else:
             print(f'MISSING (from {src}): "{q}"')

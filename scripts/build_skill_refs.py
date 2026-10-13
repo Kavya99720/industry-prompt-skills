@@ -12,6 +12,7 @@ Copied (the originals stay the source of truth; never edit the copies):
   docs/shared/variables.json                  -> references/shared/variables.json
   docs/shared/baseline-rules.md               -> references/shared/baseline-rules.md
   docs/shared/platform-contract.md            -> references/shared/platform-contract.md
+  docs/shared/intake-flow.md                  -> references/shared/intake-flow.md   (only when the skill's SKILL.md names it)
   industries/<x>/section-bases.md (optional)  -> references/industry/section-bases.md
   industries/<x>/variables.json (optional)    -> references/industry/variables.json
 A generated references/INDEX.md lists the copies. Test profiles, eval files and results are never copied.
@@ -23,6 +24,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SHARED = ("section-bases.md", "variables.json", "baseline-rules.md", "platform-contract.md")
+# Copied only for a skill whose SKILL.md names it (references/shared/<name>).
+OPTIONAL_SHARED = ("intake-flow.md",)
 # Optional, written by the industry: its own section base text and its custom-detail variables.
 OPTIONAL_INDUSTRY = ("section-bases.md", "variables.json")
 
@@ -47,6 +50,11 @@ def plan(industry, root=ROOT):
             files[f"workflows/{f.name}"] = ind / "workflows" / f.name
     for name in SHARED:
         files[f"shared/{name}"] = Path("docs/shared") / name
+    skill_md = root / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
+    skill_text = skill_md.read_text(encoding="utf-8") if skill_md.is_file() else ""
+    for name in OPTIONAL_SHARED:
+        if f"shared/{name}" in skill_text and (root / "docs" / "shared" / name).is_file():
+            files[f"shared/{name}"] = Path("docs/shared") / name
     for name in OPTIONAL_INDUSTRY:
         if (root / ind / name).is_file():
             files[f"industry/{name}"] = ind / name

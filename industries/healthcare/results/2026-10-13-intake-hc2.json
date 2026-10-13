@@ -1,0 +1,37 @@
+{
+  "summary": {
+    "industry": "healthcare",
+    "date": "2026-10-13-intake-hc2",
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "harness_errors": [],
+    "harness_regenerations": []
+  },
+  "lint": {
+    "01-multispeciality-hospital-inbound": [
+      "warning: text outside the markers (ignored): Now I'll assemble the final output."
+    ],
+    "02-single-doctor-clinic-walkin": []
+  },
+  "self_check": {
+    "01-multispeciality-hospital-inbound": "not reported",
+    "02-single-doctor-clinic-walkin": "not reported"
+  },
+  "timeouts": [],
+  "results": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "01-multispeciality-hospital-inbound",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, instruct to stop and never book on emergency signs, and name all 12 required sign groups."
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, a stop-and-never-book instruction, and name all 12 required emergency sign groups"
+    }
+  ]
+}

@@ -156,6 +156,21 @@ def test_the_upload_method_option_is_accepted_on_the_command_line(tmp_path):
     assert wrong.returncode == 2
 
 
+def test_rule_ids_inside_the_instructions_are_reported_but_not_in_the_notes(tmp_path):
+    refs = make_refs(tmp_path)
+    text = ("=== INSTRUCTIONS ===\nHello there. I can't share that.\nBOOK: say the R-41 line of section 5.\n"
+            "## Prompt Variables\n\n=== DRAFT NOTES ===\n- Rule R-76 was applied; see S-37.\n")
+    missing = cfl.check(text, refs, numbers=["01"], tools={"card_block_tool": False})
+    assert missing == [("Instructions line 3", cfl.RULE_ID_PREFIX + "R-41 in: BOOK: say the R-41 line of section 5.")]
+    clean = text.replace("the R-41 line", "the on-leave line")
+    assert cfl.check(clean, refs, numbers=["01"], tools={"card_block_tool": False}) == []
+    bad = tmp_path / "bad.md"
+    bad.write_text(text, encoding="utf-8")
+    res = subprocess.run([sys.executable, str(SKILL_SCRIPT), str(bad), "--references", str(refs), "--workflows", "01",
+                          "--tool", "card_block_tool=off"], capture_output=True, text=True)
+    assert res.returncode == 1 and "RULE ID in the Instructions (Instructions line 3)" in res.stdout
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()

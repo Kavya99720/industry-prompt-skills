@@ -1,0 +1,17 @@
+{
+  "cases": [
+    "HLT-E07"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "01-multispeciality-hospital-inbound",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, instruct to stop and never book on emergency signs, and name all 12 required sign groups."
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now I'll assemble the final output."
+  ],
+  "self_check": "not reported"
+}
