@@ -15,6 +15,8 @@ FAILS (exit 1) on:
   - a real client value: any term in scripts/denylist.txt (private, gitignored), or a phone number
 WARNS on {{var.company_name}} used outside a welcome, closing or AI-disclosure line.
 
+A folder named sentence-tests/ (saved manual-test outputs) is skipped when a folder is scanned, like results/; a
+file named explicitly with --paths is still checked.
 Put `check_variables: ignore` on a line to skip it (for text that explains a wrong style).
 Leakage check (scripts/leakage_terms.json): a term that belongs to another industry (for example 'pharmacist' in a
 banking file) is reported. Mode 'report' prints the hits and never fails; mode 'fail' makes every hit that is not in the
@@ -41,6 +43,13 @@ def is_results(path):
     """industries/<x>/results/ holds generated run output, not authored files."""
     parts = path.parts
     return "industries" in parts and "results" in parts[parts.index("industries"):]
+
+
+def is_sentence_test(path):
+    """A sentence-tests/ folder holds saved manual-test outputs (with the customer's example values in the fill-in table)."""
+    return "sentence-tests" in Path(path).parts
+
+
 IGNORE_MARK = "check_variables: ignore"
 
 # Old or wrong names and the variable that replaces them. Only these are auto-fixed.
@@ -152,7 +161,8 @@ def collect_files(targets, root):
             files.append(p)
         elif p.is_dir():
             for f in sorted(p.rglob("*")):
-                if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and not is_results(f):
+                if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and not is_results(f) \
+                        and not is_sentence_test(f):
                     files.append(f)
     return files
 
@@ -293,7 +303,8 @@ def leakage_files(root, industry):
     base = root / "industries" / industry
     if base.is_dir():
         for f in sorted(base.rglob("*")):
-            if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and "results" not in f.relative_to(base).parts:
+            if f.is_file() and f.suffix in SUFFIXES and not (SKIP_DIRS & set(f.parts)) and "results" not in f.relative_to(base).parts \
+                    and "sentence-tests" not in f.relative_to(base).parts:
                 files.append(f)
     skill = root / ".claude" / "skills" / f"{industry}-prompt-writer" / "SKILL.md"
     if skill.is_file():

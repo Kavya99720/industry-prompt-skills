@@ -154,6 +154,26 @@ def test_results_folders_are_skipped(repo):
     assert errors == 1 and all("results" not in i.path for i in issues)
 
 
+def test_sentence_tests_folders_are_skipped_but_a_named_file_is_still_checked(repo):
+    st = repo / "industries" / "demo" / "sentence-tests"
+    st.mkdir(parents=True)
+    bad = st / "t.md"
+    bad.write_text("bad {{doctors}} Dr. Ramesh Kumar 9876543210" + chr(10), encoding="utf-8")
+    kept = repo / "industries" / "demo" / "brief.md"
+    kept.write_text("bad {{doctors}}" + chr(10), encoding="utf-8")
+    deep = repo / ".claude" / "skills" / "x-prompt-writer" / "sentence-tests"
+    deep.mkdir(parents=True)
+    (deep / "u.md").write_text("bad {{doctors}}" + chr(10), encoding="utf-8")
+    out = io.StringIO()
+    errors, _, _, issues = cv.run(repo, ["industries", ".claude/skills"], repo / "docs/shared/variables.json",
+                                  repo / "scripts/denylist.txt", out=out)
+    assert errors == 1 and all("sentence-tests" not in i.path for i in issues)
+    out = io.StringIO()
+    named, _, _, named_issues = cv.run(repo, ["industries/demo/sentence-tests/t.md"], repo / "docs/shared/variables.json",
+                                       repo / "scripts/denylist.txt", out=out)
+    assert named >= 1 and any("sentence-tests" in i.path for i in named_issues)
+
+
 @pytest.mark.parametrize("line", ["Say Doctor Rao, is that right?", "Ask Dr. Shah first.", "Dr Kumar is in."])
 def test_example_person_names_fail(repo, line):
     (errors, _, _, issues), _, _ = scan(repo, line + chr(10))
