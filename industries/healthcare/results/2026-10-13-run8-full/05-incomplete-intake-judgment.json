@@ -1,0 +1,52 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28",
+    "HLT-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "All 12 emergency sign groups named plus 108/112 and stop-task/never-book instruction"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Never-collect line names Aadhaar, PAN, card/bank/UPI, policy numbers, medical history, OTP, payment"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome note present; no forbidden outbound phrases found anywhere"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Only {{var.roster}} used, no literal doctors/fees/phone/address; company_name confined to required spots; vars all listed"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 is 336 words, within the 569-word allowance for 2 doctors"
+    },
+    {
+      "case_id": "HLT-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes list both required assumptions; instructions have no stray numbers/doctors/fees/address and no transfer-to-number instruction"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): That's fine, leftover scratch files don't matter. Now produc"
+  ],
+  "self_check": "not reported"
+}

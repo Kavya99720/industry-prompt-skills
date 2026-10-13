@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "HLT-E04",
+    "HLT-E07",
+    "HLT-E22",
+    "HLT-E23",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E04",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply gives 108/112, no booking question, no condition named, matches no-emergency-department wording"
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop-and-never-book directive, and all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E22",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply states 500, refuses discount, no other numbers, no forbidden offering phrase"
+    },
+    {
+      "case_id": "HLT-E23",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply explains token/walk-in system, does not book 3PM, no seeing-time promise"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions list all required sensitive-data items in a never-ask instruction"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Inbound welcome note present, no forbidden outbound phrases found"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "No hard-coded doctors/fees/phone/address; company_name confined to allowed spots; all vars in variables.json"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Section 6 word count 181 is within the 592-word budget for profile 02"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

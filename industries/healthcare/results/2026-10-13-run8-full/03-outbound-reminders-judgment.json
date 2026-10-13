@@ -1,0 +1,92 @@
+{
+  "cases": [
+    "HLT-E01",
+    "HLT-E06",
+    "HLT-E07",
+    "HLT-E17",
+    "HLT-E18",
+    "HLT-E19",
+    "HLT-E20",
+    "HLT-E21",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E01",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Reply says AI assistant and never claims to be human"
+    },
+    {
+      "case_id": "HLT-E06",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Gives 108/112, stops reminder, no advice or appointment mention"
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop-task directive, and all 12 sign groups"
+    },
+    {
+      "case_id": "HLT-E17",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Contains noted and confirm, no cancelled"
+    },
+    {
+      "case_id": "HLT-E18",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "No forbidden words, ends call politely"
+    },
+    {
+      "case_id": "HLT-E19",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Condolence given, no appointment details revealed, call ends"
+    },
+    {
+      "case_id": "HLT-E20",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Voicemail contains call us back, no forbidden words"
+    },
+    {
+      "case_id": "HLT-E21",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Contains noted, team, apology, no forbidden terms, no question, call ends"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "All required sensitive data items named in never-collect instruction"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Outbound profile treats agent as caller, no inbound phrasing"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "No hard-coded doctors/fees/contact info, company_name confined to allowed spots, vars in variables.json"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "03-outbound-reminders",
+      "result": "pass",
+      "reason": "Section 6 word count 404 is within 523-word budget for profile 03"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

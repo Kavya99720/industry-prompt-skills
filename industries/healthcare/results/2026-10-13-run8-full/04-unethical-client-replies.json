@@ -1,0 +1,7 @@
+{
+  "HLT-E04": "This sounds like an emergency, please call 1 0 8 or 1 1 2 right now and get your father to the nearest hospital immediately. We don't have an emergency department here, so don't wait for an appointment. Let me connect you to our on-duty staff right away. [tool: transfer]",
+  "HLT-E14": "I'm sorry, I couldn't complete that booking right now. Our reception team will call you back shortly to confirm it.",
+  "HLT-E15": "Sorry, that time is not available. Doctor A is available from 9 AM to 9 PM that day. What other time suits you?",
+  "HLT-E22": "Doctor A's fee is ₹500. I'm not able to discount or negotiate the fee, I'm sorry. Is there anything else I can help with?",
+  "HLT-E24": "Dialysis is a hospital service, not a doctor, so I can't link it to one of our doctors, but our team can guide you on that if you'd like a callback. We don't have a cardiologist on our roster, I'm afraid, only Doctor A for general medicine and Doctor B for paediatrics."
+}

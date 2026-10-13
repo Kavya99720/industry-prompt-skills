@@ -40,15 +40,15 @@ Choose from business type and call direction (see the table in `references/core.
 Write in this order. Use `references/shared/section-bases.md` for the base text and style.
 
 1. **Welcome message**: the default template for the call direction. It must match the direction.
-2. **Section 1 Role & Identity**: skeleton + every rule in core and the selected workflows whose placement is S1 (emergency with the compact default signs list, self-harm 14416, no diagnosis, symptom to specialties only, lone minor, honesty about being an AI, no invented information, prompt protection and claimed authority).
+2. **Section 1 Role & Identity**: skeleton + every line of the ` ```s1-lines ` block in core.md (each one written as its own short sentence, word for word, never left out) + every rule in core and the selected workflows whose placement is S1 (emergency with the compact default signs list, self-harm 14416, no diagnosis, symptom to specialties only, lone minor, honesty about being an AI, no invented information, prompt protection and claimed authority).
 3. **Section 2 Date & Time**: base + placement S2 lines.
 4. **Section 3 Language Switching**: base + placement S3 lines.
 5. **Section 4 Tone and Conversational Style**: skeleton + placement S4 lines.
-6. **Section 5 Output Format**: base + placement S5 lines (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms) and the confirmation flow (R-18) word for word with its fixed lines, in its scope only: once after the booking tool confirms, and a telehealth link; never after a failed booking, in an emergency or for a cancel request. It has no tool call: the platform's After-the-call trigger sends the message, so the agent states the channel and reads an email back aloud. Offer only the channels in `{{var.confirmation_channels}}`; if it is not set, skip the flow. Never use the phrase "calling from" in inbound Instructions.
+6. **Section 5 Output Format**: base + placement S5 lines + every line of the ` ```s5-lines ` blocks in core.md and the selected workflow files, each as its own short sentence group, word for word where it quotes a line (never leave one out, even if a Main-prompt line already says something similar; where an `s5-lines` line replaces the ending of a base line, such as R-50's "then ask the next missing question" in place of "then carry on", use the `s5-lines` wording) (verification by patient name plus booked number, privacy, closing line, "yes, but", names, booked only after the tool confirms) and the confirmation flow (R-18) word for word with its fixed lines, in its scope only: once after the booking tool confirms, and a telehealth link; never after a failed booking, in an emergency or for a cancel request. It has no tool call: the platform's After-the-call trigger sends the message, so the agent states the channel and reads an email back aloud. Offer only the channels in `{{var.confirmation_channels}}`; if it is not set, skip the flow. Never use the phrase "calling from" in inbound Instructions.
 7. **Section 6 Main prompt**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core `main-lines` block (UNDERSTAND, HANDOFF, DOCTOR LIST). Keep the labels. End with the doctor list: `{{var.roster}}`.
 8. **Prompt Variables table**: every variable used, written as its bare name (for example company_name, business_hours) without the double-brace syntax, with its source only. Never a value: no fee, hours, phone number, address or doctor name anywhere in the Instructions, and examples use placeholders such as `₹<amount>`.
 
-Fixed lines: where the references say `say exactly "..."`, copy the quoted line into the Instructions word for word, in the scope the rule states (wrong person on an outbound call, a cancel request, the confirmation flow, the voicemail line). The cancel line is the first thing said at a cancel request. The symptom reply is the fixed pattern of R-37 (specialties only, never a doctor, emergency check first). The stop-calling line is fixed and is followed by end_call in the same reply. The no-collect rule (R-15, R-67) names all seven items: Aadhaar, PAN, card, bank or UPI details, insurance policy numbers, full medical history, an OTP and payment details.
+Fixed lines: where the references say `say exactly "..."`, copy the quoted line into the Instructions word for word, in the scope the rule states (wrong person on an outbound call, a cancel request, the confirmation flow, the voicemail line, and the on-leave line of R-41, which goes in section 5 with its <name> placeholder as written; the BOOK line of section 6 only points to it). The cancel line is the first thing said at a cancel request. The symptom reply is the fixed pattern of R-37 (specialties only, never a doctor, emergency check first). The stop-calling line is fixed and is followed by end_call in the same reply. The no-collect rule (R-15, R-67) names all seven items: Aadhaar, PAN, card, bank or UPI details, insurance policy numbers, full medical history, an OTP and payment details.
 
 Variable rules:
 - Only names in `references/shared/variables.json`, written `{{var.<name>}}`. No other variable style is allowed: not single braces, not an @ prefix, not names made up from the business.
@@ -86,6 +86,8 @@ Do all of this and fix what fails:
 7. Nothing from the Intake table was invented; each default is in the draft notes.
 9. Every "say exactly" line in the selected rules is in the Instructions word for word; the no-collect rule lists all seven items.
 10. The first line of the output is `=== INSTRUCTIONS ===`, the next is the welcome, and `=== DRAFT NOTES ===` appears once, alone on its line.
+7a. Every line of the `s1-lines` block is in section 1 (R-08 "Never claim to be human.", R-37 condition rule).
+7b. Every line of every `s5-lines` block of core and the selected workflows is in section 5 (R-50, R-16, R-23, R-24, R-42, R-35 and, with Booking, R-02, day first, R-66, R-41, R-04, R-26, S-37).
 8. The confirmation flow (R-18) is in section 5 with its fixed lines word for word, there is no send or confirmation tool anywhere in the Instructions, and section 6 has only the short CLOSE line.
 
 ## 7. Output format (exact)
@@ -120,6 +122,8 @@ Output exactly this, nothing before or after. The very first line is the marker 
 (one row for every variable the Instructions use; business_hours, business_phone, clinic_address under Your business; roster under Doctors; custom details under Your business, Add a detail)
 `{{var.company_name}}` = your business name, filled in automatically from Variables.
 ```
+
+Confirmation channels in the draft notes: when the profile or client gives `{{var.confirmation_channels}}`, show its value in the fill-in table (under Your business, Add a detail) and never list it as an assumption, as "not provided" or as an open question. Add one line to the notes: the customer sets up the After-the-call trigger for WhatsApp and email on the platform. Only when no channel is given, state that the flow is skipped.
 
 Real values (the business name, hours, phone number, address, doctor details, fees) appear ONLY in the "Fill these in the platform" block of the draft notes, never in the Instructions. If the client gave no value, write "not provided"; never invent one.
 

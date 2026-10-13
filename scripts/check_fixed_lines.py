@@ -3,7 +3,9 @@
 this during generation (it would need a tool approval, which cannot be given in a non-interactive run; DECISIONS 63).
 
 Every `say exactly "..."` line (and every fixed block, which is one quoted string) in the skill's references/core.md and
-the selected workflows must appear verbatim in the generated output:
+the selected workflows must appear verbatim in the generated output. A line marked `must include "..."` (on any line of
+core.md or a selected workflow file) is required text, not a spoken line: it must appear in the output as a normalized
+match (case-insensitive, punctuation ignored), so a longer sentence that contains it passes:
 
   python scripts/check_fixed_lines.py OUTPUT.md --industry banking --workflows 01 02 03 --tool card_block_tool=on --tool balance_lookup_tool=off
 
@@ -26,12 +28,19 @@ import sys
 from pathlib import Path
 
 SAY_EXACTLY = re.compile(r'say exactly(?: and only)?(?: this block\b[^"]{0,50})?\s*"([^"]+)"', re.I)
+MUST_PREFIX = "must include: "
+MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
 
 def norm(text):
     text = text.replace("`", "").replace("’", "'").replace("‘", "'")
     text = text.replace("“", '"').replace("”", '"')
     return " ".join(text.split())
+
+
+def norm_text(text):
+    """Case-insensitive, punctuation-free form used for must-include lines."""
+    return " ".join(re.sub(r"[^\w\s]", "", norm(text).lower()).split())
 
 
 def workflow_files(refs, numbers, direction):
@@ -84,13 +93,36 @@ def required_lines(refs, numbers, direction, tools):
     return [(v[0], v[1]) for v in found.values() if v[2]]
 
 
+def required_text(refs, numbers, direction, tools):
+    """Quotes marked must include, as a list of (source file name, quote)."""
+    files = [refs / "core.md"] + workflow_files(refs, numbers, direction)
+    found = {}
+    for f in files:
+        if not f.is_file():
+            continue
+        for row in f.read_text(encoding="utf-8").splitlines():
+            for q in MUST_INCLUDE.findall(row):
+                mentioned = [t for t in tools if t in row]
+                needed = (not mentioned) or any(tools[t] for t in mentioned)
+                key = norm_text(q)
+                if key not in found:
+                    found[key] = [f.name, q, needed]
+                elif needed:
+                    found[key][2] = True
+    return [(v[0], v[1]) for v in found.values() if v[2]]
+
+
 def check(output_text, refs, numbers=(), direction=None, tools=None):
     tools = with_defaults(tools)
     head = output_text.split("\n", 12)
     if direction is None:
         direction = "outbound" if any("calling from" in l for l in head) else "inbound"
     body = norm(output_text)
-    return [(src, q) for src, q in required_lines(Path(refs), set(numbers), direction, tools) if norm(q) not in body]
+    missing = [(src, q) for src, q in required_lines(Path(refs), set(numbers), direction, tools) if norm(q) not in body]
+    text = norm_text(output_text)
+    missing += [(src, MUST_PREFIX + q) for src, q in required_text(Path(refs), set(numbers), direction, tools)
+                if norm_text(q) not in text]
+    return missing
 
 
 def main(argv=None):
@@ -117,9 +149,13 @@ def main(argv=None):
         tools[name] = state.lower() == "on"
     missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools)
     for src, q in missing:
-        print(f'MISSING (from {src}): "{q}"')
-    required = len(required_lines(Path(args.references), set(args.workflows),
-                                  args.direction or ("outbound" if "calling from" in path.read_text(encoding="utf-8")[:900] else "inbound"), with_defaults(tools)))
+        if q.startswith(MUST_PREFIX):
+            print(f'MISSING (from {src}): must include "{q[len(MUST_PREFIX):]}"')
+        else:
+            print(f'MISSING (from {src}): "{q}"')
+    direction = args.direction or ("outbound" if "calling from" in path.read_text(encoding="utf-8")[:900] else "inbound")
+    required = (len(required_lines(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
+                + len(required_text(Path(args.references), set(args.workflows), direction, with_defaults(tools))))
     print(f"fixed lines: {required} required, {len(missing)} missing")
     return 1 if missing else 0
 

@@ -1,0 +1,50 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28",
+    "HLT-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Contains 108/112, stop/never-book rule, and all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Single never-ask line names Aadhaar, PAN, card/bank/UPI, insurance policy numbers, full medical history, OTP, and payment"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound welcome note used correctly with no outbound phrasing, matching profile 05 as inbound"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "No hard-coded doctors/fees/phone/address; roster variable used; company_name confined to welcome/closing/AI-disclosure; vars all listed"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 word count (350) is within the 569-word allowance for the 2-doctor profile"
+    },
+    {
+      "case_id": "HLT-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes list default_language and no-transfer-number assumptions; instructions avoid literal phone numbers, doctors, fees, address, and any transfer-to-number instruction"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

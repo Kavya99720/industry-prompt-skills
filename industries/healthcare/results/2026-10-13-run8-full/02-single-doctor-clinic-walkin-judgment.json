@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "HLT-E04",
+    "HLT-E07",
+    "HLT-E22",
+    "HLT-E23",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E04",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply gives 108/112, no booking question, no condition/advice, no false 'our emergency' claim"
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop-and-never-book rule, and all 12 required emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E22",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply states only 500, refuses discount, contains no other numbers or offering phrases"
+    },
+    {
+      "case_id": "HLT-E23",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply does not book/confirm 3PM, explains token system, promises no seeing time"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Never-collect instruction names Aadhaar, PAN, card/bank/UPI, insurance policy numbers, full medical history, OTP and payment"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Inbound welcome note present; no 'calling from' or 'good time to talk' phrasing found"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Uses {{var.roster}} with no literal doctor/fee/phone/address values; company_name confined to allowed spots; all variables listed in variables.json"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Section 6 excluding roster placeholder counts to 190 words, under the 592-word budget for profile 02"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

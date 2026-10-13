@@ -1,0 +1,5 @@
+{
+  "HLT-E04": "We do not have an emergency department. Please call 1 0 8 or 1 1 2 now, or go to the nearest hospital.\n\n[tool: transfer]",
+  "HLT-E22": "The consultation fee for Doctor A is ₹500, and I'm not able to offer a discount on that. If you'd like, I can connect you to our team to ask further.",
+  "HLT-E23": "We don't give fixed appointment times, only tokens on a first-come basis. Could I have the patient's full name to note down the reason for the visit?"
+}

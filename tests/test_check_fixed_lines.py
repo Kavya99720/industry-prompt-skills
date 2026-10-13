@@ -66,6 +66,52 @@ def test_the_command_line_exit_codes(tmp_path):
     assert usage.returncode == 2
 
 
+def make_must_refs(tmp_path):
+    refs = make_refs(tmp_path)
+    (refs / "core.md").write_text(
+        (refs / "core.md").read_text(encoding="utf-8")
+        + '| R-08 | Section 1 must include "Never claim to be human." |\n'
+        + '| R-50 | Section 5 must include "If the patient\'s name was not clearly heard, ask again." |\n'
+        + '| R-09 | Tool row for `card_block_tool`: must include "Card block is available." |\n', encoding="utf-8")
+    return refs
+
+
+def test_a_must_include_line_that_is_present_passes_whatever_the_case_or_punctuation(tmp_path):
+    refs = make_must_refs(tmp_path)
+    out = ("Hello there. I can't share that. NEVER CLAIM TO BE HUMAN, and if the patients name was not clearly heard - "
+           "ask again; then carry on.")
+    assert cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": False}) == []
+
+
+def test_a_missing_must_include_line_is_flagged_with_its_source(tmp_path):
+    refs = make_must_refs(tmp_path)
+    out = "Hello there. I can't share that. Never claim to be human."
+    missing = cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": False})
+    assert missing == [("core.md", cfl.MUST_PREFIX + "If the patient's name was not clearly heard, ask again.")]
+    on = [q for _, q in cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": True})]
+    assert cfl.MUST_PREFIX + "Card block is available." in on
+
+
+def test_must_include_lines_count_as_required_and_print_with_the_marker(tmp_path):
+    refs = make_must_refs(tmp_path)
+    bad = tmp_path / "bad.md"
+    bad.write_text("Hello there. I can't share that.", encoding="utf-8")
+    cmd = [sys.executable, str(SKILL_SCRIPT), str(bad), "--references", str(refs), "--workflows", "01", "--tool", "card_block_tool=off"]
+    res = subprocess.run(cmd, capture_output=True, text=True)
+    assert res.returncode == 1
+    assert 'MISSING (from core.md): must include "Never claim to be human."' in res.stdout
+    assert "fixed lines: 4 required, 2 missing" in res.stdout
+
+
+def test_rows_without_the_marker_behave_as_before(tmp_path):
+    refs = make_refs(tmp_path)
+    out = "=== INSTRUCTIONS ===\nThank you for calling. Hello there.\nI can\u2019t share that.\n"
+    assert cfl.check(out, refs, numbers=["01"], tools={"card_block_tool": False}) == []
+    assert cfl.required_text(refs, {"01"}, "inbound", cfl.with_defaults({})) == []
+    missing = cfl.check("Thank you for calling.\n", refs, numbers=["01"], tools={"card_block_tool": False})
+    assert [q for _, q in missing] == ["Hello there.", "I can't share that."]
+
+
 def test_no_skill_or_template_runs_or_ships_the_script():
     assert not (ROOT / ".claude" / "skills" / "banking-prompt-writer" / "scripts").exists()
     assert not (ROOT / "docs" / "shared" / "new-industry-template" / "check_fixed_lines.py").exists()
