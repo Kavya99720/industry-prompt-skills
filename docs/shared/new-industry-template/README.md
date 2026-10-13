@@ -1,6 +1,6 @@
 # New-industry template
 
-Start point for the 8 industries still to build (retail, finance, education, logistics, hr, banking, real-estate, travel). Healthcare and pharmacy are finished (Done v1) and locked; copy their LAYOUT from this template, never their content, and never edit them.
+Start point for the 6 industries still to build (retail, education, logistics, hr, banking, real-estate). Healthcare and pharmacy are finished (Done v1) and locked; copy their LAYOUT from this template, never their content, and never edit them.
 
 Everything below comes from building healthcare and pharmacy (docs/DECISIONS.md entries 29 to 56). Each lesson is already written as a rule in the template files, with its scope.
 
@@ -14,7 +14,7 @@ Everything below comes from building healthcare and pharmacy (docs/DECISIONS.md 
 | [skill.template.md](skill.template.md) | .claude/skills/<x>-prompt-writer/SKILL.md skeleton |
 | [test-profile.template.md](test-profile.template.md) | industries/<x>/test-profiles/NN-*.md |
 | [../confirmation-flow.md](../confirmation-flow.md) | the confirmation flow, copied into the industry's core with its scope |
-| [../prompting-guide.md](../prompting-guide.md) | the rules, the risk and tone table for all 10 industries, Sarvam's guidance |
+| [../prompting-guide.md](../prompting-guide.md) | the rules, the risk and tone table for all 8 industries, Sarvam's guidance |
 
 ## Build order (one industry at a time)
 

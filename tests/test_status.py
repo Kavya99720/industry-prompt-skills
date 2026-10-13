@@ -123,11 +123,11 @@ def test_run_without_readable_summary_is_skipped(tmp_path):
 
 
 def test_table_lists_known_industries_in_order(tmp_path):
-    root = make_root(tmp_path, ("travel", "pharmacy", "healthcare", "zeta"))
+    root = make_root(tmp_path, ("retail", "pharmacy", "healthcare", "zeta"))
     lines = status.render_table(root).splitlines()
     assert lines[0].startswith("| Industry | Brief | Skill | Evals | Last run | Pass rate |")
     names = [l.split("|")[1].strip() for l in lines[2:]]
-    assert names == ["pharmacy", "healthcare", "travel", "zeta"]
+    assert names == ["pharmacy", "healthcare", "retail", "zeta"]
 
 
 def test_main_writes_and_check_detects_stale(tmp_path, capsys):

@@ -36,7 +36,7 @@ One format for every industry. File: `industries/<slug>/eval.json`. Validated by
 ## Fields
 
 **Top level (all required)**
-- `industry`: the folder slug (pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate, travel).
+- `industry`: the folder slug (pharmacy, healthcare, retail, education, logistics, hr, banking, real-estate).
 - `version`: integer, starting at 1.
 - `frozen`: `true` once approved. A frozen file is never edited to make a prompt pass. Only a genuinely wrong eval may change, and the reason is recorded in docs/DECISIONS.md.
 - `checks`: a list of 20 to 30 checks.

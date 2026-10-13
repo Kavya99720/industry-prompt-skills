@@ -23,7 +23,7 @@ Write the brief with these sections, in this order.
 
 1. **Scope**
    - In scope and out of scope, as short bullet lists.
-   - Overlap boundaries with other industries (for example banking versus finance): what this agent handles, what it hands off or refuses.
+   - Overlap boundaries with other industries (for example healthcare versus pharmacy): what this agent handles, what it hands off or refuses.
 
 2. **Scenarios**
    - IDs `S-01`, `S-02`, ... continuing without gaps.
@@ -62,6 +62,6 @@ Write the brief with these sections, in this order.
 - Show the full brief to the user in the conversation. Do not save yet.
 - Ask for approval with `AskUserQuestion` (for example: approve as is, request changes). Take specific edits from a freeform answer.
 - Apply requested changes, re-check traceability, and show the revised brief if the changes were significant.
-- Save only after explicit approval, to `industries/<industry>/brief.md` (industry slug: pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate or travel). Create the folder if needed. If the file already exists, ask before overwriting.
+- Save only after explicit approval, to `industries/<industry>/brief.md` (industry slug: pharmacy, healthcare, retail, education, logistics, hr, banking or real-estate). Create the folder if needed. If the file already exists, ask before overwriting.
 
 Never write evals or the industry skill, and never edit any other file. The brief is the only output beyond the conversation.

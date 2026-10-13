@@ -20,12 +20,6 @@
       "net banking",
       "cheque"
     ],
-    "finance": [
-      "mutual fund",
-      "demat",
-      "NBFC",
-      "EMI"
-    ],
     "retail": [
       "SKU",
       "loyalty points",
@@ -54,11 +48,6 @@
       "RERA",
       "carpet area",
       "site visit"
-    ],
-    "travel": [
-      "PNR",
-      "itinerary",
-      "boarding pass"
     ]
   },
   "allow": [
@@ -69,11 +58,6 @@
     },
     {
       "industry": "pharmacy",
-      "term": "OTP",
-      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
-    },
-    {
-      "industry": "finance",
       "term": "OTP",
       "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
     },
@@ -103,11 +87,6 @@
       "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
     },
     {
-      "industry": "travel",
-      "term": "OTP",
-      "reason": "no-collect rule: every industry says it never asks for an OTP; a safety line shared by all, not banking content"
-    },
-    {
       "industry": "healthcare",
       "term": "EMI",
       "reason": "out-of-scope boundary note: medical loans and EMI belong to finance (scope list)"
@@ -126,11 +105,6 @@
       "industry": "banking",
       "term": "NBFC",
       "reason": "boundary note: NBFC belongs to finance"
-    },
-    {
-      "industry": "finance",
-      "term": "debit card",
-      "reason": "boundary note: cards belong to banking"
     }
   ],
   "shared_allow": [

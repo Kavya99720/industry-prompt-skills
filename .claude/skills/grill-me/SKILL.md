@@ -27,7 +27,7 @@ Establish the industry and intended agent, then clarify these areas as needed:
 - **Prohibited behavior:** What must the agent never do? Clarify high-impact safety, compliance, or authority limits.
 - **Human escalation:** When must it hand off, to whom, and what should it do if a human is unavailable?
 - **Data collection:** What information may it collect, and what must it avoid collecting or retain only with permission?
-- **Industry boundaries:** What is in scope and out of scope, especially where industries overlap (for example, banking versus finance)?
+- **Industry boundaries:** What is in scope and out of scope, especially where industries overlap (for example, healthcare versus pharmacy)?
 
 Use concrete options tailored to the industry rather than repeating generic choices. Keep the first option the recommended default, but do not imply that the user has accepted it. Capture corrections and exceptions from freeform answers.
 
