@@ -19,8 +19,8 @@ import sys
 from pathlib import Path
 
 INDUSTRIES = (
-    "healthcare", "pharmacy", "retail", "finance", "banking",
-    "education", "logistics", "hr", "real-estate", "travel",
+    "healthcare", "pharmacy", "retail", "banking",
+    "education", "logistics", "hr", "real-estate",
 )
 LOCK_FILE = ".claude/locked-industries.json"
 LOG_FILE = ".claude/logs/hook-events.log"

@@ -43,8 +43,8 @@ import check_variables  # noqa: E402
 import validate_eval  # noqa: E402
 
 INDUSTRIES = (
-    "healthcare", "pharmacy", "retail", "finance", "banking",
-    "education", "logistics", "hr", "real-estate", "travel",
+    "healthcare", "pharmacy", "retail", "banking",
+    "education", "logistics", "hr", "real-estate",
 )
 RETRIES = int(os.environ.get("RUN_EVALS_RETRIES", "2"))
 RETRY_WAIT = int(os.environ.get("RUN_EVALS_RETRY_WAIT", "10"))

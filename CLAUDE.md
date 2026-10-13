@@ -1,5 +1,5 @@
 # Industry Prompt Skills (CEL-53)
-Prompt-writing skills for 10 industries (pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate, travel). Each skill generates system prompts for voice/chat agents. Each industry has an eval.json of 20-30 compliance checks. Generated prompts are validated against the evals; failures are fixed in the skill until all evals pass. This folder is separate from the platform codebase.
+Prompt-writing skills for 8 industries (pharmacy, healthcare, retail, education, logistics, hr, banking, real-estate). Each skill generates system prompts for voice/chat agents. Each industry has an eval.json of 20-30 compliance checks. Generated prompts are validated against the evals; failures are fixed in the skill until all evals pass. This folder is separate from the platform codebase.
 
 ## Layout
 - industries/<industry>/brief.md — industry brief (scenarios S-xx, rules R-xx)
@@ -16,7 +16,7 @@ Prompt-writing skills for 10 industries (pharmacy, healthcare, retail, finance, 
 ## Workflow per industry
 grill-me -> brainstorm -> spec-first (brief) -> plan mode approval -> industry agent builds brief, test profiles -> write-evals (then frozen) -> write skill -> run-evals (eval-judge grades) -> fix the SKILL for failures -> re-run -> release-check.
 
-Starter material for the 8 remaining industries: docs/shared/new-industry-template/ (start with its README.md) and docs/shared/prompting-guide.md. Healthcare and pharmacy are finished (Done v1) and locked.
+Starter material for the 6 remaining industries: docs/shared/new-industry-template/ (start with its README.md) and docs/shared/prompting-guide.md. Healthcare and pharmacy are finished (Done v1) and locked.
 
 ### Workflow rules
 - One grill-me at a time. Save it to industries/<x>/grill-me.md before the next industry's grill-me starts. An industry agent reads only its own grill-me.md.

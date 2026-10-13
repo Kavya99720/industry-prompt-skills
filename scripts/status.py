@@ -20,8 +20,8 @@ ROOT = Path(__file__).resolve().parent.parent
 START = "<!-- STATUS:START -->"
 END = "<!-- STATUS:END -->"
 ORDER = (
-    "pharmacy", "healthcare", "retail", "finance", "education",
-    "logistics", "hr", "banking", "real-estate", "travel",
+    "pharmacy", "healthcare", "retail", "education",
+    "logistics", "hr", "banking", "real-estate",
 )
 HEADER = ("Industry", "Brief", "Skill", "Evals", "Last run", "Pass rate")
 RUN_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-run(\d+)$")

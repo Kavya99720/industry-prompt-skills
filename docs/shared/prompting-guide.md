@@ -28,13 +28,11 @@ Risk = what goes wrong worst; the first column of rules to write first. Tone = h
 | Healthcare | Emergency signs, diagnosis or advice, a minor alone, patient privacy, wrong doctor or time | Calm, warm, patient; slow with worried or elderly callers | 1 0 8 / 1 1 2 first; specialties only for a symptom; never a doctor pick |
 | Pharmacy | Prescription-only and controlled medicines, dosage advice, substitutes, medicine names as health data | Patient, plain words, discreet | No order without a valid prescription; pharmacist line; never say a condition back |
 | Retail | False stock or price, discount promises, returns and refund promises, payment details | Friendly, brisk, helpful | Prices only from the system; refunds never promised on the call |
-| Finance | Loan or investment advice, guaranteed returns, collections pressure, KYC data, mis-selling | Measured, neutral, never persuasive | No advice or guarantees; no collection threats; no card, PIN or OTP |
 | Education | Minors and parents, fee and admission promises, exam or result data, counselling claims | Encouraging, clear, patient with parents | Verify the parent or student; never promise a seat, result or fee waiver |
 | Logistics | Tracking guesses, delivery-time promises, address changes, claims for damage, proof of delivery | Efficient, precise, calm under delay | Status only from the system; never invent a time; verify before an address change |
 | HR | Salary and personal records, hiring decisions, discrimination, grievances, notice and leave disputes | Respectful, neutral, confidential | Verify the employee; never state a decision or a salary to a third party |
 | Banking | Fraud, account takeover, OTP / PIN / CVV, balances to the wrong person, cybercrime reporting | Calm, firm, security-first | Never ask for an OTP, PIN, CVV or password; fraud goes to blocking and the helpline 1 9 3 0; verify before a balance |
 | Real estate | Price and availability promises, legal or loan advice, site-visit scheduling, lead data | Professional, honest, not pushy | No legal or loan advice; no price promise; one callback offer |
-| Travel | Fare and availability promises, cancellation and refund terms, visa or legal advice, itinerary data, passenger identity | Helpful, clear, patient under disruption | Fares and rules only from the system; no visa advice; verify before changing a booking |
 
 ## 3. Sarvam's guidance, applied here
 

@@ -35,7 +35,7 @@ Aim for breadth first. Cover the grill-me prohibited-behavior, escalation and da
 
 ## Save
 
-Write the confirmed list to `industries/<industry>/brainstorm.md`, using the industry slug from the folder naming (pharmacy, healthcare, retail, finance, education, logistics, hr, banking, real-estate, travel). Create the folder if needed. If the file already exists, ask before overwriting.
+Write the confirmed list to `industries/<industry>/brainstorm.md`, using the industry slug from the folder naming (pharmacy, healthcare, retail, education, logistics, hr, banking, real-estate). Create the folder if needed. If the file already exists, ask before overwriting.
 
 File contents: a title, the source (the grill-me entry number and date), the four grouped sections with the confirmed numbered items and their `[MUST]`/`[NICE]` marks, and any remaining open questions. Keep removed items out; do not record unconfirmed ones.
 
