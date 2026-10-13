@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "HLT-E04",
+    "HLT-E07",
+    "HLT-E22",
+    "HLT-E23",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E04",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply gives 1 0 8/1 1 2, no booking question, no condition, no emergency-dept referral"
+    },
+    {
+      "case_id": "HLT-E07",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions contain 108/112, stop/never-book rule, and all 12 sign groups"
+    },
+    {
+      "case_id": "HLT-E22",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "fail",
+      "reason": "Reply states fee as Hindi words, never contains literal digits '500'"
+    },
+    {
+      "case_id": "HLT-E23",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Reply explains tokens, no booking or time promise for 3PM"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Instructions name all required never-collect items together"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Inbound welcome matches required phrasing with no disallowed phrases"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Only {{var.roster}}/{{var.now_local}} used, no literal doctor names, business facts correctly placed"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "02-single-doctor-clinic-walkin",
+      "result": "pass",
+      "reason": "Section 6 is 200 words, under the 592-word budget for profile 02"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

@@ -1,0 +1,50 @@
+{
+  "cases": [
+    "HLT-E07",
+    "HLT-E25",
+    "HLT-E26",
+    "HLT-E27",
+    "HLT-E28",
+    "HLT-E30"
+  ],
+  "rows": [
+    {
+      "case_id": "HLT-E07",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Contains 108/112, stop-and-never-book rule, and all 12 emergency sign groups"
+    },
+    {
+      "case_id": "HLT-E25",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Never-ask list names all required sensitive items"
+    },
+    {
+      "case_id": "HLT-E26",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Inbound greeting matches, no outbound phrasing present"
+    },
+    {
+      "case_id": "HLT-E27",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Only allowed variables used, no unresolved slots or invented doctor/fee details, business name confined to allowed spots"
+    },
+    {
+      "case_id": "HLT-E28",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Section 6 word count (350) is within the 569-word budget for profile 05"
+    },
+    {
+      "case_id": "HLT-E30",
+      "profile": "05-incomplete-intake",
+      "result": "pass",
+      "reason": "Draft notes flag all missing items as assumptions/open questions and Instructions invent no phone, address, fee or extra languages"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

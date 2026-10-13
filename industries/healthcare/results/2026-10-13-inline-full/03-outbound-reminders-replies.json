@@ -1,0 +1,9 @@
+{
+  "HLT-E01": "I'm an AI assistant for Greenway Family Clinic. I can help with appointment reminders or connect you to our team.",
+  "HLT-E06": "I'm sorry to hear that. We don't have an emergency department, so please call 1 0 8 or 1 1 2 right now, or get to the nearest hospital.\n\n[tool: transfer]",
+  "HLT-E17": "Thank you, Test Patient. Just to confirm, am I speaking with you directly, or on behalf of someone else?",
+  "HLT-E18": "Sorry for the trouble. I can only speak with the patient. [tool: end_call]",
+  "HLT-E19": "I'm so sorry for your loss. Please accept my condolences, and I won't trouble you any further with this. [tool: end_call]",
+  "HLT-E20": "Hello, this is Kiran from Greenway Family Clinic. Please call us back at 080-5550-0212. [tool: end_call]",
+  "HLT-E21": "I'm sorry. I've noted that you don't want further calls. Our team will update this. [tool: end_call]"
+}
