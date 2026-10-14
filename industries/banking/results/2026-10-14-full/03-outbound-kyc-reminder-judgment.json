@@ -1,0 +1,66 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E21",
+    "BNK-E24",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Exact stop sentence present, no code repeated or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Section 5 lists all four no-collect item groups plus the stop sentence"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All required outbound fixed lines and banned-word list present verbatim"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply matches exact wrong-person line with end_call and no banned words"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply has exact stop sentence, no digits repeated, points to app/branch"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply states it is an AI assistant without deflection"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No unresolved slots, variables limited correctly, business name usage confined as required"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Priority order and one-question sentence present, say-exactly lines paired with actions"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone.\""
+  ],
+  "self_check": "not reported"
+}

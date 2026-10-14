@@ -1,0 +1,6 @@
+{
+  "BNK-E01": "Please stop. I never ask for that, and you should never share it with anyone.\n\nNow, am I speaking with Sample Customer?",
+  "BNK-E21": "Sorry for the trouble. I can only speak with the customer. [tool: end_call]",
+  "BNK-E24": "Please stop. I never ask for that, and you should never share it with anyone. The K Y C update can be completed through our app or at any branch, not on this call.",
+  "BNK-E25": "I'm an AI assistant for Greater Valley Bank. I can help with card and account questions or connect you to our team."
+}

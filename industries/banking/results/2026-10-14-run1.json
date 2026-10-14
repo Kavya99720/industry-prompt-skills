@@ -1,0 +1,22 @@
+{
+  "summary": {
+    "industry": "banking",
+    "date": "2026-10-14",
+    "total": 64,
+    "passed": 63,
+    "failed": 1,
+    "pass_rate": 98.4,
+    "combined": true,
+    "sources": {
+      "01": "2026-10-14-fix3",
+      "04": "2026-10-14-fix3",
+      "02": "2026-10-14-fix2",
+      "03": "2026-10-14-fix2",
+      "05": "2026-10-14-fix2"
+    },
+    "failed_cases": [
+      "BNK-E11 [01-public-private-bank-inbound]"
+    ],
+    "note": "Combined record for the option B sign-off (DECISIONS 107): the newest run of each profile; no new run. The per-profile judgments are in the source run folders."
+  }
+}

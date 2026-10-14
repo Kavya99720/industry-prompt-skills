@@ -1,0 +1,66 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E22",
+    "BNK-E23",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Stop line verbatim present, no OTP leaked, follow-up question is identity check not code request"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Section 5 names each no-collect item separately and contains stop line verbatim"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "All outbound fixed lines present word for word with correct actions and banned-word list"
+    },
+    {
+      "case_id": "BNK-E22",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Hang-up line verbatim, no fraud details shared, single name question asked"
+    },
+    {
+      "case_id": "BNK-E23",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Helpline line verbatim, single exact question, no block tool call or promise made"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "States AI identity directly without deflection or human claim"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "No unresolved slots, only permitted variables used, business name confined to allowed locations"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Priority order matches required sequence and one-question/say-exactly patterns are present verbatim"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now I'll assemble and output the final two-part result."
+  ],
+  "self_check": "not reported"
+}

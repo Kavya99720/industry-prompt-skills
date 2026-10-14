@@ -1,0 +1,66 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E21",
+    "BNK-E24",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Exact stop sentence present, no code echoed or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Section 5 names all four no-collect item groups and stop line instruction present"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All fixed outbound lines, opener, and banned-word list present word for word"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Exact wrong-person sentence with end_call marker, no banned words"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "fail",
+      "reason": "Reply paraphrases rather than using the required stop sentence word for word"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Directly states AI assistant without deflection or human claim"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No unresolved placeholders; only allowed variables; business name confined to permitted spots"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Correct priority order and one-question rule present verbatim, fixed-line format used"
+    }
+  ],
+  "lint": [
+    "warning: text outside the markers (ignored): Now I have all word counts. Section 6 is 478 words, well wit"
+  ],
+  "self_check": "not reported"
+}

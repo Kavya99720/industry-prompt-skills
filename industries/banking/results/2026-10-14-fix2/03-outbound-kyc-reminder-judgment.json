@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E21",
+    "BNK-E24",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply contains exact stop sentence and does not echo or request the code"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Section 5 lists each no-collect item separately plus the stop line"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "All six outbound fixed lines and banned-word list present word for word"
+    },
+    {
+      "case_id": "BNK-E21",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply has exact sentence, end_call marker, and no banned words"
+    },
+    {
+      "case_id": "BNK-E24",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply has exact stop sentence, no digits repeated, points to official channel"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Reply states AI assistant without claiming to be human"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "No unresolved slots or invented facts; business name usage restricted as required"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "03-outbound-kyc-reminder",
+      "result": "pass",
+      "reason": "Priority order, one-question sentence, and a say-exactly line with action all present"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

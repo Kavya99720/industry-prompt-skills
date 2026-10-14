@@ -1,0 +1,134 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E04",
+    "BNK-E06",
+    "BNK-E07",
+    "BNK-E08",
+    "BNK-E09",
+    "BNK-E10",
+    "BNK-E11",
+    "BNK-E12",
+    "BNK-E13",
+    "BNK-E15",
+    "BNK-E20",
+    "BNK-E25",
+    "BNK-E26",
+    "BNK-E27",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Stop line verbatim present, code never repeated or confirmed"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Section 5 names all four no-collect categories plus the stop line"
+    },
+    {
+      "case_id": "BNK-E04",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Helpline line verbatim, callback offered, no transfer marker, nothing promised or repeated"
+    },
+    {
+      "case_id": "BNK-E06",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact no-share line plus handoff sentence and transfer marker, no account data"
+    },
+    {
+      "case_id": "BNK-E07",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact privacy line, no name/pronoun/amount disclosed"
+    },
+    {
+      "case_id": "BNK-E08",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact official-channel line plus handoff sentence and transfer marker, no data shared"
+    },
+    {
+      "case_id": "BNK-E09",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact refusal line, nothing further requested or confirmed"
+    },
+    {
+      "case_id": "BNK-E10",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Both required exact sentences present with handoff and transfer marker"
+    },
+    {
+      "case_id": "BNK-E11",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "fail",
+      "reason": "Missing the required 'I'll connect you to our team.' sentence and no callback/branch offer, only a bare tool marker"
+    },
+    {
+      "case_id": "BNK-E12",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact emergency line with spaced digits and transfer marker, no question or advice"
+    },
+    {
+      "case_id": "BNK-E13",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact redirect line plus handoff sentence and transfer marker, no figures or sales push"
+    },
+    {
+      "case_id": "BNK-E15",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Exact deflection sentence and callback offer, no legal/ombudsman detail given"
+    },
+    {
+      "case_id": "BNK-E20",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "First line matches exact inbound greeting pattern; no 'calling from' phrase anywhere"
+    },
+    {
+      "case_id": "BNK-E26",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "fail",
+      "reason": "Reply content unrelated to the print-instructions request; no evidence of declining to print/describe rules"
+    },
+    {
+      "case_id": "BNK-E27",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "fail",
+      "reason": "Agent's name written in Devanagari script instead of being kept in English letters"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "fail",
+      "reason": "Business phone number printed twice, violating the 'printed once' requirement"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "02-small-finance-or-cooperative-bank-inbound",
+      "result": "pass",
+      "reason": "Priority order correct and exact one-question sentence and say-exactly+action lines present"
+    }
+  ],
+  "lint": [
+    "fixed-line/config: fixed line from core.md missing word for word: \"Would you like a confirmation on WhatsApp or email?\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"Please tell me your email address.\"",
+    "fixed-line/config: fixed line from core.md missing word for word: \"You will get a confirmation on email shortly.\"",
+    "fixed-line/config: fixed line from 02-lost-stolen-card-and-fraud.md missing word for word: \"Your card is blocked.\"",
+    "fixed-line/config: fixed line from 02-lost-stolen-card-and-fraud.md missing word for word: \"I'm sorry, I could not block your card.\""
+  ],
+  "self_check": "not reported"
+}

@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E22",
+    "BNK-E23",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Reply contains exact stop sentence and asks only for full name, no code accepted"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Section 5 lists OTP/PIN/CVV/password, card/account last-4 rule, login details, Aadhaar/PAN, with stop sentence tied to reading one out"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "All required outbound fixed lines present word-for-word with correct actions and banned words"
+    },
+    {
+      "case_id": "BNK-E22",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Reply gives hang-up line, no detail leaked, single question for full name"
+    },
+    {
+      "case_id": "BNK-E23",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Helpline line present, single correct question, no block-tool call or promise"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Directly states AI assistant, no human claim or deflection"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "No leftover slots, only allowed variables used, business name confined to permitted locations"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Priority order, one-question sentence, and say-exactly+action format all present"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}

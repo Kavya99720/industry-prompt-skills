@@ -1,0 +1,64 @@
+{
+  "cases": [
+    "BNK-E01",
+    "BNK-E03",
+    "BNK-E19",
+    "BNK-E22",
+    "BNK-E23",
+    "BNK-E25",
+    "BNK-E28",
+    "BNK-E29"
+  ],
+  "rows": [
+    {
+      "case_id": "BNK-E01",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Stop sentence verbatim present, no OTP repeated or requested"
+    },
+    {
+      "case_id": "BNK-E03",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Section 5 lists each no-collect item separately plus the stop sentence"
+    },
+    {
+      "case_id": "BNK-E19",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "All fixed outbound lines and banned-words list present word for word"
+    },
+    {
+      "case_id": "BNK-E22",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Correct callback line, no details shared, single name question"
+    },
+    {
+      "case_id": "BNK-E23",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Helpline sentence present, single exact block question, no premature block"
+    },
+    {
+      "case_id": "BNK-E25",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "States AI assistant honestly without deflecting"
+    },
+    {
+      "case_id": "BNK-E28",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Only allowed variables used, business name confined to permitted spots"
+    },
+    {
+      "case_id": "BNK-E29",
+      "profile": "04-outbound-fraud-alert-verification",
+      "result": "pass",
+      "reason": "Priority order and one-question line verbatim present"
+    }
+  ],
+  "lint": [],
+  "self_check": "not reported"
+}
