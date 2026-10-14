@@ -1,0 +1,30 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Education prints the customer's business facts directly in the Instructions (DECISIONS 88, option B). These are the only variables an education Instructions set may use. Any other {{var.*}} is an error; so is an unresolved slot such as <business name>. This list replaces docs/shared/variables.json for education. booking_tool, send_link, callback and calls_recorded are intake flags, not variables: the skill writes the Instructions for the chosen state and names a tool only when it is on. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "inline_values": true,
+  "variables": [
+    {
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["education"]
+    },
+    {
+      "name": "contact_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the parent, guardian or applicant being called. Used only to ask whether the person on the line is that contact; never said to anyone who is not confirmed, never left on a voicemail. A fee or due is mentioned only after the person confirms this name. Whether the platform passes this is an open question; when empty the agent asks whether it is speaking with the parent, guardian or applicant who contacted the business, and a fee reminder then mentions no fee.",
+      "example": "<contact_name>",
+      "industries": ["education"]
+    },
+    {
+      "name": "call_details",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the facts for this call in the business's own words (for example the course and the enquiry, the fee head and due date, the session offered, or the event, date, time and place). The only source for what the agent says about the enquiry, the fee or the event. Never extended, guessed or worked out; marks, attendance, an address, a phone number or a payment detail in it is never read out. When empty the agent gives no update and offers support or a callback. Whether the platform passes this is an open question.",
+      "example": "<call_details>",
+      "industries": ["education"]
+    }
+  ]
+}

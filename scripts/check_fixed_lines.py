@@ -28,9 +28,12 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
                    wording" row sets it, or a "Contact-source wording" row for retail); the not-known source line is then
                    not required
 
-  --industry retail with --profile
-                   the profile's Tools row (order_lookup_tool, stock_check_tool, send_link), Calls recorded, Confirmation
-                   channels, Transfer targets and Contact-source wording rows set the settings; --tool overrides them
+  --industry retail or education with --profile
+                   the profile's Tools row (retail: order_lookup_tool, stock_check_tool, send_link; education:
+                   booking_tool, send_link, callback), Calls recorded, Confirmation channels, Transfer targets and
+                   Contact-source wording rows set the settings; --tool overrides them. Education's callback setting
+                   (callback_setting) is ON unless the Tools row says "callback OFF"; a rule marked
+                   [callback_setting: on] is required only then.
 
   --tool prescription_upload_method=whatsapp|email|in_store|not_set
                    the prescription upload method the client chose. Rows marked [upload: whatsapp] or [upload: email] are
@@ -119,8 +122,8 @@ def fill_slots(quote, slots):
         return None
 
 
-AI_OUTBOUND_INDUSTRIES = ("banking", "real-estate", "retail")  # their outbound welcome names the agent as an AI assistant (DECISIONS 100; real estate: DECISIONS 110; retail: DECISIONS 114)
-RECORDING_IN_WELCOME_INDUSTRIES = ("real-estate", "retail")  # calls recorded = yes puts the recording sentence in the outbound welcome (DECISIONS 111, 114)
+AI_OUTBOUND_INDUSTRIES = ("banking", "real-estate", "retail", "education")  # their outbound welcome names the agent as an AI assistant (DECISIONS 100; real estate: DECISIONS 110; retail: DECISIONS 114; education: DECISIONS 118)
+RECORDING_IN_WELCOME_INDUSTRIES = ("real-estate", "retail", "education")  # calls recorded = yes puts the recording sentence in the outbound welcome (DECISIONS 111, 114)
 
 
 def profile_tools(profile_text):
@@ -132,6 +135,7 @@ def profile_tools(profile_text):
     tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row))
              for t in ("card_block_tool", "balance_lookup_tool", "booking_tool", "send_link",
                         "order_lookup_tool", "stock_check_tool")}
+    tools["callback_setting"] = not re.search(r"callback(?:_setting)?\s+OFF(?![A-Za-z])", row)  # education: ON unless the row says OFF (DECISIONS 118)
     tools["calls_recorded"] = bool(re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I))
     tools["confirmation_channels"] = bool(channels)
     tools[CHANNELS] = channels
@@ -197,10 +201,13 @@ def with_defaults(tools):
     """confirmation_channels is OFF unless the client configured a channel: its lines are then required.
     package_offer is OFF unless the business facts or the client name a package or offer (--tool package_offer=on).
     Real estate: booking_tool, send_link and calls_recorded are OFF unless the profile or --tool turns them on (DECISIONS 110).
-    Retail: order_lookup_tool and stock_check_tool are OFF too, and its profile's settings are read (DECISIONS 114)."""
+    Retail: order_lookup_tool and stock_check_tool are OFF too, and its profile's settings are read (DECISIONS 114).
+    Education: booking_tool and send_link are OFF by default like real estate; callback_setting is ON by default; its
+    profile's settings are read (DECISIONS 118)."""
     merged = {"confirmation_channels": False, "package_offer": False,
               "booking_tool": False, "send_link": False, "calls_recorded": False,
-              "order_lookup_tool": False, "stock_check_tool": False}
+              "order_lookup_tool": False, "stock_check_tool": False,
+              "callback_setting": True}
     merged.update(tools or {})
     return merged
 
@@ -338,8 +345,8 @@ def main(argv=None):
             return 2
         tools[name] = state.lower() == "on"
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
-    if profile_text is not None and args.industry == "retail":
-        # retail reads every setting its profile states (tools, recording, channels, transfer targets, source wording);
+    if profile_text is not None and args.industry in ("retail", "education"):
+        # retail and education read every setting its profile states (tools, recording, channels, transfer targets, source wording);
         # an explicit --tool wins. Other industries keep passing their settings with --tool (DECISIONS 114).
         for key, value in profile_tools(profile_text).items():
             tools.setdefault(key, value)

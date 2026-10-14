@@ -532,3 +532,83 @@ def test_retail_link_and_confirmation_lines_follow_the_profile_channels():
 def test_the_bank_line_carries_the_cybercrime_helpline_in_latin_digits():
     lines = retail_lines("01-single-store-inbound.md", ["01", "03", "05", "06"], "inbound")
     assert "Please contact your bank or card issuer right away, and report it on the cybercrime helpline, 1 9 3 0." in lines
+
+
+# ---- education (DECISIONS 118) ----
+
+EDUCATION = ROOT / "industries" / "education"
+
+
+def education_lines(profile_name, workflows, direction, extra=()):
+    """The required lines the checker computes for an education profile (no generation: the settings only)."""
+    text = (EDUCATION / "test-profiles" / profile_name).read_text(encoding="utf-8")
+    tools = {}
+    for key, value in cfl.profile_tools(text).items():
+        tools.setdefault(key, value)
+    tools.update(dict(extra))
+    slots = cfl.profile_slots(text)
+    return [q for _, q in cfl.required_lines(EDUCATION, set(workflows), direction, cfl.with_defaults(tools), slots)]
+
+
+def test_education_outbound_welcome_names_the_ai_and_adds_the_recording_line_only_when_recorded():
+    base = PROFILE.replace("| Direction | Inbound |", "| Direction | Outbound |")
+    named = "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. "
+    assert cfl.welcome_from_profile(base, "education") == named + "Is this a good time to talk?"
+    rec = base + "\n| Calls recorded | yes |\n"
+    assert cfl.welcome_from_profile(rec, "education") == named + "This call may be recorded for quality purposes. Is this a good time to talk?"
+    unnamed = rec.replace("| Assistant | Asha (female) |", "| Assistant | not given |")
+    assert cfl.welcome_from_profile(unnamed, "education") == (
+        "Hello, I am an AI assistant calling from Lakeview Hospital. "
+        "This call may be recorded for quality purposes. Is this a good time to talk?")
+    inbound = PROFILE.replace("| Direction | Outbound |", "| Direction | Inbound |")
+    assert cfl.welcome_from_profile(inbound, "education").startswith("Thank you for calling")
+
+
+def test_education_settings_default_and_the_profile_reader_finds_them():
+    defaults = cfl.with_defaults({})
+    assert (defaults["booking_tool"], defaults["send_link"], defaults["calls_recorded"]) == (False, False, False)
+    assert defaults["callback_setting"] is True
+    tools = cfl.profile_tools("| Tools | change_language, transfer. booking_tool ON, send_link OFF, callback ON |\n"
+                              "| Confirmation channels | whatsapp |\n| Calls recorded | yes |\n")
+    assert tools["booking_tool"] is True and tools["send_link"] is False and tools["callback_setting"] is True
+    assert tools["calls_recorded"] is True and tools["channels"] == {"whatsapp"}
+    assert cfl.profile_tools("| Tools | transfer. callback OFF |")["callback_setting"] is False
+    assert cfl.profile_tools("| Tools | transfer |")["callback_setting"] is True
+
+
+def test_education_booking_and_callback_lines_follow_the_settings():
+    failed = "I am sorry, that did not work. Our team will call you to confirm."
+    callback_line = "Our team can call back during office hours."
+    wrong_person = "Sorry for the trouble. I can only speak with the person this call is for."
+    assert failed in education_lines("03-coaching-inbound-demo-booking.md", ["01", "02", "04", "05", "06"], "inbound")
+    p05 = education_lines("05-outbound-fee-reminder-no-assistant-name.md", ["09", "11"], "outbound")
+    assert wrong_person in p05 and callback_line in p05
+    p05_off = education_lines("05-outbound-fee-reminder-no-assistant-name.md", ["09", "11"], "outbound", extra=[("callback_setting", False)])
+    assert wrong_person in p05_off and callback_line not in p05_off
+    assert wrong_person not in education_lines("01-school-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+
+
+def test_education_recording_links_and_source_lines_follow_the_profile():
+    recorded = "This call may be recorded for quality purposes."
+    assert recorded in education_lines("02-college-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+    assert recorded not in education_lines("01-school-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+    p01 = education_lines("01-school-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+    assert "Would you like the link on WhatsApp or email?" in p01
+    p03 = education_lines("03-coaching-inbound-demo-booking.md", ["01", "02", "04", "05", "06"], "inbound")
+    assert "You will get the link on WhatsApp shortly." in p03 and "You will get the link on email shortly." not in p03
+    p02 = education_lines("02-college-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+    assert not any("You will get" in q for q in p02)
+    not_known = "I don't have that detail with me. Would you like us to stop calling you?"
+    assert not_known in education_lines("05-outbound-fee-reminder-no-assistant-name.md", ["09", "11"], "outbound")
+    assert not_known not in education_lines("04-edtech-outbound-counselling.md", ["09", "12"], "outbound")
+
+
+def test_education_safety_lines_are_required_and_the_pickup_line_only_with_its_workflow():
+    lines = education_lines("06-preschool-inbound-pickup.md", ["01", "02", "05", "06", "08"], "inbound")
+    for needed in ("Call 1 1 2 right now.", "Childline: 1 0 9 8.", "Tele-MANAS: 1 4 4 1 6. Emergency: 1 0 8 or 1 1 2.",
+                   "For privacy, I cannot share a student's details on this call.",
+                   "I cannot confirm or change who may pick up a child on this call. I have noted your request for our staff.",
+                   "Please contact your bank or card issuer right away, and report it on the cybercrime helpline, 1 9 3 0."):
+        assert needed in lines
+    pickup = "I cannot confirm or change who may pick up a child on this call. I have noted your request for our staff."
+    assert pickup not in education_lines("01-school-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
