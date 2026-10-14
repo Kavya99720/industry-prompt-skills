@@ -184,3 +184,21 @@ def test_v1_signoff_shows_done_v1_only_at_95_percent_or_better(tmp_path):
     assert r[2] == "Done (v1)" and r[5] == "Done (v1) (64/65)"
     make_run(d, "2026-10-09-run7", 65, 60)
     assert row(root, "pharmacy")[2] == "In progress"
+
+
+def test_no_eval_industry_is_na_and_done_with_skill_and_signoff(tmp_path):
+    root = make_root(tmp_path, ("real-estate",))
+    d = root / "industries" / "real-estate"
+    assert row(root, "real-estate") == ("real-estate", "Todo", "Todo", "N/A", "N/A", "N/A")
+    skill = root / ".claude" / "skills" / "real-estate-prompt-writer"
+    skill.mkdir(parents=True)
+    (skill / "SKILL.md").write_text("x", encoding="utf-8")
+    assert row(root, "real-estate")[2] == "In progress"
+    (d / "v1-signoff.md").write_text("signed off", encoding="utf-8")
+    assert row(root, "real-estate")[2:] == ("Done", "N/A", "N/A", "N/A")
+
+
+def test_no_eval_industry_with_an_eval_file_uses_the_normal_path(tmp_path):
+    root = make_root(tmp_path, ("retail",))
+    make_eval(root / "industries" / "retail" / "eval.json", 20, frozen=True)
+    assert row(root, "retail")[3] == "Done (20)"

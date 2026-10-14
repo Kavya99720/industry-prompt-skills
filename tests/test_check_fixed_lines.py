@@ -386,3 +386,32 @@ def test_the_team_phrase_is_required_only_when_a_transfer_target_exists():
         assert (phrase in lines) is expected, name
     # no target known (other industries, no profile): still required
     assert phrase in [q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults({}))]
+
+
+def test_real_estate_outbound_welcome_names_the_ai_and_adds_the_recording_line_only_when_recorded():
+    base = PROFILE.replace("| Direction | Inbound |", "| Direction | Outbound |")
+    ai = "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. Is this a good time to talk?"
+    assert cfl.welcome_from_profile(base, "real-estate") == ai
+    rec = base + "\n| Calls recorded | yes |\n"
+    assert cfl.welcome_from_profile(rec, "real-estate") == ai + " This call may be recorded for quality purposes."
+    no = base + "\n| Calls recorded | no |\n"
+    assert cfl.welcome_from_profile(no, "real-estate") == ai
+    assert "recorded" not in cfl.welcome_from_profile(rec, "banking")
+
+
+def test_real_estate_tools_default_off_and_profile_can_turn_them_on():
+    defaults = cfl.with_defaults({})
+    assert (defaults["booking_tool"], defaults["send_link"], defaults["calls_recorded"]) == (False, False, False)
+    tools = cfl.profile_tools("| Tools | booking_tool ON, send_link OFF, transfer |\n| Calls recorded | yes |\n")
+    assert tools["booking_tool"] is True and tools["send_link"] is False and tools["calls_recorded"] is True
+    assert cfl.profile_tools("| Tools | transfer |\n")["calls_recorded"] is False
+
+
+def test_a_booking_off_line_is_required_by_default_and_a_booking_on_line_is_not(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text(
+        '| R-01 | Needs `booking_tool`: say exactly "Booked line." |\n'
+        '| R-02 | [booking_tool: off] say exactly "Callback line." |\n', encoding="utf-8")
+    assert cfl.check("Callback line.", refs, numbers=[]) == []
+    assert [q for _, q in cfl.check("Callback line.", refs, numbers=[], tools={"booking_tool": True})] == ["Booked line."]

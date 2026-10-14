@@ -6,7 +6,9 @@ Usage:
   python scripts/status.py --check   exit 1 if the table in README.md is out of date
 
 Standard library only. Status values are Todo, In progress and Done, with real
-numbers in brackets where there are any.
+numbers in brackets where there are any. Industries in NO_EVAL have no eval.json:
+their Evals, Last run and Pass rate columns say N/A, and Skill is Done once the skill
+and industries/<slug>/v1-signoff.md exist.
 """
 import json
 import re
@@ -23,6 +25,8 @@ ORDER = (
     "pharmacy", "healthcare", "retail", "education",
     "logistics", "hr", "banking", "real-estate",
 )
+# Industries that get no eval.json and no eval runs (DECISIONS 108). If one still has an eval.json, the normal path applies.
+NO_EVAL = ("retail", "education", "logistics", "hr", "real-estate")
 HEADER = ("Industry", "Brief", "Skill", "Evals", "Last run", "Pass rate")
 RUN_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-run(\d+)$")
 RUN_FILE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})-run(\d+)(?:-.+)?$")
@@ -81,8 +85,20 @@ def latest_run(industry_dir):
     return None
 
 
+def no_eval_row(root, slug, industry_dir):
+    """Row for an industry without eval.json: Done needs the skill and a v1-signoff.md; eval columns are N/A."""
+    skill = root / ".claude" / "skills" / f"{slug}-prompt-writer" / "SKILL.md"
+    if not skill.is_file():
+        skill_status = "Todo"
+    else:
+        skill_status = "Done" if (industry_dir / "v1-signoff.md").is_file() else "In progress"
+    return (slug, brief_status(industry_dir), skill_status, "N/A", "N/A", "N/A")
+
+
 def industry_row(root, slug):
     industry_dir = root / "industries" / slug
+    if slug in NO_EVAL and not (industry_dir / "eval.json").is_file():
+        return no_eval_row(root, slug, industry_dir)
     run = latest_run(industry_dir)
     all_pass = run is not None and run[1]["total"] > 0 and run[1]["failed"] == 0
     # v1 sign-off: industries/<slug>/v1-signoff.md exists and the newest run is at least 95% passed

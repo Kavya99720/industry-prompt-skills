@@ -108,7 +108,7 @@ def fill_slots(quote, slots):
         return None
 
 
-AI_OUTBOUND_INDUSTRIES = ("banking",)  # their outbound welcome names the agent as an AI assistant (DECISIONS 100)
+AI_OUTBOUND_INDUSTRIES = ("banking", "real-estate")  # their outbound welcome names the agent as an AI assistant (DECISIONS 100; real estate: DECISIONS 110)
 
 
 def profile_tools(profile_text):
@@ -117,7 +117,9 @@ def profile_tools(profile_text):
     row = profile_value(profile_text, "Tools") or ""
     cell = profile_value(profile_text, "Confirmation channels") or ""
     channels = {c for c in ("whatsapp", "email") if re.search(c, cell, re.I)} if not re.match(r"\s*(not set|none)", cell, re.I) else set()
-    tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row)) for t in ("card_block_tool", "balance_lookup_tool")}
+    tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row))
+             for t in ("card_block_tool", "balance_lookup_tool", "booking_tool", "send_link")}
+    tools["calls_recorded"] = bool(re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I))
     tools["confirmation_channels"] = bool(channels)
     tools[CHANNELS] = channels
     targets = profile_value(profile_text, "Transfer targets")
@@ -139,8 +141,11 @@ def welcome_from_profile(profile_text, industry=None):
     agent = re.sub(r"\s*\([^)]*\)\s*$", "", agent).strip() if given(agent) else None
     direction = (profile_value(profile_text, "Direction") or "inbound").lower()
     if direction.startswith("out") and industry in AI_OUTBOUND_INDUSTRIES:
-        return (f"Hello, this is {agent}, an AI assistant calling from {biz}. Is this a good time to talk?" if agent
-                else f"Hello, I am an AI assistant calling from {biz}. Is this a good time to talk?")
+        welcome = (f"Hello, this is {agent}, an AI assistant calling from {biz}. Is this a good time to talk?" if agent
+                   else f"Hello, I am an AI assistant calling from {biz}. Is this a good time to talk?")
+        if industry == "real-estate" and re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I):
+            welcome += " This call may be recorded for quality purposes."
+        return welcome
     if direction.startswith("out"):
         return (f"Hello, this is {agent} calling from {biz}. Is this a good time to talk?" if agent
                 else f"Hello, I am calling from {biz}. Is this a good time to talk?")
@@ -172,8 +177,10 @@ def workflow_files(refs, numbers, direction):
 
 def with_defaults(tools):
     """confirmation_channels is OFF unless the client configured a channel: its lines are then required.
-    package_offer is OFF unless the business facts or the client name a package or offer (--tool package_offer=on)."""
-    merged = {"confirmation_channels": False, "package_offer": False}
+    package_offer is OFF unless the business facts or the client name a package or offer (--tool package_offer=on).
+    Real estate: booking_tool, send_link and calls_recorded are OFF unless the profile or --tool turns them on (DECISIONS 110)."""
+    merged = {"confirmation_channels": False, "package_offer": False,
+              "booking_tool": False, "send_link": False, "calls_recorded": False}
     merged.update(tools or {})
     return merged
 
