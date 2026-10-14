@@ -1,0 +1,30 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Real estate prints the customer's business facts directly in the Instructions (DECISIONS 88, option B). These are the only variables a real-estate Instructions set may use. Any other {{var.*}} is an error; so is an unresolved slot such as <business name>. This list replaces docs/shared/variables.json for real estate. booking_tool, send_link, calls_recorded and referral_program are intake flags, not variables: the skill writes the Instructions for the chosen state and names a tool only when it is on. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "inline_values": true,
+  "variables": [
+    {
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["real-estate"]
+    },
+    {
+      "name": "lead_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the lead being called. Used only to ask whether the person on the line is that lead; never said to anyone who is not confirmed, never left on a voicemail. Whether the platform passes this is an open question; when empty the agent asks whether it is speaking with the person who enquired.",
+      "example": "<lead_name>",
+      "industries": ["real-estate"]
+    },
+    {
+      "name": "lead_source",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: where the number came from, in the business's own words (for example a form or an event). Said only when a caller asks where the number came from and only when the field is not empty. When empty the agent never guesses a source. Whether the platform passes this is an open question.",
+      "example": "<lead_source>",
+      "industries": ["real-estate"]
+    }
+  ]
+}
