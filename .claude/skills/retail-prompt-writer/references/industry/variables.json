@@ -1,0 +1,30 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Retail prints the customer's business facts directly in the Instructions (DECISIONS 88, option B). These are the only variables a retail Instructions set may use. Any other {{var.*}} is an error; so is an unresolved slot such as <business name>. This list replaces docs/shared/variables.json for retail. order_lookup_tool, stock_check_tool, send_link and calls_recorded are intake flags, not variables: the skill writes the Instructions for the chosen state and names a tool only when it is on. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "inline_values": true,
+  "variables": [
+    {
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["retail"]
+    },
+    {
+      "name": "customer_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the customer being called. Used only to ask whether the person on the line is that customer; never said to anyone who is not confirmed, never left on a voicemail. Whether the platform passes this is an open question; when empty the agent asks whether it is speaking with the customer who shopped with the business.",
+      "example": "<customer_name>",
+      "industries": ["retail"]
+    },
+    {
+      "name": "call_details",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the facts for this call in the business's own words (for example the item and delivery status, the items left in a cart, the feedback topic, or the repair status and collection hours). The only source for what the agent says about the order, cart or repair. Never extended, guessed or worked out; a full address, phone number or payment detail in it is never read out. When empty the agent gives no update and offers support or a callback. Whether the platform passes this is an open question.",
+      "example": "<call_details>",
+      "industries": ["retail"]
+    }
+  ]
+}
