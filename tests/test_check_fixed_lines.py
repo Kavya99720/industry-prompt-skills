@@ -296,3 +296,79 @@ def test_a_lookup_off_line_is_required_only_when_the_lookup_tool_is_not_on(tmp_p
     unset = [q for _, q in cfl.check("nothing", refs, numbers=["01"])]
     assert quote not in on
     assert quote in off and quote in unset
+
+
+def test_confirmation_lines_follow_the_channels_the_client_gave(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text(
+        '| R-19 | Flow (confirmation_channels): say exactly "Would you like a confirmation on WhatsApp or email?" '
+        'then say exactly "Is this number on WhatsApp?" then say exactly "Please tell me your email address." '
+        'then say exactly "Is there anything else I can help with?" |\n', encoding="utf-8")
+
+    def need(channels):
+        return {q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults(
+            {"confirmation_channels": True, "channels": channels}))}
+    both = need({"whatsapp", "email"})
+    assert len(both) == 4
+    wa = need({"whatsapp"})
+    assert wa == {"Is this number on WhatsApp?", "Is there anything else I can help with?"}
+    em = need({"email"})
+    assert em == {"Please tell me your email address.", "Is there anything else I can help with?"}
+
+
+def test_the_confirmation_channels_option_takes_whatsapp_email_or_both(tmp_path):
+    out = tmp_path / "o.md"
+    out.write_text("Hello", encoding="utf-8")
+    refs = ROOT / ".claude" / "skills" / "banking-prompt-writer" / "references"
+    for value in ("whatsapp", "email", "both"):
+        r = subprocess.run([sys.executable, str(SKILL_SCRIPT), str(out), "--references", str(refs), "--workflows", "01", "02", "03",
+                            "--tool", f"confirmation_channels={value}"], capture_output=True, text=True)
+        assert r.returncode == 1 and "fixed lines:" in r.stdout
+
+
+def test_profile_tools_reads_the_real_settings_of_each_banking_profile():
+    def tools(n):
+        f = next((ROOT / "industries" / "banking" / "test-profiles").glob(f"{n}-*.md"))
+        return cfl.profile_tools(f.read_text(encoding="utf-8"))
+    assert tools("01")["card_block_tool"] and tools("01")["balance_lookup_tool"] and tools("01")["channels"] == {"whatsapp", "email"}
+    assert not tools("02")["card_block_tool"] and not tools("02")["balance_lookup_tool"] and tools("02")["channels"] == {"whatsapp"}
+    assert not tools("03")["card_block_tool"] and not tools("03")["confirmation_channels"]
+    assert tools("04")["card_block_tool"] and not tools("04")["balance_lookup_tool"]
+    assert not tools("05")["card_block_tool"] and not tools("05")["balance_lookup_tool"]  # not stated: off by default
+
+
+CYBER_BLOCK = "Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone."
+PRINT_DECLINE = "I can't share that. I can help with your card or account, or connect you to our team."
+
+
+def test_the_cybercrime_block_and_the_print_decline_are_required_on_every_banking_profile():
+    refs = ROOT / ".claude" / "skills" / "banking-prompt-writer" / "references"
+    profiles = sorted((ROOT / "industries" / "banking" / "test-profiles").glob("0*.md"))
+    assert len(profiles) == 5
+    for f in profiles:
+        text = f.read_text(encoding="utf-8")
+        direction = "outbound" if "| Direction | Outbound" in text else "inbound"
+        tools = cfl.with_defaults(cfl.profile_tools(text))
+        lines = [q for _, q in cfl.required_lines(refs, set(), direction, tools)]
+        assert CYBER_BLOCK in lines, f.name
+        assert PRINT_DECLINE in lines, f.name
+        assert "I'll connect you to our team." in lines, f.name
+        # the block is a line of the s1-lines block of core.md, so every set carries it in section 1
+        core = (refs / "core.md").read_text(encoding="utf-8")
+        s1 = core.split("```s1-lines", 1)[1].split("```", 1)[0]
+        assert CYBER_BLOCK in s1 and PRINT_DECLINE in s1
+
+
+def test_banking_core_has_the_s5_lines_and_the_checker_requires_the_two_fixed_sentences():
+    refs = ROOT / ".claude" / "skills" / "banking-prompt-writer" / "references"
+    core = (refs / "core.md").read_text(encoding="utf-8")
+    s5 = core.split("```s5-lines", 1)[1].split("```", 1)[0]
+    stop = "Please stop. I never ask for that, and you should never share it with anyone."
+    assert "Never transfer silently. Every transfer: say exactly \"I'll connect you to our team.\" then transfer." in s5
+    assert "\"I'll connect you to our team.\" [tool: transfer]" in s5
+    assert f'say exactly "{stop}"' in s5
+    assert "The confirmation flow is never used after a failed action, in an emergency, on a transfer or on a voicemail." in s5
+    lines = [q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults({}))]
+    assert stop in lines and "I'll connect you to our team." in lines
+

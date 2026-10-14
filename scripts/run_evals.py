@@ -242,11 +242,15 @@ def profile_facts(profile_text, industry=None):
     method = u.group(1).lower() if u and u.group(1).lower() in ("whatsapp", "email", "in_store") else "not set"
     confirmation = bool(re.search(r"confirmation_channels\W{0,6}=\s*(whatsapp|email)", profile_text, re.I)
                         or re.search(r"\|\s*Confirmation channels\s*\|\s*(whatsapp|email)", profile_text, re.I))
-    return {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation,
-            "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text, industry)
-            if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None,
-            "slots": check_fixed_lines.profile_slots(profile_text)
-            if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None}
+    facts = {"direction": direction, "workflows": numbers, "upload": method, "confirmation": confirmation,
+             "inline_welcome": check_fixed_lines.welcome_from_profile(profile_text, industry)
+             if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None,
+             "slots": check_fixed_lines.profile_slots(profile_text)
+             if check_fixed_lines.profile_value(profile_text, "Business name") is not None else None}
+    if industry == "banking":
+        # the profile's real tool settings and channels decide which fixed lines are required
+        facts["tools"] = check_fixed_lines.with_defaults(check_fixed_lines.profile_tools(profile_text))
+    return facts
 
 
 VARIABLE_LABELS = {
@@ -366,6 +370,8 @@ def fixed_lines(industry, facts, root=ROOT):
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example in R-71, not a real line
+                if facts.get("tools") is not None and not check_fixed_lines.quote_needed(row, q, facts["tools"]):
+                    continue  # a tool or channel the profile does not use (banking)
                 q = check_fixed_lines.fill_slots(q, facts.get("slots"))
                 if q is None:
                     continue  # a slot (agent name, business name, phone) the profile does not give

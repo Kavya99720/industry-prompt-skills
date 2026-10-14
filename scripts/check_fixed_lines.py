@@ -19,6 +19,10 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
   --industry NAME  use .claude/skills/NAME-prompt-writer/references (default when --references is not given: banking)
   --references DIR the references folder, instead of --industry
 
+  --tool confirmation_channels=whatsapp|email|both
+                   the confirmation channels the client gave: only the lines of those channels are required (the
+                   combined "WhatsApp or email" question only with both). on/off still works as before.
+
   --tool prescription_upload_method=whatsapp|email|in_store|not_set
                    the prescription upload method the client chose. Rows marked [upload: whatsapp] or [upload: email] are
                    required only for the matching method (none for in_store or not_set). Without this option every marked
@@ -52,6 +56,7 @@ UPLOAD_VALUES = ("whatsapp", "email", "in_store", "not_set")
 # A row marked "[balance_lookup_tool: off]" or labelled "(lookup off)" / "(block off)" is required only when that tool is not on.
 TOOL_OFF_MARK = re.compile(r"\[(\w+):\s*off\]|\((lookup|block) off\)", re.I)
 TOOL_OFF_LABELS = {"lookup": "balance_lookup_tool", "block": "card_block_tool"}
+CHANNELS = "channels"  # the confirmation channels the client gave, a set; only set when known (banking)
 MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
 
@@ -102,6 +107,18 @@ def fill_slots(quote, slots):
 
 
 AI_OUTBOUND_INDUSTRIES = ("banking",)  # their outbound welcome names the agent as an AI assistant (DECISIONS 100)
+
+
+def profile_tools(profile_text):
+    """The banking tool settings and confirmation channels a test profile states: card_block_tool and balance_lookup_tool
+    are ON only when the Tools row says so (OFF by default), confirmation_channels is ON when a channel is given."""
+    row = profile_value(profile_text, "Tools") or ""
+    cell = profile_value(profile_text, "Confirmation channels") or ""
+    channels = {c for c in ("whatsapp", "email") if re.search(c, cell, re.I)} if not re.match(r"\s*(not set|none)", cell, re.I) else set()
+    tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row)) for t in ("card_block_tool", "balance_lookup_tool")}
+    tools["confirmation_channels"] = bool(channels)
+    tools[CHANNELS] = channels
+    return tools
 
 
 def welcome_from_profile(profile_text, industry=None):
@@ -156,6 +173,36 @@ def with_defaults(tools):
     return merged
 
 
+def channel_needed(quote, channels):
+    """A confirmation-flow quote is required only for the channels the client gave: the combined question needs both,
+    an email line needs email, a WhatsApp line needs WhatsApp. channels is a set of "whatsapp" / "email"."""
+    low = quote.lower()
+    if "whatsapp or email" in low:
+        return {"whatsapp", "email"} <= channels
+    if "email" in low:
+        return "email" in channels
+    if "whatsapp" in low:
+        return "whatsapp" in channels
+    return True
+
+
+def quote_needed(row, quote, tools):
+    """Whether one quote of one rule row is required under the profile's real tool settings and channels."""
+    mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
+    needed = (not mentioned) or any(tools[t] for t in mentioned)
+    branch = UPLOAD_BRANCH.search(row)
+    if branch and isinstance(tools.get(UPLOAD_TOOL), str):
+        needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
+    off = TOOL_OFF_MARK.search(row)
+    if off:
+        name = off.group(1) or TOOL_OFF_LABELS[off.group(2).lower()]
+        needed = tools.get(name) is not True
+    channels = tools.get(CHANNELS)
+    if needed and isinstance(channels, (set, frozenset)) and "confirmation_channels" in row:
+        needed = channel_needed(quote, channels)
+    return needed
+
+
 def required_lines(refs, numbers, direction, tools, slots=None):
     """Quotes that must be present, as a list of (source file name, quote)."""
     files = [refs / "core.md"] + workflow_files(refs, numbers, direction)
@@ -167,15 +214,7 @@ def required_lines(refs, numbers, direction, tools, slots=None):
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example, not a real line
-                mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
-                needed = (not mentioned) or any(tools[t] for t in mentioned)
-                branch = UPLOAD_BRANCH.search(row)
-                if branch and isinstance(tools.get(UPLOAD_TOOL), str):
-                    needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
-                off = TOOL_OFF_MARK.search(row)
-                if off:
-                    name = off.group(1) or TOOL_OFF_LABELS[off.group(2).lower()]
-                    needed = tools.get(name) is not True
+                needed = quote_needed(row, q, tools)
                 q = fill_slots(q, slots)
                 if q is None:
                     continue
@@ -253,6 +292,10 @@ def main(argv=None):
         name, _, state = item.partition("=")
         if name == UPLOAD_TOOL and state.lower() in UPLOAD_VALUES:
             tools[name] = state.lower()
+            continue
+        if name == "confirmation_channels" and state.lower() in ("whatsapp", "email", "both"):
+            tools[name] = True
+            tools[CHANNELS] = {"whatsapp", "email"} if state.lower() == "both" else {state.lower()}
             continue
         if state.lower() not in ("on", "off"):
             print(f"--tool needs name=on or name=off, got {item}", file=sys.stderr)

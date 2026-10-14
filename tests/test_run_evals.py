@@ -751,3 +751,32 @@ def test_a_generated_draft_notes_block_never_claims_a_hand_check():
     assert run_evals.notes_claim_problem("**Open questions** - none") is None
     assert run_evals.notes_claim_problem(None) is None
     assert run_evals.notes_claim_problem("- Checked by hand: passed the first time")
+
+
+def _banking_required_lines(n):
+    profile = next((run_evals.ROOT / "industries" / "banking" / "test-profiles").glob(f"{n}-*.md"))
+    facts = run_evals.profile_facts(profile.read_text(encoding="utf-8"), "banking")
+    return [q for source, q in run_evals.fixed_lines("banking", facts) if source != "welcome"]
+
+
+def test_banking_fixed_lines_follow_each_profiles_own_tools_and_channels():
+    account = "I can't share account details on this call."
+    blocked = "Your card is blocked."
+    email = "Please tell me your email address."
+    combined = "Would you like a confirmation on WhatsApp or email?"
+    p1, p2, p3, p4, p5 = (_banking_required_lines(n) for n in ("01", "02", "03", "04", "05"))
+    # profile 01: lookup ON (account line not required), card block ON, WhatsApp and email
+    assert account not in p1 and blocked in p1 and email in p1 and combined in p1
+    # profile 02: no tools (account line required), WhatsApp only
+    assert account in p2 and blocked not in p2 and email not in p2 and combined not in p2
+    assert "I'm sorry, I could not block your card." not in p2
+    assert "Is this number on WhatsApp?" in p2
+    # profile 04: card block ON, lookup OFF; profiles 03 and 05: no card blocking
+    assert blocked in p4 and blocked not in p3 and blocked not in p5
+    # the cybercrime block is required on every profile
+    for lines in (p1, p2, p3, p4, p5):
+        assert "Please report this quickly on the cybercrime helpline, 1 9 3 0. Please stop. I never ask for that, and you should never share it with anyone." in lines
+
+
+def test_non_banking_profiles_ignore_the_banking_tool_rules():
+    assert "tools" not in run_evals.profile_facts(FIXED_PROFILE)
