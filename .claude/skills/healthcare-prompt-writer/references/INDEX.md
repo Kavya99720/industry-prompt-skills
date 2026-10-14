@@ -13,5 +13,6 @@ A test fails when a copy is out of sync.
 | shared/section-bases.md | docs/shared/section-bases.md |
 | shared/baseline-rules.md | docs/shared/baseline-rules.md |
 | shared/platform-contract.md | docs/shared/platform-contract.md |
+| shared/natural-speech.md | docs/shared/natural-speech.md |
 | shared/intake-flow.md | docs/shared/intake-flow.md |
 | industry/variables.json | industries/healthcare/variables.json |

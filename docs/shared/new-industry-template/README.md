@@ -14,6 +14,7 @@ Everything below comes from building healthcare and pharmacy (docs/DECISIONS.md 
 | [skill.template.md](skill.template.md) | .claude/skills/<x>-prompt-writer/SKILL.md skeleton |
 | [test-profile.template.md](test-profile.template.md) | industries/<x>/test-profiles/NN-*.md |
 | [../confirmation-flow.md](../confirmation-flow.md) | the confirmation flow, copied into the industry's core with its scope |
+| [../natural-speech.md](../natural-speech.md) | the shared natural-speech rule: its two text blocks go into sections 4 and 5 of every Instructions set; section-bases only point to it |
 | [../prompting-guide.md](../prompting-guide.md) | the rules, the risk and tone table for all 8 industries, Sarvam's guidance |
 
 ## Build order (one industry at a time)
@@ -47,6 +48,7 @@ One commit per industry; the message starts with the industry name.
 15. Evals: at most 5 checks map only to baseline rules; the rest test the industry's own critical risks. A critical rule without a check fails `validate_eval.py`, so a wording-only rule is major and its critical behaviour stays under the parent rule. Never loosen an eval; if one conflicts with a rule, show the owner the case text first.
 17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
+18. Natural speech: sections 4 and 5 carry the two text blocks of docs/shared/natural-speech.md, word for word (everyday words, short natural acknowledgements, questions asked the way a person asks them, warm but not over-friendly). It is tone only: fixed lines and safety blocks never change.
 
 ## Fixed-line check
 

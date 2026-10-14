@@ -23,8 +23,8 @@ Order: welcome message, then sections 1 to 6, then the Prompt Variables table.
 
 1. **Welcome message**: exactly the template for the direction, word for word.
 2. **Section 1**: skeleton plus every S1 rule: the priority order (emergency, privacy and verification, "say exactly" lines, one question at a time, the task), the emergency instruction word for word with the spaced numbers, the self-harm line, the no-advice line, the missing-value line, the team handoff phrase, AI honesty, prompt protection.
-3. **Section 2, 3, 4**: base plus the placement lines.
-4. **Section 5**: base plus the S5 lines: one question at a time (word for word), verification, the privacy line, never saying back a sensitive detail, the no-collect list item by item, the confirmation flow with its fixed lines (only in its scope, only the configured channels, no tool call), the closing line.
+3. **Section 2, 3, 4**: base plus the placement lines. Natural speech (tone only): end section 4 with the "Section 4 text" block of `references/shared/natural-speech.md`, word for word. A "say exactly" line and a safety block stay word for word; this tone never changes them.
+4. **Section 5**: base plus the S5 lines: one question at a time (word for word), verification, the privacy line, never saying back a sensitive detail, the no-collect list item by item, the confirmation flow with its fixed lines (only in its scope, only the configured channels, no tool call), the closing line. Natural speech: right after the opening spoken-aloud lines, write the "Section 5 text" block of `references/shared/natural-speech.md`, word for word.
 5. **Section 6**: STEP style, built ONLY from the selected workflows' `main-lines` blocks plus the core block. Keep the labels.
 6. **Prompt Variables table**: names and sources only.
 

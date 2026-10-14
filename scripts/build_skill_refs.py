@@ -12,6 +12,7 @@ Copied (the originals stay the source of truth; never edit the copies):
   docs/shared/variables.json                  -> references/shared/variables.json   (not copied for an industry whose variables.json says "inline_values": true)
   docs/shared/baseline-rules.md               -> references/shared/baseline-rules.md
   docs/shared/platform-contract.md            -> references/shared/platform-contract.md
+  docs/shared/natural-speech.md               -> references/shared/natural-speech.md   (the shared tone rule, DECISIONS 120)
   docs/shared/intake-flow.md                  -> references/shared/intake-flow.md   (only when the skill's SKILL.md names it)
   industries/<x>/section-bases.md (optional)  -> references/industry/section-bases.md
   industries/<x>/variables.json (optional)    -> references/industry/variables.json
@@ -23,7 +24,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SHARED = ("section-bases.md", "variables.json", "baseline-rules.md", "platform-contract.md")
+SHARED = ("section-bases.md", "variables.json", "baseline-rules.md", "platform-contract.md", "natural-speech.md")
 # Copied only for a skill whose SKILL.md names it (references/shared/<name>).
 OPTIONAL_SHARED = ("intake-flow.md",)
 # Optional, written by the industry: its own section base text and its custom-detail variables.
