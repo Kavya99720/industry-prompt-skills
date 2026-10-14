@@ -353,7 +353,7 @@ def test_the_cybercrime_block_and_the_print_decline_are_required_on_every_bankin
         lines = [q for _, q in cfl.required_lines(refs, set(), direction, tools)]
         assert CYBER_BLOCK in lines, f.name
         assert PRINT_DECLINE in lines, f.name
-        assert "I'll connect you to our team." in lines, f.name
+        assert ("I'll connect you to our team." in lines) is (tools[cfl.TRANSFER_TARGET]), f.name
         # the block is a line of the s1-lines block of core.md, so every set carries it in section 1
         core = (refs / "core.md").read_text(encoding="utf-8")
         s1 = core.split("```s1-lines", 1)[1].split("```", 1)[0]
@@ -372,3 +372,17 @@ def test_banking_core_has_the_s5_lines_and_the_checker_requires_the_two_fixed_se
     lines = [q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults({}))]
     assert stop in lines and "I'll connect you to our team." in lines
 
+
+def test_the_team_phrase_is_required_only_when_a_transfer_target_exists():
+    refs = ROOT / ".claude" / "skills" / "banking-prompt-writer" / "references"
+    phrase = "I'll connect you to our team."
+    for name, expected in (("01", True), ("02", True), ("03", True), ("04", True), ("05", False)):
+        f = next((ROOT / "industries" / "banking" / "test-profiles").glob(name + "-*.md"))
+        text = f.read_text(encoding="utf-8")
+        tools = cfl.with_defaults(cfl.profile_tools(text))
+        assert tools[cfl.TRANSFER_TARGET] is expected, name
+        direction = "outbound" if "| Direction | Outbound" in text else "inbound"
+        lines = [q for _, q in cfl.required_lines(refs, set(), direction, tools)]
+        assert (phrase in lines) is expected, name
+    # no target known (other industries, no profile): still required
+    assert phrase in [q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults({}))]

@@ -56,6 +56,8 @@ UPLOAD_VALUES = ("whatsapp", "email", "in_store", "not_set")
 # A row marked "[balance_lookup_tool: off]" or labelled "(lookup off)" / "(block off)" is required only when that tool is not on.
 TOOL_OFF_MARK = re.compile(r"\[(\w+):\s*off\]|\((lookup|block) off\)", re.I)
 TOOL_OFF_LABELS = {"lookup": "balance_lookup_tool", "block": "card_block_tool"}
+TEAM_PHRASE = "I'll connect you to our team."
+TRANSFER_TARGET = "transfer_target"  # True when the profile gives at least one transfer target; only set when known (banking)
 CHANNELS = "channels"  # the confirmation channels the client gave, a set; only set when known (banking)
 MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
@@ -118,6 +120,9 @@ def profile_tools(profile_text):
     tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row)) for t in ("card_block_tool", "balance_lookup_tool")}
     tools["confirmation_channels"] = bool(channels)
     tools[CHANNELS] = channels
+    targets = profile_value(profile_text, "Transfer targets")
+    if targets:  # no row: unknown, the phrase stays required
+        tools[TRANSFER_TARGET] = not re.match(r"\s*(not given|none)", targets, re.I)
     return tools
 
 
@@ -197,6 +202,8 @@ def quote_needed(row, quote, tools):
     if off:
         name = off.group(1) or TOOL_OFF_LABELS[off.group(2).lower()]
         needed = tools.get(name) is not True
+    if tools.get(TRANSFER_TARGET) is False and norm(quote) == norm(TEAM_PHRASE):
+        needed = False  # with no transfer target every handoff is a callback offer (R-17)
     channels = tools.get(CHANNELS)
     if needed and isinstance(channels, (set, frozenset)) and "confirmation_channels" in row:
         needed = channel_needed(quote, channels)
