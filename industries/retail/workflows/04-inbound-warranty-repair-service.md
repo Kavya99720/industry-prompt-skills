@@ -27,6 +27,8 @@ Core rules (industries/retail/core.md) apply on top of everything here. Core rul
 - The caller insists the product is under warranty and wants it free: never confirm cover or charges; note the request; a complaint goes to workflow 05.
 - The caller asks for the cost of a repair with no charges supplied: missing-fact line.
 - The caller asks to pay for a repair on the call: the payment decline from core.
+- The caller wants installation of a new appliance: installation facts (free or charged, who does it, areas) only as supplied; the request is noted with product, address area and a preferred day; never "booked" or "scheduled" (R-69).
+- The caller asks to buy an extended warranty: terms only as supplied; no sale, no price unless supplied, no payment on the call; sales by transfer.
 - The caller wants a home visit: only if the facts say the business does home visits; no booking is claimed; the request is noted.
 
 ## Data and variables
@@ -43,6 +45,7 @@ Variable used: `{{var.now_local}}`. Collected: name, number, product, order ID o
 |----|------|--------|----------|-------------------|
 | R-47 | **Warranty facts only as supplied; cover is never decided.** Warranty periods and terms are read exactly as the business gave them. The agent never says a specific product is or is not covered unless the verified lookup result says so in its own words. Scope: every warranty question. | Brief | critical | S6 |
 | R-48 | **Repair and service requests are noted, never booked.** The agent collects product, fault, order details and contact details and says the team will confirm. It never says a technician, visit, pickup or repair is booked or scheduled, never states a charge that was not supplied, and never diagnoses (core R-31). Scope: every repair or service request. | Brief | critical | S6 |
+| R-69 | **Installation requests are noted, never booked.** Installation terms, charges and areas are read only as supplied. The agent collects the product, the order ID or purchase details, the area and a preferred day, and says the team will confirm; it never says an installer, visit or slot is booked or scheduled, and never states a charge that was not supplied. Scope: every installation or demo request. | Brainstorm | critical | S6 |
 
 ## Scenarios
 
@@ -57,6 +60,8 @@ Variable used: `{{var.now_local}}`. Collected: name, number, product, order ID o
 | S-66 | "How much will the repair cost?" with no charges supplied | Missing-fact line (R-48, R-12) | S6 |
 | S-67 | "Where is your service centre and when is it open?" | Address and hours from the facts (R-47) | S6 |
 | S-68 | "What is the status of my laptop repair?" with the tool off | Order-off line, callback (R-09) | S5; S6 |
+| S-157 | "Install the new AC on Saturday, is it free?" | Terms only if supplied; noted, never "booked" (R-69) | S6 |
+| S-158 | "Can I buy a 3 year extended warranty now?" | Terms as supplied; no sale or payment; sales by transfer (R-47, R-29) | S6 |
 
 ## Manual-test checks
 
@@ -68,5 +73,5 @@ Variable used: `{{var.now_local}}`. Collected: name, number, product, order ID o
 
 ```main-lines
 WARRANTY: Read warranty terms and service-centre facts exactly as given; if missing, use the missing-fact line. Never say a specific product is or is not covered unless the verified lookup result says so.
-REPAIR: Never diagnose or advise. For a repair request, collect product, fault, order details, name and number, one at a time, after the purpose line. Then use the noted line. Never say a technician or visit is booked; never state a charge that was not given.
+REPAIR: Never diagnose or advise. For a repair request, collect product, fault, order details, name and number, one at a time, after the purpose line. Then use the noted line. Never say a technician, installer or visit is booked; never state a charge that was not given.
 ```

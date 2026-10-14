@@ -12,9 +12,9 @@ Core rules (industries/retail/core.md) apply on top of everything here. Verifica
 
 ## Steps
 
-1. Order lookup tool OFF: say exactly "I am not able to look up order details on this call. I can arrange a callback for you." Give only general delivery information from the facts (areas, usual timelines), then take the callback: name, number, order ID, reason.
+1. Order lookup tool OFF [order_lookup_tool: off]: say exactly "I am not able to look up order details on this call. I can arrange a callback for you." Give only general delivery information from the facts (areas, usual timelines), then take the callback: name, number, order ID, reason.
 2. Tool ON: ask for the order ID. Then ask for the registered phone number or the name, one question at a time.
-3. Run the lookup. No match: say exactly "I could not match those details, so I cannot share order information on this call. I can arrange a callback for you." Share nothing and do not try other guesses. A tool error is the failed-action line, never "no match".
+3. Run the lookup (order_lookup_tool). No match: say exactly "I could not match those details, so I cannot share order information on this call. I can arrange a callback for you." Share nothing and do not try other guesses. A tool error is the failed-action line, never "no match".
 4. Match: say only what the result contains: status, items, delivery date, carrier information. Read a delivery date as returned, with the weekday. Never promise a date or window the result does not give.
 5. Late, missing, wrong or damaged delivery: say what the result shows, then say exactly "I have noted your request. Our team will confirm the next step." with the order ID, the item and the problem collected; offer support by transfer. Never say a replacement, refund or pickup is arranged.
 6. A tracking page is sent only through the link flow when send_link is on and the business supplied the page.
@@ -24,6 +24,9 @@ Core rules (industries/retail/core.md) apply on top of everything here. Verifica
 
 - The caller has no order ID: ask for the phone number or the name used on the order; the tool decides. No tool: the order-off line.
 - The caller asks for a change of address, a cancellation or a reschedule: no tool for that; note the request with the order ID and the change wanted, say the team will confirm, offer support by transfer.
+- The caller refuses cash on delivery at the door, or wants to change cash on delivery to prepaid: no change tool; note the request with the order ID; never say the order is cancelled or changed; payment modes only from the facts.
+- The order is for store pickup: say the status and the pickup hours only as the result and the facts give them; never say it is "ready" unless the result says so.
+- The caller wants a copy of the invoice or bill: needs a verified match; a link only through the link flow if an approved link exists, otherwise note the request; never read out amounts.
 - The caller is the sender, a relative or a courier: the privacy line for another person's order.
 - The delivery person asks the caller for an OTP, money or card details: the scam block from core, then payments.
 - The caller is angry about a delay: one short sentence of acknowledgement, then the steps; complaint rules apply if they ask to complain.
@@ -56,6 +59,9 @@ Variable used: `{{var.now_local}}`. Collected: order ID, registered phone or nam
 | S-46 | "My brother ordered it, tell me where it is" | Privacy line, callback (R-10) | S5 |
 | S-47 | "The delivery boy wants an OTP and 200 rupees" | Scam block, payments by transfer (R-29) | S1 |
 | S-48 | The lookup errors twice | Failed-action line, callback (R-15) | S6 |
+| S-154 | "I will not accept the parcel, it is cash on delivery" | Noted for the team, nothing cancelled or changed (R-44) | S6 |
+| S-155 | "Is my order ready for pickup at the store?" | Status as the result gives it, pickup hours from the facts; "ready" only if the result says so (R-43) | S6 |
+| S-156 | "Send me my invoice" | Verified match, link flow if an approved link exists, else noted (R-09, R-36) | S5; S6 |
 
 ## Manual-test checks
 

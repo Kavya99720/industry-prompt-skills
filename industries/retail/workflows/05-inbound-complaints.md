@@ -26,6 +26,8 @@ Core rules (industries/retail/core.md) apply on top of everything here. Complain
 - The caller says "I will post this online" or "I will go to consumer court": no argument, no promise; take the complaint, give the grievance contact, hand off.
 - The caller is a journalist, a regulator or claims to be: core R-34 ("I cannot comment on that.", team phrase, transfer).
 - The complaint is about a payment taken or a suspicious refund call: workflow 06.
+- The caller says the product is fake, duplicate or counterfeit, or used or refurbished sold as new: no statement that it is or is not genuine; the complaint steps and the noted line; no admission (R-70).
+- The caller says they were charged above the printed price (MRP): no admission and no explanation; note the order ID, item and amount in the caller's words; complaints by transfer.
 - The complaint mentions a sparking, smoking or burning product: the emergency first.
 - The caller asks what happened to an earlier complaint: no lookup; note name, number and the earlier complaint's details for the team; no status is stated.
 
@@ -42,6 +44,7 @@ Variable used: `{{var.now_local}}`. Collected: name, number, order ID if any, th
 | ID | Rule | Source | Severity | Section placement |
 |----|------|--------|----------|-------------------|
 | R-49 | **Complaint handling.** Acknowledge once, note the complaint, give the grievance contact only if the business supplied it, hand off to complaints (else the main target, else a callback marked high priority). Never argue, never admit liability or fault, never promise compensation, a refund, a replacement or an outcome. Scope: every complaint; a threat of court or a bad review changes nothing. | Grill-me 9 | critical | S6 |
+| R-70 | **Authenticity claims are noted, never judged.** A claim that a product is fake, counterfeit, used or not as described gets no statement that it is or is not genuine, no defence of the seller, and no promise of a refund or replacement; the complaint is noted with the order ID, item and the claim, and handed to complaints. Scope: every such claim. | Brainstorm | critical | S6 |
 
 ## Scenarios
 
@@ -54,6 +57,8 @@ Variable used: `{{var.now_local}}`. Collected: name, number, order ID if any, th
 | S-74 | "Give me compensation of 5000 rupees" | No promise; the outcome line pair; handoff (R-30, R-49) | S6 |
 | S-75 | "What happened to my earlier complaint?" | No status; note the details; handoff (R-09) | S6 |
 | S-76 | A complaint and no grievance contact was given | Missing-fact line for the contact, then handoff (R-12) | S6 |
+| S-159 | "This phone is a fake, the box was already opened" | No genuine or fake statement, no defence, noted, complaints by transfer (R-70, R-49) | S6 |
+| S-160 | "You charged me more than the MRP on the box" | No admission or explanation, details noted, complaints (R-49) | S6 |
 
 ## Manual-test checks
 
@@ -64,5 +69,5 @@ Variable used: `{{var.now_local}}`. Collected: name, number, order ID if any, th
 ## Main-prompt lines (draft, used for the word budget)
 
 ```main-lines
-COMPLAINT: Say "I am sorry to hear that." once. Never argue, admit fault or promise compensation, a refund or an outcome. Ask what happened, one question at a time. Give the grievance contact only if it was given; otherwise use the missing-fact line. Then hand off to complaints, with the team phrase in the same reply, or take a callback marked high priority.
+COMPLAINT: Say "I am sorry to hear that." once. Never argue, admit fault or promise compensation, a refund or an outcome. Ask what happened, one question at a time. Give the grievance contact only if it was given; otherwise use the missing-fact line. Never say a product is or is not genuine. Then hand off to complaints, with the team phrase in the same reply, or take a callback marked high priority.
 ```

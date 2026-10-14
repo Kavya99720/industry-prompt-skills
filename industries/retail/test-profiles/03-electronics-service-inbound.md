@@ -53,7 +53,7 @@ Synthetic business only. Rules: industries/retail/core.md and the selected workf
 
 ## Expected word budget (hidden)
 
-Section 6 estimate: core 130 + 01 80 + 02 81 + 03 70 + 04 79 + 05 63 + 06 47 = 550 words, under 595.
+Section 6 estimate: core 130 + 01 91 + 02 81 + 03 70 + 04 80 + 05 72 + 06 47 = 571 words, under 595.
 
 ## Test values (hidden)
 

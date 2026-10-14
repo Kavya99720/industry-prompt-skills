@@ -449,3 +449,86 @@ def test_the_not_known_source_line_is_required_only_without_lead_source_wording(
     assert cfl.profile_tools("| Lead-source wording | the advice request form |")["lead_source_wording"] is True
     assert cfl.profile_tools("| Lead-source wording | not provided |")["lead_source_wording"] is False
     assert "lead_source_wording" not in cfl.profile_tools("| Tools | transfer |")
+
+
+# ---- retail (DECISIONS 114) ----
+
+RETAIL = ROOT / "industries" / "retail"
+
+
+def test_retail_outbound_welcome_names_the_ai_and_adds_the_recording_line_only_when_recorded():
+    base = PROFILE.replace("| Direction | Inbound |", "| Direction | Outbound |")
+    named = "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. "
+    assert cfl.welcome_from_profile(base, "retail") == named + "Is this a good time to talk?"
+    rec = base + "\n| Calls recorded | yes |\n"
+    assert cfl.welcome_from_profile(rec, "retail") == named + "This call may be recorded for quality purposes. Is this a good time to talk?"
+    unnamed = rec.replace("| Assistant | Asha (female) |", "| Assistant | not given |")
+    assert cfl.welcome_from_profile(unnamed, "retail") == (
+        "Hello, I am an AI assistant calling from Lakeview Hospital. "
+        "This call may be recorded for quality purposes. Is this a good time to talk?")
+    # other industries are unchanged: healthcare keeps its plain outbound welcome, banking never adds the recording line
+    assert cfl.welcome_from_profile(rec, "healthcare") == "Hello, this is Asha calling from Lakeview Hospital. Is this a good time to talk?"
+    assert "recorded" not in cfl.welcome_from_profile(rec, "banking")
+
+
+def test_retail_settings_default_off_and_the_profile_reader_finds_them():
+    defaults = cfl.with_defaults({})
+    assert (defaults["order_lookup_tool"], defaults["stock_check_tool"]) == (False, False)
+    tools = cfl.profile_tools("| Tools | order_lookup_tool ON, stock_check_tool OFF, send_link ON, transfer |\n"
+                              "| Confirmation channels | whatsapp |\n| Contact-source wording | your recent order |\n")
+    assert tools["order_lookup_tool"] is True and tools["stock_check_tool"] is False and tools["send_link"] is True
+    assert tools["confirmation_channels"] is True and tools["channels"] == {"whatsapp"}
+    assert tools["lead_source_wording"] is True
+    assert cfl.profile_tools("| Contact-source wording | not given (the not-known line is used) |")["lead_source_wording"] is False
+
+
+def retail_lines(profile_name, workflows, direction, extra=()):
+    """The required lines the checker computes for a retail profile (no generation: the settings only)."""
+    profile = RETAIL / "test-profiles" / profile_name
+    text = profile.read_text(encoding="utf-8")
+    tools = {}
+    for key, value in cfl.profile_tools(text).items():
+        tools.setdefault(key, value)
+    tools.update(dict(extra))
+    slots = cfl.profile_slots(text)
+    return [q for _, q in cfl.required_lines(RETAIL, set(workflows), direction, cfl.with_defaults(tools), slots)]
+
+
+def test_the_order_verification_lines_follow_the_lookup_tool_setting():
+    off = "I am not able to look up order details on this call. I can arrange a callback for you."
+    no_match = "I could not match those details, so I cannot share order information on this call. I can arrange a callback for you."
+    lines_off = retail_lines("01-single-store-inbound.md", ["01", "03", "05", "06"], "inbound")
+    assert off in lines_off and no_match not in lines_off
+    lines_on = retail_lines("02-ecommerce-inbound-order-lookup.md", ["01", "02", "03", "05", "06"], "inbound")
+    assert no_match in lines_on and off not in lines_on
+    lines_electronics = retail_lines("03-electronics-service-inbound.md", ["01", "02", "03", "04", "05", "06"], "inbound")
+    assert off in lines_electronics and no_match not in lines_electronics
+
+
+def test_retail_outbound_only_lines_are_not_required_inbound_and_the_recording_line_follows_the_setting():
+    inbound = retail_lines("02-ecommerce-inbound-order-lookup.md", ["01", "02", "03", "05", "06"], "inbound")
+    wrong_person = "Sorry for the trouble. I can only speak with the person this call is for."
+    assert wrong_person not in inbound
+    recorded = "This call may be recorded for quality purposes."
+    assert recorded in inbound  # profile 02: calls recorded yes
+    outbound_no = retail_lines("05-outbound-feedback-no-assistant-name.md", ["07", "10"], "outbound")
+    assert wrong_person in outbound_no and recorded not in outbound_no
+    # profile 05 gives no contact-source wording, so the not-known line is required; profile 04 gives wording, so it is not
+    not_known = "I don't have that detail with me. Would you like us to stop calling you?"
+    assert not_known in outbound_no
+    assert not_known not in retail_lines("04-outbound-order-update-with-name.md", ["07", "08"], "outbound")
+    assert not_known not in retail_lines("06-outbound-abandoned-cart.md", ["07", "09"], "outbound")
+
+
+def test_retail_link_and_confirmation_lines_follow_the_profile_channels():
+    p06 = retail_lines("06-outbound-abandoned-cart.md", ["07", "09"], "outbound")
+    assert "You will get the link on WhatsApp shortly." in p06
+    assert "You will get the link on email shortly." not in p06
+    assert "Would you like the link on WhatsApp or email?" not in p06
+    p01 = retail_lines("01-single-store-inbound.md", ["01", "03", "05", "06"], "inbound")
+    assert not any("You will get" in q for q in p01)  # no channel, no send link
+
+
+def test_the_bank_line_carries_the_cybercrime_helpline_in_latin_digits():
+    lines = retail_lines("01-single-store-inbound.md", ["01", "03", "05", "06"], "inbound")
+    assert "Please contact your bank or card issuer right away, and report it on the cybercrime helpline, 1 9 3 0." in lines
