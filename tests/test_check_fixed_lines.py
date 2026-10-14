@@ -393,7 +393,13 @@ def test_real_estate_outbound_welcome_names_the_ai_and_adds_the_recording_line_o
     ai = "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. Is this a good time to talk?"
     assert cfl.welcome_from_profile(base, "real-estate") == ai
     rec = base + "\n| Calls recorded | yes |\n"
-    assert cfl.welcome_from_profile(rec, "real-estate") == ai + " This call may be recorded for quality purposes."
+    named = "Hello, this is Asha, an AI assistant calling from Lakeview Hospital. "
+    assert cfl.welcome_from_profile(rec, "real-estate") == (
+        named + "This call may be recorded for quality purposes. Is this a good time to talk?")
+    unnamed = rec.replace("| Assistant | Asha (female) |", "| Assistant | not given |")
+    assert cfl.welcome_from_profile(unnamed, "real-estate") == (
+        "Hello, I am an AI assistant calling from Lakeview Hospital. "
+        "This call may be recorded for quality purposes. Is this a good time to talk?")
     no = base + "\n| Calls recorded | no |\n"
     assert cfl.welcome_from_profile(no, "real-estate") == ai
     assert "recorded" not in cfl.welcome_from_profile(rec, "banking")
@@ -415,3 +421,31 @@ def test_a_booking_off_line_is_required_by_default_and_a_booking_on_line_is_not(
         '| R-02 | [booking_tool: off] say exactly "Callback line." |\n', encoding="utf-8")
     assert cfl.check("Callback line.", refs, numbers=[]) == []
     assert [q for _, q in cfl.check("Callback line.", refs, numbers=[], tools={"booking_tool": True})] == ["Booked line."]
+
+
+def test_a_row_naming_several_settings_is_required_only_when_all_are_on(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text(
+        '| R-01 | Link row (`send_link`, `confirmation_channels`): say exactly "Link line." |\n'
+        '| R-02 | Single row (`send_link`): say exactly "Single line." |\n', encoding="utf-8")
+    def needed(tools):
+        return sorted(q for _, q in cfl.required_lines(refs, set(), "inbound", cfl.with_defaults(tools)))
+    assert needed({"send_link": False, "confirmation_channels": True}) == []
+    assert needed({"send_link": True, "confirmation_channels": False}) == ["Single line."]
+    assert needed({"send_link": True, "confirmation_channels": True}) == ["Link line.", "Single line."]
+
+
+def test_the_not_known_source_line_is_required_only_without_lead_source_wording(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    line = "I don't have that detail with me. Would you like us to stop calling you?"
+    (refs / "core.md").write_text(f'SOURCE: otherwise say exactly "{line}" and wait.\n', encoding="utf-8")
+    def needed(tools):
+        return [q for _, q in cfl.required_lines(refs, set(), "outbound", cfl.with_defaults(tools))]
+    assert needed({}) == [line]
+    assert needed({"lead_source_wording": False}) == [line]
+    assert needed({"lead_source_wording": True}) == []
+    assert cfl.profile_tools("| Lead-source wording | the advice request form |")["lead_source_wording"] is True
+    assert cfl.profile_tools("| Lead-source wording | not provided |")["lead_source_wording"] is False
+    assert "lead_source_wording" not in cfl.profile_tools("| Tools | transfer |")

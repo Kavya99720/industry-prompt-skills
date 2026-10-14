@@ -23,6 +23,10 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
                    the confirmation channels the client gave: only the lines of those channels are required (the
                    combined "WhatsApp or email" question only with both). on/off still works as before.
 
+  --tool lead_source_wording=on|off
+                   real estate outbound: on when the client gave lead-source wording (a --profile with a "Lead-source
+                   wording" row sets it); the not-known source line is then not required
+
   --tool prescription_upload_method=whatsapp|email|in_store|not_set
                    the prescription upload method the client chose. Rows marked [upload: whatsapp] or [upload: email] are
                    required only for the matching method (none for in_store or not_set). Without this option every marked
@@ -59,6 +63,8 @@ TOOL_OFF_LABELS = {"lookup": "balance_lookup_tool", "block": "card_block_tool"}
 TEAM_PHRASE = "I'll connect you to our team."
 TRANSFER_TARGET = "transfer_target"  # True when the profile gives at least one transfer target; only set when known (banking)
 CHANNELS = "channels"  # the confirmation channels the client gave, a set; only set when known (banking)
+LEAD_SOURCE_WORDING = "lead_source_wording"  # True when the profile gives lead-source wording; only set when known (real estate)
+SOURCE_NOT_KNOWN = "I don't have that detail with me. Would you like us to stop calling you?"
 MUST_INCLUDE = re.compile(r'must include\s*"([^"]+)"', re.I)
 
 
@@ -122,6 +128,9 @@ def profile_tools(profile_text):
     tools["calls_recorded"] = bool(re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I))
     tools["confirmation_channels"] = bool(channels)
     tools[CHANNELS] = channels
+    source = profile_value(profile_text, "Lead-source wording")
+    if source is not None:  # no row: unknown, the not-known line stays required
+        tools[LEAD_SOURCE_WORDING] = _given(source)
     targets = profile_value(profile_text, "Transfer targets")
     if targets:  # no row: unknown, the phrase stays required
         tools[TRANSFER_TARGET] = not re.match(r"\s*(not given|none)", targets, re.I)
@@ -141,11 +150,11 @@ def welcome_from_profile(profile_text, industry=None):
     agent = re.sub(r"\s*\([^)]*\)\s*$", "", agent).strip() if given(agent) else None
     direction = (profile_value(profile_text, "Direction") or "inbound").lower()
     if direction.startswith("out") and industry in AI_OUTBOUND_INDUSTRIES:
-        welcome = (f"Hello, this is {agent}, an AI assistant calling from {biz}. Is this a good time to talk?" if agent
-                   else f"Hello, I am an AI assistant calling from {biz}. Is this a good time to talk?")
+        opening = (f"Hello, this is {agent}, an AI assistant calling from {biz}." if agent
+                   else f"Hello, I am an AI assistant calling from {biz}.")
         if industry == "real-estate" and re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I):
-            welcome += " This call may be recorded for quality purposes."
-        return welcome
+            opening += " This call may be recorded for quality purposes."  # before the question (DECISIONS 111)
+        return opening + " Is this a good time to talk?"
     if direction.startswith("out"):
         return (f"Hello, this is {agent} calling from {biz}. Is this a good time to talk?" if agent
                 else f"Hello, I am calling from {biz}. Is this a good time to talk?")
@@ -201,7 +210,7 @@ def channel_needed(quote, channels):
 def quote_needed(row, quote, tools):
     """Whether one quote of one rule row is required under the profile's real tool settings and channels."""
     mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
-    needed = (not mentioned) or any(tools[t] for t in mentioned)
+    needed = (not mentioned) or all(tools[t] for t in mentioned)  # a row naming several settings needs ALL of them on (DECISIONS 111)
     branch = UPLOAD_BRANCH.search(row)
     if branch and isinstance(tools.get(UPLOAD_TOOL), str):
         needed = needed and tools[UPLOAD_TOOL] == branch.group(1).lower()
@@ -211,6 +220,8 @@ def quote_needed(row, quote, tools):
         needed = tools.get(name) is not True
     if tools.get(TRANSFER_TARGET) is False and norm(quote) == norm(TEAM_PHRASE):
         needed = False  # with no transfer target every handoff is a callback offer (R-17)
+    if tools.get(LEAD_SOURCE_WORDING) is True and norm(quote) == norm(SOURCE_NOT_KNOWN):
+        needed = False  # the business gave lead-source wording: the not-known line never fires (DECISIONS 111)
     channels = tools.get(CHANNELS)
     if needed and isinstance(channels, (set, frozenset)) and "confirmation_channels" in row:
         needed = channel_needed(quote, channels)
@@ -250,7 +261,7 @@ def required_text(refs, numbers, direction, tools):
         for row in f.read_text(encoding="utf-8").splitlines():
             for q in MUST_INCLUDE.findall(row):
                 mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
-                needed = (not mentioned) or any(tools[t] for t in mentioned)
+                needed = (not mentioned) or all(tools[t] for t in mentioned)
                 key = norm_text(q)
                 if key not in found:
                     found[key] = [f.name, q, needed]
@@ -316,6 +327,10 @@ def main(argv=None):
             return 2
         tools[name] = state.lower() == "on"
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
+    if profile_text is not None and LEAD_SOURCE_WORDING not in tools:
+        known = profile_tools(profile_text).get(LEAD_SOURCE_WORDING)
+        if known is not None:
+            tools[LEAD_SOURCE_WORDING] = known
     welcome = welcome_from_profile(profile_text, args.industry) if profile_text else None
     slots = profile_slots(profile_text) if profile_text else None
     missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome, slots)
