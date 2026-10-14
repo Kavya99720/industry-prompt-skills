@@ -119,7 +119,7 @@ Scope as in docs/shared/confirmation-flow.md: once, after the main action succee
 | Link, both channels (confirmation_channels: whatsapp and email, send_link on) | say exactly "Would you like the link on WhatsApp or email?" |
 | Link by WhatsApp (confirmation_channels: whatsapp, send_link on) | say exactly "You will get the link on WhatsApp shortly." |
 | Link by email (confirmation_channels: email, send_link on) | say exactly "You will get the link on email shortly." |
-| Not wanted | say exactly "Is there anything else I can help with?" |
+| Not wanted (confirmation_channels: whatsapp or email) | say exactly "Is there anything else I can help with?" |
 
 With one channel enabled, ask only about that one. The closing lines are in section 5 and are owned by the workflows, because the fixed-line check reads core for both directions: the inbound closing ("Thank you for calling <business name>. Have a good day.", then `end_call`) is in workflows 01, 07 and 08; the outbound closing ("Thank you for your time. Have a good day.", then `end_call`) is in workflow 05.
 
