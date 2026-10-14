@@ -7,3 +7,5 @@ __pycache__/
 # Private denylist of real client names (never commit)
 scripts/denylist.txt
 .claude/logs/
+
+outputs/*.md
