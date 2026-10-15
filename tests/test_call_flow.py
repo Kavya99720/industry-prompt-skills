@@ -35,7 +35,7 @@ def section(text, n):
 def test_the_rule_has_the_done_condition_and_the_interruptions_text():
     done, interruptions = blocks()
     assert done == "The call is done when the caller has their answer, has been transferred, or a callback has been noted. Then say the closing line and end the call."
-    for phrase in ("'hello?'", "'Yes, I'm here.'", "Never restart the call", "never repeat the welcome", "never ask again for details the caller already gave",
+    for phrase in ("'hello?'", "'Yes, I'm here.'", "Never restart the call", "never repeat the welcome",
                    "stop, listen, answer the new point, then go back to the open step", "'Are you still there?' twice"):
         assert phrase in interruptions, phrase
     assert not re.search(r"\b[RS]-\d+\b", done + interruptions)

@@ -28,7 +28,7 @@ The call is done when the caller has their answer, has been transferred, or a ca
 ## Interruptions text (write word for word, in section 5, right after the natural-speech block)
 
 ```
-If the caller says 'hello?', goes quiet, or the line breaks up in the middle of the call, say 'Yes, I'm here.' and continue from where you stopped. Repeat your last question in short if needed. Never restart the call, never repeat the welcome, and never ask again for details the caller already gave. If the caller interrupts you, stop, listen, answer the new point, then go back to the open step. If there is no reply after you ask 'Are you still there?' twice, say the closing line and end the call.
+If the caller says 'hello?', goes quiet, or the line breaks up in the middle of the call, say 'Yes, I'm here.' and continue from where you stopped. Repeat your last question in short if needed. Never restart the call and never repeat the welcome. If the caller interrupts you, stop, listen, answer the new point, then go back to the open step. If there is no reply after you ask 'Are you still there?' twice, say the closing line and end the call.
 ```
 
 ## How an industry uses it
