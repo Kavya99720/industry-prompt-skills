@@ -122,8 +122,8 @@ def fill_slots(quote, slots):
         return None
 
 
-AI_OUTBOUND_INDUSTRIES = ("banking", "real-estate", "retail", "education")  # their outbound welcome names the agent as an AI assistant (DECISIONS 100; real estate: DECISIONS 110; retail: DECISIONS 114; education: DECISIONS 118)
-RECORDING_IN_WELCOME_INDUSTRIES = ("real-estate", "retail", "education")  # calls recorded = yes puts the recording sentence in the outbound welcome (DECISIONS 111, 114)
+AI_OUTBOUND_INDUSTRIES = ("banking", "real-estate", "retail", "education", "logistics")  # their outbound welcome names the agent as an AI assistant (DECISIONS 100; real estate: DECISIONS 110; retail: DECISIONS 114; education: DECISIONS 118)
+RECORDING_IN_WELCOME_INDUSTRIES = ("real-estate", "retail", "education", "logistics")  # calls recorded = yes puts the recording sentence in the outbound welcome (DECISIONS 111, 114)
 
 
 def profile_tools(profile_text):
@@ -134,7 +134,8 @@ def profile_tools(profile_text):
     channels = {c for c in ("whatsapp", "email") if re.search(c, cell, re.I)} if not re.match(r"\s*(not set|none)", cell, re.I) else set()
     tools = {t: bool(re.search(t + r"\s+ON(?![A-Za-z])", row))
              for t in ("card_block_tool", "balance_lookup_tool", "booking_tool", "send_link",
-                        "order_lookup_tool", "stock_check_tool")}
+                        "order_lookup_tool", "stock_check_tool",
+                        "tracking_lookup_tool", "reschedule_tool", "pickup_request_tool", "address_change_tool")}
     tools["callback_setting"] = not re.search(r"callback(?:_setting)?\s+OFF(?![A-Za-z])", row)  # education: ON unless the row says OFF (DECISIONS 118)
     tools["calls_recorded"] = bool(re.match(r"\s*yes", profile_value(profile_text, "Calls recorded") or "", re.I))
     tools["confirmation_channels"] = bool(channels)
@@ -203,10 +204,13 @@ def with_defaults(tools):
     Real estate: booking_tool, send_link and calls_recorded are OFF unless the profile or --tool turns them on (DECISIONS 110).
     Retail: order_lookup_tool and stock_check_tool are OFF too, and its profile's settings are read (DECISIONS 114).
     Education: booking_tool and send_link are OFF by default like real estate; callback_setting is ON by default; its
-    profile's settings are read (DECISIONS 118)."""
+    profile's settings are read (DECISIONS 118).
+    Logistics: tracking_lookup_tool, reschedule_tool, pickup_request_tool and address_change_tool are OFF by default and
+    its profile's settings are read (DECISIONS 124)."""
     merged = {"confirmation_channels": False, "package_offer": False,
               "booking_tool": False, "send_link": False, "calls_recorded": False,
               "order_lookup_tool": False, "stock_check_tool": False,
+              "tracking_lookup_tool": False, "reschedule_tool": False, "pickup_request_tool": False, "address_change_tool": False,
               "callback_setting": True}
     merged.update(tools or {})
     return merged
@@ -345,7 +349,7 @@ def main(argv=None):
             return 2
         tools[name] = state.lower() == "on"
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
-    if profile_text is not None and args.industry in ("retail", "education"):
+    if profile_text is not None and args.industry in ("retail", "education", "logistics"):
         # retail and education read every setting its profile states (tools, recording, channels, transfer targets, source wording);
         # an explicit --tool wins. Other industries keep passing their settings with --tool (DECISIONS 114).
         for key, value in profile_tools(profile_text).items():

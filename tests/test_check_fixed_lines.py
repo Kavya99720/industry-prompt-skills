@@ -612,3 +612,76 @@ def test_education_safety_lines_are_required_and_the_pickup_line_only_with_its_w
         assert needed in lines
     pickup = "I cannot confirm or change who may pick up a child on this call. I have noted your request for our staff."
     assert pickup not in education_lines("01-school-inbound.md", ["01", "02", "03", "05", "06"], "inbound")
+
+
+# ---- logistics (DECISIONS 124) ----
+
+LOGISTICS = ROOT / "industries" / "logistics"
+
+
+def logistics_lines(profile_name, workflows, direction):
+    """The required lines the checker computes for a logistics profile (no generation: the settings only)."""
+    text = (LOGISTICS / "test-profiles" / profile_name).read_text(encoding="utf-8")
+    tools = dict(cfl.profile_tools(text))
+    slots = cfl.profile_slots(text)
+    return [q for _, q in cfl.required_lines(LOGISTICS, set(workflows), direction, cfl.with_defaults(tools), slots)]
+
+
+def test_logistics_tools_default_off_and_the_profile_reader_finds_them():
+    defaults = cfl.with_defaults({})
+    for name in ("tracking_lookup_tool", "reschedule_tool", "pickup_request_tool", "address_change_tool"):
+        assert defaults[name] is False
+    tools = cfl.profile_tools("| Tools | tracking_lookup_tool ON, reschedule_tool ON, pickup_request_tool OFF, address_change_tool ON, transfer |")
+    assert tools["tracking_lookup_tool"] and tools["reschedule_tool"] and tools["address_change_tool"]
+    assert tools["pickup_request_tool"] is False and tools["booking_tool"] is False  # pickup_request_tool is not read as booking_tool
+
+
+def test_logistics_outbound_welcome_names_the_ai_and_puts_the_recording_line_before_the_question():
+    text = (LOGISTICS / "test-profiles" / "04-outbound-delivery-update-named-recorded.md").read_text(encoding="utf-8")
+    assert cfl.welcome_from_profile(text, "logistics") == (
+        "Hello, this is Nisha, an AI assistant calling from Quickdrop Parcel Test. "
+        "This call may be recorded for quality purposes. Is this a good time to talk?")
+    unnamed = (LOGISTICS / "test-profiles" / "05-outbound-pickup-cod-no-assistant-name.md").read_text(encoding="utf-8")
+    assert cfl.welcome_from_profile(unnamed, "logistics") == "Hello, I am an AI assistant calling from Swift Lane Couriers Test. Is this a good time to talk?"
+
+
+def test_the_shipment_verification_lines_follow_the_tracking_lookup_setting():
+    off = "I am not able to look up shipment details on this call. I can arrange a callback for you."
+    not_verified = "I could not verify those details, so I cannot share shipment information on this call. I can arrange a callback for you."
+    lines_off = logistics_lines("01-courier-inbound-tools-off.md", ["01", "02", "03", "04", "05"], "inbound")
+    assert off in lines_off and not_verified not in lines_off
+    lines_on = logistics_lines("02-ecommerce-courier-inbound-lookup-on.md", ["01", "02", "03", "04", "05"], "inbound")
+    assert not_verified in lines_on and off not in lines_on
+    lines_freight = logistics_lines("03-freight-forwarder-inbound.md", ["06", "05", "04"], "inbound")
+    assert not_verified in lines_freight and off not in lines_freight
+
+
+def test_logistics_scam_block_stop_line_and_bank_line_are_always_required_inbound():
+    for name, wfs in (("01-courier-inbound-tools-off.md", ["01", "02", "03", "04", "05"]), ("06-warehouse-inbound-client-requests-refused.md", ["06", "05"])):
+        lines = logistics_lines(name, wfs, "inbound")
+        for q in ("Please be careful. We never ask for a payment, an OTP or any details to release a parcel. Do not share them with anyone.",
+                  "I cannot confirm whether that call was from us.",
+                  "Please report this quickly on the cybercrime helpline, 1 9 3 0.",
+                  "Please contact your bank or card issuer right away, and report it on the cybercrime helpline, 1 9 3 0.",
+                  "Please do not share that. I do not need it on this call.",
+                  "Tele-MANAS: 1 4 4 1 6. Emergency: 1 0 8 or 1 1 2.", "Call 1 1 2 right now.", "Our team will call you back."):
+            assert q in lines, (name, q)
+
+
+def test_logistics_team_phrase_is_not_required_without_a_transfer_target():
+    team = "I'll connect you to our team."
+    assert team not in logistics_lines("06-warehouse-inbound-client-requests-refused.md", ["06", "05"], "inbound")
+    assert team in logistics_lines("01-courier-inbound-tools-off.md", ["01", "02", "03", "04", "05"], "inbound")
+
+
+def test_logistics_outbound_only_lines_and_the_source_and_recording_settings():
+    inbound = logistics_lines("01-courier-inbound-tools-off.md", ["01", "02", "03", "04", "05"], "inbound")
+    wrong_person = "Sorry for the trouble. I can only speak with the person this call is for."
+    assert wrong_person not in inbound
+    recorded = "This call may be recorded for quality purposes."
+    assert recorded not in inbound  # profile 01: calls recorded no
+    assert recorded in logistics_lines("02-ecommerce-courier-inbound-lookup-on.md", ["01", "02", "03", "04", "05"], "inbound")
+    not_known = "I don't have that detail with me. Would you like us to stop calling you?"
+    out05 = logistics_lines("05-outbound-pickup-cod-no-assistant-name.md", ["07", "09"], "outbound")
+    assert wrong_person in out05 and not_known in out05 and recorded not in out05
+    assert not_known not in logistics_lines("04-outbound-delivery-update-named-recorded.md", ["07", "08"], "outbound")

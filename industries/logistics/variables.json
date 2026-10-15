@@ -1,0 +1,38 @@
+{
+  "syntax": "{{var.<name>}}",
+  "note": "Logistics prints the customer's business facts directly in the Instructions (DECISIONS 88, option B). These are the only variables a logistics Instructions set may use. Any other {{var.*}} is an error; so is an unresolved slot such as <business name>. This list replaces docs/shared/variables.json for logistics. tracking_lookup_tool, reschedule_tool, pickup_request_tool, address_change_tool and calls_recorded are intake flags, not variables: the skill writes the Instructions for the chosen state and names a tool only when it is on. 'status: unconfirmed' means the platform has not confirmed the variable exists.",
+  "inline_values": true,
+  "variables": [
+    {
+      "name": "now_local",
+      "source": "Built in",
+      "description": "Today's date and time for the call, with the dates of the coming days. Every date the agent says is read off this list.",
+      "example": "Thursday, 08 October, 10:30 AM",
+      "industries": ["logistics"]
+    },
+    {
+      "name": "contact_name",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the name of the person being called (the receiver, or the sender on a pickup call). Used only to ask whether the person on the line is that person; never said to anyone who is not confirmed, never left on a voicemail. Whether the platform passes this is an open question; when empty the agent asks whether it is speaking with the person who has the shipment with the business.",
+      "example": "<contact_name>",
+      "industries": ["logistics"]
+    },
+    {
+      "name": "tracking_number",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the shipment's tracking reference (AWB number, tracking number or order ID, whichever the business uses). Read one character at a time, and only to a confirmed person. Whether the platform passes this is an open question; when empty the agent relies on call_details.",
+      "example": "<tracking_number>",
+      "industries": ["logistics"]
+    },
+    {
+      "name": "call_details",
+      "source": "Call context",
+      "status": "unconfirmed",
+      "description": "Outbound calls: the facts for this call in the business's own words (the delivery update, the pickup address and time, or the COD amount). The only source for what the agent says about the shipment. Never extended, guessed or worked out; a full address or phone number in it is never read out. When empty the agent gives no update and offers support or a callback. Whether the platform passes this is an open question.",
+      "example": "<call_details>",
+      "industries": ["logistics"]
+    }
+  ]
+}

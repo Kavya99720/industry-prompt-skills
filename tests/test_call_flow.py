@@ -4,7 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RULE = ROOT / "docs" / "shared" / "call-flow.md"
-INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education")
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
 GOALS = {
     "healthcare": "Your goal: help the caller with clinic information, doctor availability or an appointment request, using only the business facts and the roster, or connect them to the right team.",
     "pharmacy": "Your goal: help the caller with medicine availability, orders and store information, using only the business facts, or connect them to the right team.",
@@ -83,7 +83,8 @@ def test_every_skill_and_the_template_name_the_rule_and_the_references_hold_a_cu
 def test_saved_profile_outputs_carry_the_goal_the_done_condition_and_the_interruptions():
     done, interruptions = blocks()
     for ind, name, goal in (("retail", "01-single-store-inbound", GOALS["retail"]), ("education", "01-school-inbound", GOALS["education"]),
-                            ("real-estate", "01-builder-inbound", GOALS["real-estate"])):
+                            ("real-estate", "01-builder-inbound", GOALS["real-estate"]),
+                            ("logistics", "01-courier-inbound-tools-off", GOALS["logistics"])):
         text = (ROOT / "industries" / ind / "sentence-tests" / f"{name}.md").read_text(encoding="utf-8")
         s1 = [l for l in section(text, 1).splitlines() if l.strip()]
         assert s1[0].startswith("You are") and s1[1] == goal and s1[2] == done, ind
