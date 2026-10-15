@@ -36,6 +36,10 @@ Rules for this section:
 
 Write the new industry's Instructions short: follow "Writing it short" in docs/shared/section-bases.md. Each rule once (safety and guardrail rules in section 1, data, verification and conversation-shape rules in section 5, step order only in section 6). Section 1 defines the handoff (the team phrase and the transfer in the same reply, with the routing), the callback and the team line one time; every other place says "the handoff", "the callback", "the team line". The Role line uses the business name when one was given. Section 1 aims at under 700 words, section 6 under 595. Each rule's one home (DECISIONS 127): a fixed line keeps its meaning in another language and never switches to English (section 3); helpline and emergency digits stay as digits (section 2); read-back and a clear yes before any action (the tool-call line of section 5); never ask again for details already given and confirm the part recognised (one line of section 5, next to the never-assume line); tone (section 4); acknowledgements, filler praise, ask like a person, "say exactly stays word for word" and the two examples (section 5); the closing line text (section 5 only; elsewhere say "the closing line"); "spoken aloud" (section 5 only).
 
+### Compact form (DECISIONS 129)
+
+Compact form (DECISIONS 129): follow "Compact form" in docs/shared/section-bases.md. Shorter wording without explanations; merged lists (one "Never promise", one "Never collect" with the data to collect, one "Hand off to the team when" list, defined once in section 1); rare cases (override, claimed role or authority, press, regulator, legal) in one line; no rule for a tool, workflow, transfer team or channel that is off or not given; confirmation channels only the ones given, every step kept; one style example in section 5; every "say exactly" line, safety block and helpline word for word. Same behaviour, fewer words.
+
 ## 2. Date & Time, TTS Rules (base)
 
 ```

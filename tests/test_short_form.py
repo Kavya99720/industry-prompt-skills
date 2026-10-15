@@ -47,7 +47,7 @@ def test_every_section_bases_and_the_template_carry_the_new_section_2_3_5_text()
 
 def test_healthcare_booking_lines_are_in_the_shared_base():
     t = (ROOT / "docs" / "shared" / "section-bases.md").read_text(encoding="utf-8")
-    for phrase in ("24-hour format", "one slot length before the end time", "unless the tool said so", "always new", "by name and specialty",
+    for phrase in ("24-hour format", "one slot length before the end time", "unless the tool said so", "by name and specialty",
                    "nearest two free times it returned", "never call the caller by the patient's name"):
         assert phrase in t, phrase
 

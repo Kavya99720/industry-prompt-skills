@@ -1,0 +1,130 @@
+#!/usr/bin/env python
+"""Rule coverage of the compact Instructions (DECISIONS 129).
+
+Every industry keeps industries/<x>/compact-coverage.json:
+  {"rules": {"R-01": {"section": "5", "phrases": ["key wording as printed"], "profiles": ["01"]}},
+   "not_applicable": {"R-84": "not applicable: feature off (...)"}}
+- section: "W" (welcome), "1" to "6", or a comma list ("1,2"); the phrases must all be inside those sections.
+- profiles (optional): the saved profile outputs (the two-digit prefix of industries/<x>/sentence-tests/NN-*.md) where the rule's
+  feature is on and the phrases must be present. Without it, the phrases must be present in at least one saved output.
+- not_applicable: a rule with no prompt text by design or for a feature that is off in every saved profile.
+Every rule id of the industry's core.md and workflow files must be in one of the two maps.
+
+Usage:
+  python scripts/compact_coverage.py [--industry x] [--md docs/compact-coverage.md]   print problems, optionally write the table
+Exit 1 if any rule is missing or unlisted.
+"""
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
+
+
+def norm(s):
+    s = s.replace("’", "'").replace("‘", "'").replace("“", '"').replace("”", '"')
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def rule_ids(industry):
+    """Every R-xx id in the industry's core.md and workflow files (table rows), with severity when present."""
+    base = ROOT / "industries" / industry
+    files = [base / "core.md"] + sorted((base / "workflows").glob("[0-9][0-9]-*.md"))
+    out = {}
+    for f in files:
+        for line in f.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"\|\s*(R-\d+)\s*\|", line)
+            if m:
+                sev = re.search(r"\|\s*(critical|major|minor)\s*\|", line)
+                out.setdefault(m.group(1), (f.name, sev.group(1) if sev else "?"))
+    return out
+
+
+def outputs(industry):
+    d = ROOT / "industries" / industry / "sentence-tests"
+    return {f.name[:2]: f for f in sorted(d.glob("[0-9][0-9]-*.md"))}
+
+
+def instructions(path):
+    return path.read_text(encoding="utf-8").split("=== DRAFT NOTES ===")[0]
+
+
+def scope(text, section):
+    if section == "W":
+        return text.split("## 1.")[0]
+    parts = []
+    for n in section.split(","):
+        m = re.search(rf"(?ms)^## {n.strip()}\. [^\n]*\n(.*?)(?=^## |\Z)", text)
+        if m:
+            parts.append(m.group(1))
+    return "\n".join(parts)
+
+
+def present(text, entry):
+    sc = norm(scope(text, entry["section"]))
+    return all(norm(p) in sc for p in entry["phrases"])
+
+
+def check(industry):
+    """Returns (rows, problems). rows: (rule, file, severity, status, where, evidence)."""
+    cov_path = ROOT / "industries" / industry / "compact-coverage.json"
+    if not cov_path.is_file():
+        return [], [f"{industry}: compact-coverage.json is missing"]
+    cov = json.loads(cov_path.read_text(encoding="utf-8"))
+    rules, na = cov.get("rules", {}), cov.get("not_applicable", {})
+    ids = rule_ids(industry)
+    outs = {k: instructions(v) for k, v in outputs(industry).items()}
+    rows, problems = [], []
+    for rid, (fname, sev) in sorted(ids.items(), key=lambda x: int(x[0][2:])):
+        if rid in na:
+            if rid in rules:
+                problems.append(f"{industry} {rid}: listed as both a rule and not applicable")
+            if not na[rid].startswith("not applicable"):
+                problems.append(f"{industry} {rid}: the not_applicable reason must start with 'not applicable'")
+            rows.append((rid, fname, sev, "not applicable", "-", na[rid]))
+            continue
+        if rid not in rules:
+            problems.append(f"{industry} {rid}: not listed in compact-coverage.json")
+            continue
+        e = rules[rid]
+        want = e.get("profiles") or list(outs)
+        found = [k for k in want if k in outs and present(outs[k], e)]
+        ok = (len(found) == len(want)) if e.get("profiles") else bool(found)
+        if not ok:
+            problems.append(f"{industry} {rid}: wording missing in section {e['section']} of {sorted(set(want) - set(found)) if e.get('profiles') else 'every saved output'}: {e['phrases']}")
+        rows.append((rid, fname, sev, "present" if ok else "MISSING", e["section"], f"{e['phrases'][0][:80]} [{','.join(found)}]"))
+    for rid in list(rules) + list(na):
+        if rid not in ids:
+            problems.append(f"{industry} {rid}: not a rule id of core.md or the workflows")
+    return rows, problems
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--industry", action="append")
+    ap.add_argument("--md")
+    a = ap.parse_args(argv)
+    inds = a.industry or list(INDUSTRIES)
+    out = ["# Compact Instructions: rule coverage (DECISIONS 129)", "",
+           "Generated by scripts/compact_coverage.py from industries/<x>/compact-coverage.json. For every rule id in the industry's core.md and workflow files: the section where its key wording now is, the saved profile outputs that carry it, or `not applicable` (no prompt text by design, or a feature that is off in every saved profile). Missing means the wording was not found.", ""]
+    bad = 0
+    for ind in inds:
+        rows, problems = check(ind)
+        bad += len(problems)
+        out += [f"## {ind}", "", "| Rule | Source | Severity | Status | Section | Evidence [profiles] |", "|---|---|---|---|---|---|"]
+        out += [f"| {r[0]} | {r[1]} | {r[2]} | {r[3]} | {r[4]} | {r[5].replace('|', '/')} |" for r in rows]
+        n_na = sum(r[3] == "not applicable" for r in rows)
+        out += ["", f"Rules: {len(rows)}. Present: {sum(r[3] == 'present' for r in rows)}. Not applicable: {n_na}. Missing or unlisted: {len(problems)}.", ""]
+        for p in problems:
+            print("PROBLEM", p)
+    if a.md:
+        Path(a.md).write_text("\n".join(out), encoding="utf-8")
+    print("coverage problems:", bad)
+    return 1 if bad else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

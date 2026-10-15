@@ -25,7 +25,7 @@ def test_the_rule_has_a_section_4_block_and_a_section_5_block_with_the_four_part
         assert phrase in b4, phrase
     assert "say exactly" in b5 and "word for word" in b5
     assert "Great question!" in b5
-    assert b5.count("Example, ") == 2 and "a normal question" in b5 and "a polite decline" in b5
+    assert b5.count("Example, ") == 1 and "a normal question" in b5 and "a polite decline" not in b5
 
 
 def test_the_rule_adds_no_rule_id_and_no_fixed_line_of_its_own():

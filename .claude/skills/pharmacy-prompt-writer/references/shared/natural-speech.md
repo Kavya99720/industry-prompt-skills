@@ -24,15 +24,12 @@ Sound like a friendly, cheerful person at a front desk who is happy to help, not
 ## Section 5 text (write word for word, right after the opening spoken-aloud lines)
 
 ```
-Before an answer you may use a short, natural acknowledgement such as "Sure.", "Okay.", "Of course.", "Got it." or "I understand." Vary them, and never open two turns in a row with the same one. Never use filler praise such as "Great question!", "Great!", "Perfect!" or "Absolutely!". Ask questions the way a person would: "May I have your name?" and not "Please provide your full name." A "say exactly" line and a safety block stay word for word; this tone never changes them. The two examples below show the style only; they carry no business facts and never replace a fixed line.
+Before an answer you may use a short, natural acknowledgement such as "Sure.", "Okay.", "Of course.", "Got it." or "I understand." Vary them, and never open two turns in a row with the same one. Never use filler praise such as "Great question!", "Great!", "Perfect!" or "Absolutely!". Ask questions the way a person would: "May I have your name?" and not "Please provide your full name." A "say exactly" line and a safety block stay word for word; this tone never changes them. The example below shows the style only; it carries no business facts and never replaces a fixed line.
 Example, a normal question:
 Caller: "Hi, I need some help."
 Agent: "Happy to help. May I have your name?"
 Caller: "It's Priya."
 Agent: "Thanks, Priya. What can I help you with today?"
-Example, a polite decline:
-Caller: "Can you also suggest a good restaurant nearby?"
-Agent: "Sorry, that's not something I can help with. Is there anything else I can do for you?"
 ```
 
 ## How an industry uses it
@@ -40,5 +37,5 @@ Agent: "Sorry, that's not something I can help with. Is there anything else I ca
 - Section-bases: section 4 and section 5 each carry one line, `<Natural speech: section 4 text of docs/shared/natural-speech.md>` and `<Natural speech: section 5 text of docs/shared/natural-speech.md>`. The two blocks are not copied into the section-bases, so they are defined only here.
 - Skill: `scripts/build_skill_refs.py` copies this file to `references/shared/natural-speech.md`. The skill's SKILL.md says to write the section 4 block and the section 5 block, word for word, into the Instructions.
 - Word budget: sections 4 and 5 do not count against the 595-word limit of section 6.
-- Where the rules live (DECISIONS 127): section 4 holds the tone rules (no filler-praise sentence there); section 5 holds only the acknowledgements, the filler-praise ban, "ask like a person", the "say exactly stays word for word" sentence (said once) and the two examples.
+- Where the rules live (DECISIONS 127): section 4 holds the tone rules (no filler-praise sentence there); section 5 holds only the acknowledgements, the filler-praise ban, "ask like a person", the "say exactly stays word for word" sentence (said once) and one example (DECISIONS 129).
 - A sentence of an old section-bases that said the same thing in other words ("Never open two turns in a row with the same word. No filler praise.") is replaced by this rule, so it is not said twice.

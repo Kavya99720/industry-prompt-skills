@@ -152,10 +152,9 @@ def test_the_compact_form_keeps_one_example_one_handoff_list_one_never_collect_l
         assert "HANDOFF: Use the handoff of section 1" in t, path
 
 
-def test_the_healthcare_base_and_skill_name_the_compact_form():
-    base = (ROOT / "industries" / "healthcare" / "section-bases.md").read_text(encoding="utf-8")
+def test_the_shared_base_and_the_healthcare_skill_name_the_compact_form():
+    base = (ROOT / "docs" / "shared" / "section-bases.md").read_text(encoding="utf-8")
     assert "## Compact form" in base and "Features that are off are not printed" in base and "Confirmation channels" in base
+    assert not (ROOT / "industries" / "healthcare" / "section-bases.md").exists()  # healthcare uses the shared base again
     skill = (ROOT / ".claude" / "skills" / "healthcare-prompt-writer" / "SKILL.md").read_text(encoding="utf-8")
-    assert "DECISIONS 128" in skill and "references/industry/section-bases.md" in skill
-    ref = ROOT / ".claude" / "skills" / "healthcare-prompt-writer" / "references" / "industry" / "section-bases.md"
-    assert ref.read_text(encoding="utf-8") == base
+    assert "DECISIONS 129" in skill and "references/shared/section-bases.md" in skill
