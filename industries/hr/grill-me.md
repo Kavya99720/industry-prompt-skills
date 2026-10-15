@@ -28,3 +28,7 @@ Date: 2026-10-15. Interview: 5 rounds of one or two questions in the main chat, 
 | 20 | Evals | None (DECISIONS 108). Quality: check_variables, check_fixed_lines, manual /prompt-writer tests on test profiles |
 
 Open items: none. Callback wording and the POSH missing-fact line were settled after the summary (rows 8, 12); the sick-leave reading was confirmed (row 19).
+
+## Refinement after the brief (DECISIONS 132)
+
+Row 11 is narrowed: the full self-harm line is for a self-harm statement or crisis only. Stress or upset about workload or job loss gets the care line ("Oh, I'm sorry to hear that.") and a handoff to the HR team. Row 17: candidates give contact fields only; no resume, documents, current pay or references over voice.
