@@ -48,7 +48,7 @@ One commit per industry; the message starts with the industry name.
 15. Evals: at most 5 checks map only to baseline rules; the rest test the industry's own critical risks. A critical rule without a check fails `validate_eval.py`, so a wording-only rule is major and its critical behaviour stays under the parent rule. Never loosen an eval; if one conflicts with a rule, show the owner the case text first.
 17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
-18. Natural speech: sections 4 and 5 carry the two text blocks of docs/shared/natural-speech.md, word for word (everyday words, short natural acknowledgements, questions asked the way a person asks them, warm but not over-friendly). It is tone only: fixed lines and safety blocks never change.
+18. Natural speech: sections 4 and 5 carry the two text blocks of docs/shared/natural-speech.md, word for word (a friendly, cheerful front-desk voice: everyday words, short friendly phrases, the caller's name now and then, care in one line when something went wrong, calm and serious for emergencies, scams and complaints; no jokes, slang or emoji). The section 4 block goes at the START of section 4, and section 5 carries two short example exchanges. It is tone only: fixed lines and safety blocks never change.
 
 ## Fixed-line check
 
