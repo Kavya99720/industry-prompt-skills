@@ -54,7 +54,7 @@ Full text and reasons are in docs/DECISIONS.md. Where each landed:
 | 1 | Verification is patient name plus booked number; no date-of-birth lookup; a volunteered DOB is never stored or repeated | R-12, R-16, R-36, S-05, S-29, S-34 |
 | 2 | Doctor On leave or On call: offer a callback; name same-specialty doctors if asked; never book | R-41, R-39, S-63, S-64 |
 | 3 | Call direction is an intake question; welcome and flow must match | core.md intake, R-72, R-07 |
-| 4 | Never check availability; if a time is taken, repeat the timing range and ask for another time; never list times | R-21, S-82, S-43, S-44, S-04, S-60 |
+| 4 | Never check availability; if a time is taken, offer only the nearest two free times the tool returned (decision 125; before, repeat the timing range and list no time); never invent a time | R-21, S-82, S-43, S-44, S-04, S-60 |
 | 5 | Symptoms: specialties only, caller chooses, never pick a doctor | R-37, S-59 |
 | 6 | Reports: never interpret or give status; transfer or callback | R-14, S-06 |
 | 7 | Closing line in Output Format with <business name>, then `end_call` | R-68 |
@@ -66,7 +66,7 @@ Full text and reasons are in docs/DECISIONS.md. Where each landed:
 | 13 | Stop-calling: note it, never promise it is done, end the call | R-73, R-47, S-86 |
 | 14 | AI disclosure on outbound: follow the client's welcome, answer honestly, never claim to be human | R-08, S-89 |
 
-Not adopted from the reference Starter: the tool's two nearest free times, the fixed 30-minute slot and last-slot rule, the "next two sitting days" rule, and "reschedule needs the booking number" as its own rule.
+Not adopted from the reference Starter (the tool's two nearest free times were adopted later, decision 125): the fixed 30-minute slot and last-slot rule, the "next two sitting days" rule, and "reschedule needs the booking number" as its own rule.
 
 ## 4. Scenario register
 

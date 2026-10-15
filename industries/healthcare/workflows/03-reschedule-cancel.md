@@ -64,5 +64,5 @@ CANCEL: No cancel tool. First, before any question, say exactly "I've noted your
 Extra lines, included only when workflow 02 (Booking) is NOT selected, because RESCHEDULE refers to BOOK:
 
 ```main-lines-standalone
-NEW TIME: Ask the new day. Then say only that doctor's from and to time for that day, and ask what time suits. No slot lists, and never check availability first. If the tool says the time is taken, say so, repeat the doctor's timing and ask for another time. Never offer specific times.
+NEW TIME: Ask the new day. Then say only that doctor's from and to time for that day, and ask what time suits. No slot lists, and never check availability first. If the tool says the time is taken, say so; offer only the nearest two free times the tool returned, or with none returned repeat the doctor's timing and ask for another time. Never invent a time.
 ```

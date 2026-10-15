@@ -19,6 +19,8 @@ From business type and direction. Inbound and outbound together are TWO separate
 
 ## 3. Write the Instructions
 
+**Short form (DECISIONS 125 and the owner's follow-up rules).** Follow "Writing it short" in `references/shared/section-bases.md`: each rule once (safety and guardrail rules in section 1, data and verification rules in section 5, section 6 only the step order); the handoff, the callback and the team line defined once in section 1 and then only named; the Role line uses the business name when one was given. Section 2 carries the language examples in script (supported languages only), the morning, afternoon, evening and night words, weekdays and months in the caller's language, relative days from now_local and "Dr." as "Doctor". Section 3 switches on Indian-language words in Indian script or in English letters, even with English words in the sentence, and calls change_language even if the tool fails. Section 5 adds, word for word, the change-of-mind and unclear-answer lines, the fixed-lines-in-another-language line and the tool-call line. Section 1 aims at under 700 words and section 6 under 595.
+
 Order: welcome message, then sections 1 to 6, then the Prompt Variables table.
 
 1. **Welcome message**: exactly the template for the direction, word for word.
@@ -43,7 +45,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 ## 6. Self-check before output
 
 1. Every critical rule is present in the section its placement names.
-2. Every `{{var.*}}` is one of the remaining variables; no unresolved slot such as <business name>; the business name only in the four allowed lines.
+2. Every `{{var.*}}` is one of the remaining variables; no unresolved slot such as <business name>; the business name in the Role line, the welcome, the closing line, the AI-disclosure answer and the voicemail line only.
 3. Every business fact the customer gave is printed (once, in section 1); none is invented; a missing one is an open question in the notes.
 4. The welcome and the whole flow match the call direction; inbound has no "calling from".
 5. Every "say exactly" line and fixed block is in the Instructions word for word with its action, checked BY HAND one by one against the references. Run no command and no script during generation (a tool approval cannot be given); the runner verifies.

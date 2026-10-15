@@ -50,7 +50,8 @@ One commit per industry; the message starts with the industry name.
 17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
 18. Natural speech: sections 4 and 5 carry the two text blocks of docs/shared/natural-speech.md, word for word (a friendly, cheerful front-desk voice: everyday words, short friendly phrases, the caller's name now and then, care in one line when something went wrong, calm and serious for emergencies, scams and complaints; no jokes, slang or emoji). The section 4 block goes at the START of section 4, and section 5 carries two short example exchanges. It is tone only: fixed lines and safety blocks never change.
-19. Call flow: section 1 starts with the goal line and the done condition, and section 5 carries the interruptions block, all from docs/shared/call-flow.md, word for word (DECISIONS 123). It is call flow only: fixed lines and safety blocks never change.
+19. Short form and shared lines (DECISIONS 125): write the Instructions short ("Writing it short" in docs/shared/section-bases.md): each rule once, the handoff, callback and team line defined once, the Role line with the business name, section 1 under 700 words and section 6 under 595; section 2 with the language examples; section 3 with the Indian-words switch rule; section 5 with the change-of-mind, unclear-answer, fixed-lines-in-another-language and tool-call lines.
+20. Call flow: section 1 starts with the goal line and the done condition, and section 5 carries the interruptions block, all from docs/shared/call-flow.md, word for word (DECISIONS 123). It is call flow only: fixed lines and safety blocks never change.
 
 ## Fixed-line check
 

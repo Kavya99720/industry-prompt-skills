@@ -40,6 +40,11 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
                    required only for the matching method (none for in_store or not_set). Without this option every marked
                    row is required, as before.
 
+  --translated     the Instructions are written in another language (DECISIONS 125: a "say exactly" line keeps its meaning, not its
+                   English words). A missing quoted line is then accepted when every digit group in it (helpline and emergency
+                   digits such as "1 1 2") is in the output; a line with no digits is listed as a NOTE ("check the translation by
+                   a reader") and does not count as missing. must-include sentences, the welcome and rule IDs are still checked.
+
 A rule ID such as "R-41" or "S-37" anywhere in the Instructions (the part before the === DRAFT NOTES === marker; the
 whole text when there is no marker) is reported as a problem: rule IDs belong to the sources, never to the prompt.
 
@@ -244,6 +249,8 @@ def quote_needed(row, quote, tools):
         needed = False  # with no transfer target every handoff is a callback offer (R-17)
     if tools.get(LEAD_SOURCE_WORDING) is True and norm(quote) == norm(SOURCE_NOT_KNOWN):
         needed = False  # the business gave lead-source wording: the not-known line never fires (DECISIONS 111)
+    if quote.startswith(" "):
+        needed = False  # a stray fragment between two quoted lines of a prose sentence, not a spoken line (pharmacy core.md)
     channels = tools.get(CHANNELS)
     if needed and isinstance(channels, (set, frozenset)) and "confirmation_channels" in row:
         needed = channel_needed(quote, channels)
@@ -308,6 +315,25 @@ def check(output_text, refs, numbers=(), direction=None, tools=None, welcome=Non
     return missing
 
 
+def split_translated(missing, output_text):
+    """--translated: (still_missing, unverified). A quoted line with digits needs its digit groups in the output; one without is a note."""
+    still, notes = [], []
+    text = norm_text(output_text)
+    for src, q in missing:
+        if q.startswith((MUST_PREFIX, RULE_ID_PREFIX)) or src.startswith("welcome"):
+            still.append((src, q))
+            continue
+        groups = re.findall(r"\d(?: \d)+|\d", q)
+        if groups:
+            if all(norm_text(g) in text for g in groups):
+                notes.append((src, q))
+            else:
+                still.append((src, q))
+        else:
+            notes.append((src, q))
+    return still, notes
+
+
 def rule_id_problems(output_text):
     """Rule IDs (R-12, S-37) inside the Instructions part of an output, as (where, RULE_ID_PREFIX + text) pairs."""
     instructions = output_text.split(NOTES_MARKER, 1)[0] if re.search(r"(?m)^" + re.escape(NOTES_MARKER) + r"\s*$", output_text) else output_text
@@ -327,6 +353,7 @@ def main(argv=None):
     ap.add_argument("--industry", default="banking")
     ap.add_argument("--references")
     ap.add_argument("--profile")
+    ap.add_argument("--translated", action="store_true")
     args = ap.parse_args(argv)
     if not args.references:
         args.references = str(Path(__file__).resolve().parent.parent / ".claude" / "skills" / f"{args.industry}-prompt-writer" / "references")
@@ -349,7 +376,7 @@ def main(argv=None):
             return 2
         tools[name] = state.lower() == "on"
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
-    if profile_text is not None and args.industry in ("retail", "education", "logistics"):
+    if profile_text is not None and args.industry in ("retail", "education", "logistics", "real-estate"):
         # retail and education read every setting its profile states (tools, recording, channels, transfer targets, source wording);
         # an explicit --tool wins. Other industries keep passing their settings with --tool (DECISIONS 114).
         for key, value in profile_tools(profile_text).items():
@@ -361,6 +388,9 @@ def main(argv=None):
     welcome = welcome_from_profile(profile_text, args.industry) if profile_text else None
     slots = profile_slots(profile_text) if profile_text else None
     missing = check(path.read_text(encoding="utf-8"), args.references, args.workflows, args.direction, tools, welcome, slots)
+    unverified = []
+    if args.translated:
+        missing, unverified = split_translated(missing, path.read_text(encoding="utf-8"))
     for src, q in missing:
         if q.startswith(RULE_ID_PREFIX):
             print(f"RULE ID in the Instructions ({src}): {q[len(RULE_ID_PREFIX):]}")
@@ -368,6 +398,8 @@ def main(argv=None):
             print(f'MISSING (from {src}): must include "{q[len(MUST_PREFIX):]}"')
         else:
             print(f'MISSING (from {src}): "{q}"')
+    for src, q in unverified:
+        print(f'NOTE (translation, check by a reader) (from {src}): "{q}"')
     direction = args.direction or ("outbound" if "calling from" in path.read_text(encoding="utf-8")[:900] else "inbound")
     required = (len(required_lines(Path(args.references), set(args.workflows), direction, with_defaults(tools), slots))
                 + len(required_text(Path(args.references), set(args.workflows), direction, with_defaults(tools)))
