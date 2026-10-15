@@ -9,3 +9,4 @@ scripts/denylist.txt
 .claude/logs/
 
 outputs/*.md
+outputs/
