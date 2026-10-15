@@ -16,4 +16,5 @@ A test fails when a copy is out of sync.
 | shared/natural-speech.md | docs/shared/natural-speech.md |
 | shared/call-flow.md | docs/shared/call-flow.md |
 | shared/intake-flow.md | docs/shared/intake-flow.md |
+| industry/section-bases.md | industries/healthcare/section-bases.md |
 | industry/variables.json | industries/healthcare/variables.json |
