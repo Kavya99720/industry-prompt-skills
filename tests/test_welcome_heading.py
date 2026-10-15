@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 HEADING = "## Welcome Message"
-INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics", "hr")
 
 spec = importlib.util.spec_from_file_location("check_fixed_lines", ROOT / "scripts" / "check_fixed_lines.py")
 cfl = importlib.util.module_from_spec(spec)

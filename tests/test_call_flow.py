@@ -4,16 +4,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RULE = ROOT / "docs" / "shared" / "call-flow.md"
-INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics", "hr")
 GOALS = {
-    "healthcare": "Your goal: help the caller with clinic information, doctor availability or an appointment request, using only the business facts and the roster, or connect them to the right team.",
-    "pharmacy": "Your goal: help the caller with medicine availability, orders and store information, using only the business facts, or connect them to the right team.",
-    "banking": "Your goal: help the caller with general product, branch and card questions, using only the business facts, or connect them to the right team.",
-    "real-estate": "Your goal: help the caller with project information and site visit requests, using only the business facts, or connect them to the right team.",
-    "retail": "Your goal: help the caller with store, product, order and return questions, using only the business facts and system data, or connect them to the right team.",
-    "education": "Your goal: help the caller with admissions, fees and school information, using only the business facts, or connect them to the right team.",
-    "logistics": "Your goal: help the caller with their shipment, such as tracking, delivery, pickup or a problem, using only system data and the business facts, or connect them to the right team.",
-    "hr": "Your goal: help the caller with general job, application and HR questions, using only the business facts, or connect them to the right team.",
+    "healthcare": "Your goal: help the caller with clinic information, doctor availability or an appointment request, using only the business facts and the roster.",
+    "pharmacy": "Your goal: help the caller with medicine availability, orders and store information, using only the business facts.",
+    "banking": "Your goal: help the caller with general product, branch and card questions, using only the business facts.",
+    "real-estate": "Your goal: help the caller with project information and site visit requests, using only the business facts.",
+    "retail": "Your goal: help the caller with store, product, order and return questions, using only the business facts and system data.",
+    "education": "Your goal: help the caller with admissions, fees and school information, using only the business facts.",
+    "logistics": "Your goal: help the caller with their shipment, such as tracking, delivery, pickup or a problem, using only system data and the business facts.",
+    "hr": "Your goal: help the caller with leave, payroll dates, an application or joining, using only system data and the business facts.",
 }
 
 
@@ -84,7 +84,8 @@ def test_saved_profile_outputs_carry_the_goal_the_done_condition_and_the_interru
     done, interruptions = blocks()
     for ind, name, goal in (("retail", "01-single-store-inbound", GOALS["retail"]), ("education", "01-school-inbound", GOALS["education"]),
                             ("real-estate", "01-builder-inbound", GOALS["real-estate"]),
-                            ("logistics", "01-courier-inbound-tools-off", GOALS["logistics"])):
+                            ("logistics", "01-courier-inbound-tools-off", GOALS["logistics"]),
+                            ("hr", "01-in-house-hr-inbound-all-tools-on", GOALS["hr"])):
         text = (ROOT / "industries" / ind / "sentence-tests" / f"{name}.md").read_text(encoding="utf-8")
         s1 = [l for l in section(text, 1).splitlines() if l.strip()]
         assert s1[0].startswith("You are") and s1[1] == goal and s1[2] == done, ind

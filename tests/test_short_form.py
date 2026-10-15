@@ -4,7 +4,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics", "hr")
 
 spec = importlib.util.spec_from_file_location("check_fixed_lines", ROOT / "scripts" / "check_fixed_lines.py")
 cfl = importlib.util.module_from_spec(spec)
@@ -40,7 +40,7 @@ def test_every_section_bases_and_the_template_carry_the_new_section_2_3_5_text()
         assert CHANGE_MIND in t and UNCLEAR in t, name
         assert FIXED_LANG in t and TOOL_CALL in t, name
         assert "सुबह नौ बजे" in t and "ಬೆಳಿಗ್ಗೆ ಒಂಬತ್ತು ಗಂಟೆ" in t, name  # language examples, supported languages only
-        if name != "logistics":  # logistics has no doctors: the reading rule is not printed there
+        if name not in ("logistics", "hr"):  # logistics and HR have no doctors: the reading rule is not printed there
             assert 'Dr. is "Doctor"' in t, name
         assert "never AM or PM" in t and "weekdays and months" in t, name
         assert '"next Monday"' in t and "find the exact date" in t, name

@@ -687,6 +687,76 @@ def test_logistics_outbound_only_lines_and_the_source_and_recording_settings():
     assert not_known not in logistics_lines("04-outbound-delivery-update-named-recorded.md", ["07", "08"], "outbound")
 
 
+# ---- HR (DECISIONS 133) ----
+
+HR = ROOT / "industries" / "hr"
+HR_IN = ["01", "02", "03", "04", "05"]
+
+
+def hr_lines(profile_name, workflows, direction):
+    """The required lines the checker computes for an HR profile (no generation: the settings only)."""
+    text = (HR / "test-profiles" / profile_name).read_text(encoding="utf-8")
+    tools = dict(cfl.profile_tools(text))
+    slots = cfl.profile_slots(text)
+    return [q for _, q in cfl.required_lines(HR, set(workflows), direction, cfl.with_defaults(tools), slots)]
+
+
+def test_hr_tools_default_off_and_the_profile_reader_finds_them():
+    defaults = cfl.with_defaults({})
+    for name in ("hr_lookup_tool", "leave_balance_tool", "leave_request_tool", "interview_schedule_tool"):
+        assert defaults[name] is False
+    tools = cfl.profile_tools("| Tools | hr_lookup_tool ON, leave_balance_tool OFF, leave_request_tool ON, interview_schedule_tool OFF, transfer |")
+    assert tools["hr_lookup_tool"] and tools["leave_request_tool"]
+    assert tools["leave_balance_tool"] is False and tools["interview_schedule_tool"] is False
+    assert tools["reschedule_tool"] is False and tools["booking_tool"] is False  # no collision with the other industries' tool names
+
+
+def test_hr_outbound_welcome_names_the_ai_and_puts_the_recording_line_before_the_question():
+    text = (HR / "test-profiles" / "06-outbound-interview-reminder-named-recorded.md").read_text(encoding="utf-8")
+    assert cfl.welcome_from_profile(text, "hr") == (
+        "Hello, this is Neha, an AI assistant calling from Orchid Hospitality Test. "
+        "This call may be recorded for quality purposes. Is this a good time to talk?")
+
+
+def test_the_hr_verification_lines_follow_the_lookup_setting():
+    team = "Our team will confirm that for you."
+    not_verified = "I could not verify those details, so I cannot share personal information on this call. I can arrange a callback for you."
+    on = hr_lines("01-in-house-hr-inbound-all-tools-on.md", HR_IN, "inbound")
+    off = hr_lines("02-in-house-hr-inbound-all-tools-off.md", HR_IN, "inbound")
+    assert not_verified in on and not_verified not in off
+    assert team in on and team in off  # the missing-fact line is always required; with the lookup off it is also the lookup-off line
+
+
+def test_hr_safety_and_scam_lines_are_always_required_inbound():
+    for name, wfs in (("01-in-house-hr-inbound-all-tools-on.md", HR_IN), ("05-verification-vendor-inbound-no-route-no-target.md", ["01", "04", "05", "06"])):
+        lines = hr_lines(name, wfs, "inbound")
+        for q in ("We never ask for money for a job, interview or offer letter.", "I cannot confirm whether that call or message was from us.",
+                  "Please report this quickly on the cybercrime helpline, 1 9 3 0.",
+                  "Please contact your bank or card issuer right away, and report it on the cybercrime helpline, 1 9 3 0.",
+                  "Please do not share that. I do not need it on this call.", "I am not able to decide that.", "I can only share published payroll dates and policies.",
+                  "I cannot confirm any job, interview result, salary or joining date on this call.",
+                  "Tele-MANAS: 1 4 4 1 6. Emergency: 1 0 8 or 1 1 2.", "Call 1 1 2 right now.", "Our team will call you back.",
+                  "For privacy, I can only discuss personal details with the person they belong to. I can arrange a callback for you."):
+            assert q in lines, (name, q)
+
+
+def test_hr_team_phrase_is_not_required_without_a_transfer_target():
+    team = "I'll connect you to our team."
+    assert team not in hr_lines("05-verification-vendor-inbound-no-route-no-target.md", ["01", "04", "05", "06"], "inbound")
+    assert team in hr_lines("01-in-house-hr-inbound-all-tools-on.md", HR_IN, "inbound")
+
+
+def test_hr_outbound_only_lines_and_the_source_and_recording_settings():
+    inbound = hr_lines("01-in-house-hr-inbound-all-tools-on.md", HR_IN, "inbound")
+    wrong_person = "Sorry for the trouble. I can only speak with the person this call is for."
+    assert wrong_person not in inbound
+    recorded = "This call may be recorded for quality purposes."
+    assert recorded in inbound and recorded not in hr_lines("02-in-house-hr-inbound-all-tools-off.md", HR_IN, "inbound")
+    out = hr_lines("06-outbound-interview-reminder-named-recorded.md", ["07", "08"], "outbound")
+    not_known = "I don't have that detail with me. Would you like us to stop calling you?"
+    assert wrong_person in out and not_known not in out  # the profile gives contact-source wording
+
+
 def test_off_skips_a_rule_and_its_repeats_in_other_rows(tmp_path):
     refs = tmp_path / "references"
     (refs / "workflows").mkdir(parents=True)

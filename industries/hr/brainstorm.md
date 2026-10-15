@@ -20,7 +20,7 @@ Employee
 13. [MUST] Employee says they were terminated, or fears it. Handed off, no comment on the case.
 14. [MUST] Employee reports harassment or abuse (POSH). The fixed block applies, no questions about the accused.
 15. [MUST] Employee distressed about job loss or workload. The self-harm and distress block applies if there is any risk. Never counsel.
-16. [NICE] Benefits and insurance enrolment questions. Published policy only; claims go to the insurer or the team.
+16. [NICE] Benefits and insurance sign-up questions. Published policy only; claims go to the insurer or the team.
 17. [NICE] Grievance about a manager that is not harassment. Name, number and type of concern logged and handed off.
 
 Candidate

@@ -10,14 +10,14 @@ The goal line is industry-specific and lives in each industry's section-bases (i
 
 | Industry | Inbound goal line |
 |---|---|
-| Healthcare | Your goal: help the caller with clinic information, doctor availability or an appointment request, using only the business facts and the roster, or connect them to the right team. |
-| Pharmacy | Your goal: help the caller with medicine availability, orders and store information, using only the business facts, or connect them to the right team. |
-| Banking | Your goal: help the caller with general product, branch and card questions, using only the business facts, or connect them to the right team. |
-| Real estate | Your goal: help the caller with project information and site visit requests, using only the business facts, or connect them to the right team. |
-| Retail | Your goal: help the caller with store, product, order and return questions, using only the business facts and system data, or connect them to the right team. |
-| Education | Your goal: help the caller with admissions, fees and school information, using only the business facts, or connect them to the right team. |
-| Logistics (for later) | Your goal: help the caller with their shipment, such as tracking, delivery, pickup or a problem, using only system data and the business facts, or connect them to the right team. |
-| HR (for later) | Your goal: help the caller with general job, application and HR questions, using only the business facts, or connect them to the right team. |
+| Healthcare | Your goal: help the caller with clinic information, doctor availability or an appointment request, using only the business facts and the roster. |
+| Pharmacy | Your goal: help the caller with medicine availability, orders and store information, using only the business facts. |
+| Banking | Your goal: help the caller with general product, branch and card questions, using only the business facts. |
+| Real estate | Your goal: help the caller with project information and site visit requests, using only the business facts. |
+| Retail | Your goal: help the caller with store, product, order and return questions, using only the business facts and system data. |
+| Education | Your goal: help the caller with admissions, fees and school information, using only the business facts. |
+| Logistics (for later) | Your goal: help the caller with their shipment, such as tracking, delivery, pickup or a problem, using only system data and the business facts. |
+| HR (for later) | Your goal: help the caller with leave, payroll dates, an application or joining, using only system data and the business facts. |
 
 ## Done condition text (write word for word, on the line after the goal line)
 

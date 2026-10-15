@@ -523,3 +523,50 @@ Rules: 74. Present: 66. Not applicable: 8. Missing or unlisted: 0.
 | R-46 | core.md | critical | present | 5 | say exactly "This call may be recorded for quality purposes." once. [02] |
 
 Rules: 46. Present: 44. Not applicable: 2. Missing or unlisted: 0.
+
+## hr
+
+| Rule | Source | Severity | Status | Section | Evidence [profiles] |
+|---|---|---|---|---|---|
+| R-01 | core.md | major | present | 1 | Priority when rules meet: emergency; self-harm; harassment, ethics and scams; pr [01,02,03,04,05,06] |
+| R-02 | core.md | critical | present | 5 | Never assume a detail the caller has not stated [01,02,03,04,05,06] |
+| R-03 | core.md | critical | present | 1 | Say exactly "Call 1 1 2 right now." [01,02,03,04,05,06] |
+| R-04 | core.md | critical | present | 1 | say exactly "Tele-MANAS: 1 4 4 1 6. Emergency: 1 0 8 or 1 1 2." [01,02,03,04,05,06] |
+| R-05 | core.md | major | present | 2 | as Latin digits, one at a time with spaces, in every language [01,02,03,04,05,06] |
+| R-06 | core.md | critical | present | 5 | Say only "verified" or "not verified" [01,03,04] |
+| R-07 | core.md | critical | present | 5 | Share data only with the verified caller, never with a manager, family member or [01,03,04] |
+| R-08 | core.md | critical | present | 5 | say exactly "For privacy, I can only discuss personal details with the person th [01,02,03,04,05,06] |
+| R-09 | core.md | critical | present | 1 | Payroll: state published payroll dates and policy only. [01,02,03,04,05,06] |
+| R-10 | core.md | critical | present | 1 | Decisions: say exactly "I am not able to decide that." followed by "I'll connect [01,02,03,04,05,06] |
+| R-11 | core.md | critical | present | 1 | Outcomes: say exactly "I cannot confirm any job, interview result, salary or joi [01,02,03,04,05,06] |
+| R-12 | core.md | critical | present | 1 | say exactly "I am not able to advise on legal questions." then the handoff to th [01,02,03,04,05,06] |
+| R-13 | core.md | critical | present | 1 | Never ask about or note religion, caste, marital status, pregnancy, health, disa [01,02,03,04,05,06] |
+| R-14 | core.md | critical | present | 5 | Sick leave: note only that the leave is medical; never ask for or record the ill [01,02,03,04,05] |
+| R-15 | core.md | critical | present | 1 | say exactly "Please do not share that. I do not need it on this call." [01,02,03,04,05,06] |
+| R-16 | core.md | critical | present | 1 | say exactly "I will use these details only so our team can help with your reques [01,02,03,04,05,06] |
+| R-17 | core.md | critical | present | 1 | Harassment or abuse at work (sexual harassment, POSH): stop the task. [01,02,03,04,05,06] |
+| R-18 | core.md | critical | present | 1 | Ethics (whistleblower, fraud, discrimination), not POSH: note only that the call [01,02,03,04,05,06] |
+| R-19 | core.md | critical | present | 1 | "We never ask for money for a job, interview or offer letter." [01,02,03,04,05,06] |
+| R-20 | core.md | critical | present | 1 | The handoff: say exactly "I'll connect you to our team." and, in the same reply, [01,02,03,04,06] |
+| R-21 | core.md | major | present | 1 | say exactly "Our team will call you back." [01,02,03,04,05,06] |
+| R-22 | core.md | major | present | 5 | say exactly "I am sorry, that did not work. Our team will call you to confirm." [01,02,03,04,05,06] |
+| R-23 | core.md | critical | present | 1 | say exactly "Our team will confirm that for you." [01,02,03,04,05,06] |
+| R-24 | core.md | critical | present | 5 | say exactly "I have noted your request. Our team will confirm the next step." [01,02,03,04,05,06] |
+| R-25 | core.md | major | present | 1,4 | Stress or upset about workload or job loss, with no such statement, gets one car [01,02,03,04,05,06] |
+| R-26 | core.md | critical | present | 1 | Never claim to be human. [01,02,03,04,05,06] |
+| R-27 | core.md | major | present | 3 | call change_language, then reply fully in that language, even if the tool fails [01,02,03,04,05,06] |
+| R-28 | core.md | critical | present | 5 | Have a good day." and, in the same reply, use end_call. [01,02,03,04,05,06] |
+| R-29 | 07-outbound-frame.md | major | present | W | an AI assistant calling from [06] |
+| R-30 | 07-outbound-frame.md | critical | present | 6 | say exactly "Sorry for the trouble. I can only speak with the person this call i [06] |
+| R-31 | 07-outbound-frame.md | critical | present | 6 | Reminders and scheduling only [06] |
+| R-32 | 09-outbound-documents-and-onboarding.md | critical | not applicable | - | not applicable: workflow 09 (outbound document follow-up and onboarding nudge) is not in any saved profile; its rule is covered by the workflow text and a hands-on test is still to be done |
+| R-33 | core.md | major | present | 1,5 | Your goal: help the caller with leave, payroll dates, an application or joining, [01,02,03,04,05] |
+| R-34 | core.md | critical | present | 1 | Business facts: [01,02,03,04,05,06] |
+| R-35 | core.md | major | not applicable | - | not applicable: the business type is chosen by the skill from the intake and shown in the workflow selection; there is no prompt text for it |
+| R-36 | core.md | major | not applicable | - | not applicable: the tool and setting list is a skill-level rule; the Instructions name a tool only when it is on |
+| R-37 | 06-inbound-managers-staffing-and-vendors.md | major | present | 6 | VERIFICATION: A background-verification enquiry: the stage only (initiated, in p [05] |
+| R-38 | core.md | critical | present | 1 | only "Are you 18 or over?" where the role needs it [01,02,03,04,05,06] |
+| R-39 | core.md | critical | present | 5 | Recording: in the first reply after the welcome, say exactly "This call may be r [01,04] |
+| R-40 | 07-outbound-frame.md | major | present | 6 | SOURCE: Asked where you got the number: state only "your recent job application" [06] |
+
+Rules: 40. Present: 37. Not applicable: 3. Missing or unlisted: 0.

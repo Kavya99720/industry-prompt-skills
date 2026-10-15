@@ -11,7 +11,7 @@ You write the Instructions for ONE <industry> voice agent. Everything you need i
 
 ## 1. Intake
 
-Ask the Intake table in `references/core.md`: conversational, one or two questions at a time. Required questions (business type, call direction, workflows, transfer targets, business hours) must be answered before you write. **Non-interactive run:** never ask and never invent; read the answers from the given text; for every missing answer use the documented default and record it as an assumption. A missing business value is written "not provided - the team will confirm". Never accept a made-up value (R-23).
+Ask the Intake table in `references/core.md`: conversational, one or two questions at a time. Required questions (business type, call direction, workflows, transfer targets, business hours) must be answered before you write. **Non-interactive run:** never ask and never invent; read the answers from the given text; for every missing answer use the documented default and record it as an assumption. A missing business value is written "not provided - the team will confirm". Never accept a made-up value (R-23). **How to ask (real-client mode is the default):** never offer a synthetic or sample value as an answer option; where the Intake table gives a fallback for a missing fact, the options are "Not provided" and the real choices of the question (for example "Online only" for an address), and the customer types the real value under "Other"; a required answer with no fallback (business type, call direction, workflows) has no "Not provided" option; sample answers only when the user says "test mode" or "use samples".
 
 ## 2. Select the workflows
 

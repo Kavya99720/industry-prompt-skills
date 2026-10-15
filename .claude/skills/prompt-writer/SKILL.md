@@ -1,6 +1,6 @@
 ---
 name: prompt-writer
-description: Use when a customer wants a voice or chat agent prompt (Instructions) written and has not picked an industry skill. Greets, finds the business type, picks the ready industry skill (read from the README status table), runs that skill's intake exactly, and saves the result to outputs/<business-name>.md. Command /prompt-writer.
+description: Use when a customer wants a voice or chat agent prompt (Instructions) written and has not picked an industry skill. Greets, finds the business type, picks the ready industry skill (read from the README status table), runs that skill's intake exactly, and saves the result to outputs/<industry>/<business-name>.md. Command /prompt-writer.
 ---
 
 # Prompt Writer (router)
@@ -22,18 +22,19 @@ Business types by industry (use these words when you suggest; they come from eac
 | retail | single store, chain or franchise, e-commerce or online store, electronics or appliance store with service |
 | education | school or preschool, college or university, coaching or tuition centre, online course or edtech |
 | logistics | courier or parcel service, freight or trucking, warehouse or 3PL, freight forwarder or customs |
+| hr | in-house HR of an employer, staffing or recruitment agency, HR outsourcing or payroll provider, training or background-verification vendor |
 
 For a ready industry not in this table, take the business types from the first sentence of its skill's description. Never suggest an industry that is not ready.
 
 ## 2. Greet and ask
 
 - If the customer's first message already names the business type ("I run a pharmacy"), skip the question and go to step 3.
-- Otherwise greet in one short line and ask what kind of business it is, suggesting only the ready industries with their business types. Example: "Hi! What kind of business is this for? I can do hospitals and clinics, pharmacies, banks, real estate, retail stores, schools and colleges or courier and logistics businesses."
+- Otherwise greet in one short line and ask what kind of business it is, suggesting only the ready industries with their business types. Example: "Hi! What kind of business is this for? I can do hospitals and clinics, pharmacies, banks, real estate, retail stores, schools and colleges, courier and logistics businesses or HR teams and staffing agencies."
 
 ## 3. Route
 
 - Match the business to a ready industry, then go to step 4.
-- If it matches an industry that is not ready (HR, or any Todo row), reply exactly: "That isn't ready yet. I can do hospitals and clinics, pharmacies, banks, real estate, retail stores, schools and colleges or courier and logistics businesses." (list the ready ones from the README at that time) and stop.
+- If it matches an industry that is not ready (any Todo row), reply exactly: "That isn't ready yet. I can do hospitals and clinics, pharmacies, banks, real estate, retail stores, schools and colleges, courier and logistics businesses or HR teams and staffing agencies." (list the ready ones from the README at that time) and stop.
 - If it is unclear, ask one short question to tell which ready industry fits. If none fits, say the same "isn't ready yet" line.
 
 ## 4. Run the industry skill
@@ -42,7 +43,7 @@ Invoke the chosen `<slug>-prompt-writer` skill with the Skill tool and follow it
 
 ## 5. Save
 
-Save the skill's full output unchanged to `outputs/<business-name>.md`: the business name from the intake, lower case, words joined with hyphens, letters and digits only. If the file exists, add `-2`, `-3` and so on; never overwrite. Tell the customer the path.
+Save the skill's full output unchanged to `outputs/<industry>/<business-name>.md`, where `<industry>` is the industry slug chosen in step 3 (for example `outputs/hr/`): the business name from the intake, lower case, words joined with hyphens, letters and digits only. If the file exists, add `-2`, `-3` and so on; never overwrite. Tell the customer the path.
 
 ## Rules
 

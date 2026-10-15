@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics")
+INDUSTRIES = ("healthcare", "pharmacy", "banking", "real-estate", "retail", "education", "logistics", "hr")
 FIXED_S3 = 'A "say exactly" line keeps its exact meaning, not its English words'
 BLOCK9 = "Never ask again for details the caller already gave."
 
@@ -51,10 +51,14 @@ def test_never_ask_again_and_confirm_recognised_are_one_line_in_section_5():
         assert change == "If the caller changes their mind, follow the new request without starting over.", f
 
 
+HR_ALL_TOOLS_OFF = ("02-in-house-hr-inbound-all-tools-off.md", "05-verification-vendor-inbound-no-route-no-target.md")  # HR section-bases: with every tool off the tool-call line is not printed
+
+
 def test_read_back_and_clear_yes_rule_is_in_the_tool_call_line_only():
     for f in outputs():
         t = instructions(f)
-        assert t.count("Never skip the read-back and a clear yes before an action") == 1, f
+        expected = 0 if f.name in HR_ALL_TOOLS_OFF and f.parent.parent.name == "hr" else 1
+        assert t.count("Never skip the read-back and a clear yes before an action") == expected, f
         assert "book only after a clear yes" not in t and "Place it only after a clear yes" not in t, f
 
 
