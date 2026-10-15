@@ -50,7 +50,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 4. The welcome and the whole flow match the call direction; inbound has no "calling from".
 5. Every "say exactly" line and fixed block is in the Instructions word for word with its action, checked BY HAND one by one against the references. Run no command and no script during generation (a tool approval cannot be given); the runner verifies.
 6. Section 1 has the priority order; section 5 has the one-question rule word for word and the item-by-item no-collect list.
-7. The first line of the output is `=== INSTRUCTIONS ===` and the next is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
+7. The first line of the output is `=== INSTRUCTIONS ===`, the next is the unnumbered heading `## Welcome Message`, the line after it is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
 8. The Fill table, its notes and everything for the client are below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table.
 9. With no transfer target the Instructions and the notes say a callback is offered, never a transfer.
 10. In the draft notes a missing value is an open question; the Fill table lists only what is set on the platform (Voice settings, Doctors setup, transfer numbers); the notes carry "If your hours, phone or address change, regenerate these Instructions."
@@ -60,6 +60,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

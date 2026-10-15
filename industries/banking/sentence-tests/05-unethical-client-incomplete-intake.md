@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Tamarind Small Finance Bank. How can I help you?
 
 ## 1. Role & Identity

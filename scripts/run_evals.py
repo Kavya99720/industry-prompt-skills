@@ -63,6 +63,7 @@ AUTH_WAIT = int(os.environ.get("RUN_EVALS_AUTH_WAIT", "60"))
 AUTH_ERROR = re.compile(r"oauth|authenticat|unauthori[sz]ed|\b401\b|token.{0,20}(expired|refresh|invalid)|please run /login|invalid.{0,20}credential|ENOTFOUND|EAI_AGAIN|ECONNRESET|ETIMEDOUT|can.t reach the API server|check your internet", re.I)
 NOTES_MARKER = "=== DRAFT NOTES ==="
 INSTRUCTIONS_MARKER = "=== INSTRUCTIONS ==="
+WELCOME_HEADING = "## Welcome Message"  # unnumbered heading above the welcome line (DECISIONS 126)
 COMMON_TOOLS = ("change_language", "transfer", "end_call", "send_confirmation")
 # Platform tools per industry; an industry not listed gets only the common ones. Keep in step with each core.md tool table.
 INDUSTRY_TOOLS = {
@@ -339,8 +340,11 @@ def strip_before_welcome(instructions, welcome, window=6):
     lines = instructions.splitlines()
     for i, line in enumerate(lines[:window]):
         if line.strip() and _norm(line) == _norm(welcome):
-            removed = [l for l in lines[:i] if l.strip()]
-            return "\n".join(lines[i:]).strip(), removed
+            start = i
+            if i > 0 and lines[i - 1].strip() == WELCOME_HEADING:
+                start = i - 1  # keep the unnumbered heading that sits right above the welcome
+            removed = [l for l in lines[:start] if l.strip()]
+            return "\n".join(lines[start:]).strip(), removed
     return instructions, []
 
 
@@ -395,9 +399,9 @@ def lint_fixed_and_config(industry, instructions, profile_text, root=ROOT):
     problems = []
     for source, q in fixed_lines(industry, facts, root):
         if source == "welcome":
-            first = next((l for l in instructions.splitlines() if l.strip()), "")
+            first = next((l for l in instructions.splitlines() if l.strip() and l.strip() != WELCOME_HEADING), "")
             if _norm(first) != _norm(q):
-                problems.append(f'welcome is not the first line, word for word: expected "{_norm(q)}", first line is "{first.strip()[:80]}"')
+                problems.append(f'welcome is not the first line under the Welcome Message heading, word for word: expected "{_norm(q)}", first line is "{first.strip()[:80]}"')
         elif _norm(q) not in body:
             problems.append(f'fixed line from {source} missing word for word: "{_norm(q)}"')
     allowed = {facts["upload"]} & {"whatsapp", "email"}

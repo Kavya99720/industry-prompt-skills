@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Greenfield Fulfilment Test. This is Rahul. How can I help you?
 
 ## 1. Role & Identity

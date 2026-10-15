@@ -62,7 +62,7 @@ def test_saved_outputs_use_the_business_name_in_the_role_line_and_no_slots_or_ex
             assert CHANGE_MIND in ins and UNCLEAR in ins, f
             assert SWITCH in ins, f
             role = next(l for l in ins.splitlines() if l.startswith("You are"))
-            welcome = ins.splitlines()[1]
+            welcome = ins.splitlines()[2]
             m = re.search(r"(?:calling(?: from)?|calling from) ([^.]+)\.", welcome)
             if m and "our " not in m.group(1)[:4]:
                 assert m.group(1) in role, (f, role)

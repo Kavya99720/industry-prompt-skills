@@ -89,17 +89,18 @@ Do all of this and fix what fails:
 6. Word counts computed for every section and for section 6 against the allowance.
 7. Nothing from the Intake table was invented; each default is in the draft notes.
 9. Every "say exactly" line in the selected rules is in the Instructions word for word; the no-collect rule lists all seven items.
-10. The first line of the output is `=== INSTRUCTIONS ===`, the next is the welcome, and `=== DRAFT NOTES ===` appears once, alone on its line.
+10. The first line of the output is `=== INSTRUCTIONS ===`, the next is the unnumbered heading `## Welcome Message`, the line after it is the welcome, and `=== DRAFT NOTES ===` appears once, alone on its line.
 7a. When a package or an offer exists, the line "Offer it at most once per call, never repeat it, and accept a decline." is in section 1. Every line of the `s1-lines` block is in section 1 (R-08 "Never claim to be human.", R-37 condition rule).
 7b. Every line of every `s5-lines` block of core and the selected workflows is in section 5, each as its own sentence word for word, including "If the patient's name was not clearly heard, ask again." (R-50, R-16, R-23, R-24, R-42, R-35 and, with Booking, R-02, day first, R-66, R-41, R-04, R-26, S-37).
 8. The confirmation flow (R-18) is in section 5 with its fixed lines word for word, there is no send or confirmation tool anywhere in the Instructions, and section 6 has only the short CLOSE line.
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. No code fence, no preface, no "here is the output" line. Never write either marker anywhere else, not even inside a sentence:
+Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the next line is the heading `## Welcome Message` (no number), then the welcome message on the line after it. No code fence, no preface, no "here is the output" line. Never write either marker anywhere else, not even inside a sentence:
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

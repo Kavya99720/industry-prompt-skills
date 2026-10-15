@@ -90,17 +90,18 @@ Do all of this and fix what fails:
 7. Nothing from the Intake table was invented; each default is in the draft notes.
 7a. When an offer or scheme exists, the line "Mention it at most once per call, never push it, and accept a decline." is in section 1. Every line of the `s1-lines` block is in section 1 word for word (the crisis-digit sentence of R-08 and the R-74 line "Our team will confirm that for you.").
 8. Section 1 has the priority order (R-73). Section 5 has R-72 word for word. Every "say exactly" line is in the Instructions word for word with its action.
-9. The FIRST line of the output is `=== INSTRUCTIONS ===` and the next line is the welcome message, word for word. Nothing before the marker: no code fence, no "Here is the output", no word count, no heading. Check both lines before you finish.
+9. The FIRST line of the output is `=== INSTRUCTIONS ===` the next line is the unnumbered heading `## Welcome Message`, and the line after it is the welcome message, word for word. Nothing before the marker: no code fence, no "Here is the output", no word count, no heading. Check these three lines before you finish.
 9a. The draft notes contain no rule ID (R-xx or S-xx) and no workflow or intake number.
 10. The "Fill these in the platform" table and everything else for the client go ONLY below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table, and the marker line `=== DRAFT NOTES ===` comes immediately after that table with nothing between them. Any line of the notes written above the marker is an error. In the draft notes a missing value is an open question for the customer (return policy, delivery terms, payment modes, address, phone, upload method, assistant name). "Not used in these Instructions" is not needed: the fill-in table lists only what is set on the platform (Voice settings, transfer numbers, the After-the-call trigger channels) and carries the line "If your hours, phone or address change, regenerate these Instructions."
 11. With no transfer target given, the Instructions and the notes say a callback is offered, never a generic transfer. Section 5 never says back a condition, symptom or medicine use (R-13), spoken helpline numbers are digit by digit (R-08), the Tele-MANAS and emergency numbers line and the team handoff line are word for word and never hyphenated or grouped (R-08, R-75), and the upload step asks "Is this number on WhatsApp?" or the email question and says the upload-link line, with no tool call (R-54).
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. No code fence, no preface, no "here is the output" line, no word count before the marker:
+Output exactly this, nothing before or after. The very first line is the marker `=== INSTRUCTIONS ===` on its own line; the next line is the heading `## Welcome Message` (no number), then the welcome message on the line after it. No code fence, no preface, no "here is the output" line, no word count before the marker:
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

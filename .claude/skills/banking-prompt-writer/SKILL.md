@@ -68,7 +68,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 5. EVERY fixed line from `references/core.md` and the selected workflows is written into the Instructions word for word with its action, checked one by one against the references. These two are often missed and must be present when their rules are: "I can't share account details on this call." (workflow 01, only when the balance lookup is OFF) and "I'm sorry, I could not complete that. Our team will call you to confirm." (core, failed action). Exact wording: no contractions, no added or removed words, nothing appended in the same sentence; extra words are a separate sentence. Where two fixed lines can fire in the same reply, write the fixed block exactly as the references give it (the card number or code during a fraud call; the coached caller about to move money).
 6. Section 1 has the priority order, the crisis-digit sentence word for word and the missing-value line word for word; section 5 has the one-question rule word for word and the item-by-item no-collect list.
 7. When an offer or scheme exists, the line "Mention it at most once per call, never push it, and accept a decline." is in section 1.
-8. The first line of the output is `=== INSTRUCTIONS ===` and the next is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
+8. The first line of the output is `=== INSTRUCTIONS ===`, the next is the unnumbered heading `## Welcome Message`, the line after it is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
 9. The confirmation flow is written with its exclusions (failed action, emergency, a fraud call handed to the fraud team, transfer, voicemail, outbound), with only the channels the customer gave, and with no email line when email was not given. The Fill table, its notes and everything for the client are below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table, and the marker follows it directly.
 10. With no transfer target the Instructions and the notes say a callback is offered, never a transfer; the emergency line and the helpline line stay.
 11. In the draft notes a missing value is an open question for the customer; the fill-in table lists only what is set on the platform (Voice settings, transfer numbers, confirmation channels, the two banking tools, "off (default)" when skipped). The draft notes contain no rule ID, no workflow or intake number, no file name and no tool name (self-check: read every line of the notes for "workflow", ".md", "core", "_tool" and "R-").
@@ -82,10 +82,11 @@ Apply the client's config and flow changes when they do not touch a critical rul
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. Never write anything before the marker: no sentence such as "Here is the output" or "Now I have all the word counts", no code fence, no preface, no word count:
+Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the next line is the heading `## Welcome Message` (no number), then the welcome message on the line after it. Never write anything before the marker: no sentence such as "Here is the output" or "Now I have all the word counts", no code fence, no preface, no word count:
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

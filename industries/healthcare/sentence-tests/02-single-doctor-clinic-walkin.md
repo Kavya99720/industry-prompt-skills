@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Care Plus Family Clinic. This is Meera. How can I help you?
 
 ## 1. Role & Identity

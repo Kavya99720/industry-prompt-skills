@@ -4,14 +4,14 @@ Copy to industries/<industry>/section-bases.md. Base text for the welcome and se
 
 ## Output markers
 
-The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the welcome message. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface.
+The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the unnumbered heading `## Welcome Message` and the welcome message on the line after it. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface.
 
 ## Welcome message
 
 - Inbound: "Thank you for calling <business name>. This is <agent name>. How can I help you?" (no agent name: drop "This is <agent name>.")
 - Outbound: "Hello, this is <agent name> calling from <business name>. Is this a good time to talk?" (no agent name: "Hello, I am calling from <business name>. ...")
 
-The welcome is the first line of the Instructions, word for word (say exactly). It matches the call direction. Never pair an outbound welcome with an inbound flow, or the reverse.
+The welcome is the first line under the `## Welcome Message` heading (the heading has no number, sections 1 to 6 keep theirs), word for word (say exactly). It matches the call direction. Never pair an outbound welcome with an inbound flow, or the reverse.
 
 ## 1. Role & Identity (skeleton)
 

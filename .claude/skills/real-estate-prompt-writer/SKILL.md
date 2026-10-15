@@ -97,7 +97,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 5. EVERY fixed line from `references/core.md` and the selected workflows is written into the Instructions word for word with its action, checked one by one against the references. Exact wording: no added or removed words, nothing appended in the same sentence; extra words are a separate sentence. Where two fixed lines can fire in the same reply, write them as the one block the references give (the payment decline followed by the third-party warning; the advice line followed by the team phrase).
 6. Section 1 has the priority order, the emergency instruction, the self-harm line and the missing-fact line word for word; section 5 has the one-question rule and the item-by-item no-collect list with the stop line.
 7. The team phrase is inline in every transfer, in the same reply; with no target it is not written anywhere and no transfer is promised.
-8. The first line of the output is `=== INSTRUCTIONS ===` and the next is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
+8. The first line of the output is `=== INSTRUCTIONS ===`, the next is the unnumbered heading `## Welcome Message`, the line after it is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
 9. The confirmation flow has only the channels the customer gave, with no email line when email was not given, and is left out when none was given. The Fill table, its notes and everything for the client are below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table, and the marker follows it directly.
 10. Booking: with the tool OFF, "booked" and "scheduled" never appear; with it ON, "booked" only after the tool confirms; times offered are only the visit days and hours the customer gave.
 11. Recording: the recording sentence is present only when calls are recorded and appears exactly once (inbound: section 5; outbound: the welcome).
@@ -107,10 +107,11 @@ Apply the client's config and flow changes when they do not touch a critical rul
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. Never write anything before the marker: no sentence such as "Here is the output", no code fence, no preface, no word count:
+Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the next line is the heading `## Welcome Message` (no number), then the welcome message on the line after it. Never write anything before the marker: no sentence such as "Here is the output", no code fence, no preface, no word count:
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

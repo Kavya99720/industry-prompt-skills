@@ -33,6 +33,8 @@ The Instructions are read on every turn, so they are written short, and no rule 
 
 The platform sets the welcome from a template the business picks (Standard, Warm or Brief for inbound). The skill writes the default and says in the draft notes that the client may change the template.
 
+The welcome sits under an unnumbered heading, `## Welcome Message`: the output is `=== INSTRUCTIONS ===`, then that heading, then the welcome line, then a blank line and the Role & Identity section. Sections 1 to 6 keep their numbers.
+
 - Inbound: "Thank you for calling <business name>. This is <agent name>. How can I help you?" (no agent name: "Thank you for calling <business name>. How can I help you?")
 - Outbound: "Hello, this is <agent name> calling from <business name>. Is this a good time to talk?" (no agent name: "Hello, I am calling from <business name>. Is this a good time to talk?")
 

@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Careplus Pharmacy. This is Divya. How can I help you?
 
 ## 1. Role & Identity

@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Sparkline Test Electronics. This is Rohan. How can I help you?
 
 ## 1. Role & Identity

@@ -33,7 +33,7 @@ One commit per industry; the message starts with the industry name.
 ## Lessons, as rules (all are in core.template.md and skill.template.md)
 
 1. Priority when rules meet: emergency, privacy and verification, "say exactly" lines, one question at a time, the task.
-2. Output markers: `=== INSTRUCTIONS ===` and `=== DRAFT NOTES ===`, each alone on its own line, each once, never inside a sentence. The first line of the output is the INSTRUCTIONS marker, the next is the welcome.
+2. Output markers: `=== INSTRUCTIONS ===` and `=== DRAFT NOTES ===`, each alone on its own line, each once, never inside a sentence. The first line of the output is the INSTRUCTIONS marker, the next is the welcome. The next line is the unnumbered heading `## Welcome Message`, then the welcome.
 3. Fixed-line format: say exactly "X", then the action in the same reply. A fixed line keeps its own full stop; a follow-up question is a separate sentence. Exact wording: no contractions, no added or removed words, nothing appended in the same sentence. When two fixed lines can fire in the same reply, write them as one fixed block in a set order; never reword them.
 4. Every rule states its scope: when it applies and when it does not. Fixed phrases never override safety rules or required lines.
 5. Tele-MANAS (1 4 4 1 6, self-harm) is a shared safety helpline like 1 0 8 and 1 1 2 and belongs in every industry's self-harm rule. Helpline and emergency numbers are spoken digit by digit with spaces ("1 0 8"); never hyphens, never grouped digits, never words.

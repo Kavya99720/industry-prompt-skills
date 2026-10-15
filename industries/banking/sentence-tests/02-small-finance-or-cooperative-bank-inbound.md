@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Kaveri Nagar Co-operative Bank. This is Arjun. How can I help you?
 
 ## 1. Role & Identity

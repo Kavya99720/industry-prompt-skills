@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Horizon Cargo Forwarding Test. This is Kavita. How can I help you?
 
 ## 1. Role & Identity

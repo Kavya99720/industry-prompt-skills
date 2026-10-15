@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Lakeshore Test College of Arts and Science. This is Karthik. How can I help you?
 
 ## 1. Role & Identity

@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Lakeview Multispeciality Hospital. This is Asha. How can I help you?
 
 ## 1. Role & Identity

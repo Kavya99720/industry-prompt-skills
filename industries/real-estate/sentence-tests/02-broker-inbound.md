@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Harbor Lane Realty. This is Ishaan. How can I help you?
 
 ## 1. Role & Identity

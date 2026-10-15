@@ -4,7 +4,7 @@ Base text for the welcome and sections 1 to 5, and the style of section 6. Built
 
 ## Output markers
 
-The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the welcome message. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface. No rule ID (R-xx, S-xx) appears in the Instructions or the draft notes.
+The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the unnumbered heading `## Welcome Message` and the welcome message on the line after it. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface. No rule ID (R-xx, S-xx) appears in the Instructions or the draft notes.
 
 ## Welcome message
 
@@ -13,7 +13,7 @@ The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, 
 - Calls recorded = yes: the sentence "This call may be recorded for quality purposes." goes inside the outbound welcome (named and unnamed), after the AI-disclosure sentence and BEFORE the question "Is this a good time to talk?": "Hello, this is <assistant name>, an AI assistant calling from <business name>. This call may be recorded for quality purposes. Is this a good time to talk?" (unnamed: "Hello, I am an AI assistant calling from <business name>. This call may be recorded for quality purposes. Is this a good time to talk?"). Inbound: it is said once in the first reply after the welcome. Calls recorded = no or not given: never said.
 - No business name: use the neutral phrase "our store" in place of the name.
 
-The welcome is the first line of the Instructions, word for word. It matches the call direction. The outbound welcome carries the AI disclosure in its first sentence, always. "calling from" appears only in outbound Instructions. The platform's template choice (Standard, Warm, Brief) is noted in the draft notes.
+The welcome is the first line under the `## Welcome Message` heading (the heading has no number, sections 1 to 6 keep theirs), word for word. It matches the call direction. The outbound welcome carries the AI disclosure in its first sentence, always. "calling from" appears only in outbound Instructions. The platform's template choice (Standard, Warm, Brief) is noted in the draft notes.
 
 ## 1. Role & Identity (skeleton)
 

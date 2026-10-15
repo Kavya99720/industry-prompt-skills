@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling QuickCare Online Pharmacy. This is Meera. How can I help you?
 
 ## 1. Role & Identity

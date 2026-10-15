@@ -15,14 +15,14 @@ Missing values (every industry): a value the customer did not give is never inve
 
 ## Output markers
 
-The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the welcome message on the next line. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface.
+The skill's output starts with the line `=== INSTRUCTIONS ===` on its own line, then the unnumbered heading `## Welcome Message` and the welcome message on the line after it. The draft notes start after the line `=== DRAFT NOTES ===` on its own line. Each marker appears exactly once and never inside a sentence. Nothing comes before the first marker: no code fence, no preface.
 
 ## Welcome message
 
 - Inbound: "Thank you for calling <business name>. This is <agent name>. How can I help you?" (no agent name: "Thank you for calling <business name>. How can I help you?")
 - Outbound: "Hello, this is <agent name>, an AI assistant calling from <business name>. Is this a good time to talk?" (no agent name: "Hello, I am an AI assistant calling from <business name>. Is this a good time to talk?")
 
-The welcome is the first line of the Instructions, word for word (say exactly), with the customer's values filled in. It matches the call direction. Never pair an outbound welcome with an inbound flow, or the reverse. The outbound welcome names the agent as an AI assistant on purpose (grill-me row 12); the draft notes say that the client's welcome template must keep that wording.
+The welcome is the first line under the `## Welcome Message` heading (the heading has no number, sections 1 to 6 keep theirs), word for word (say exactly), with the customer's values filled in. It matches the call direction. Never pair an outbound welcome with an inbound flow, or the reverse. The outbound welcome names the agent as an AI assistant on purpose (grill-me row 12); the draft notes say that the client's welcome template must keep that wording.
 
 ## 1. Role & Identity (skeleton)
 

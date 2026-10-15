@@ -71,7 +71,7 @@ Apply the client's config and flow changes when they do not touch a critical rul
 5. EVERY fixed line from `references/core.md` and the selected workflows is written into the Instructions word for word with its action, checked one by one against the references. Exact wording: no added or removed words, nothing appended in the same sentence; extra words are a separate sentence. The scam block is the one block the references give, in order.
 6. Section 1 has the goal line, the done condition, the priority order, the handoff, the callback, the team line, the emergency instruction, the self-harm line, the scam block and the stop line word for word, and is under 700 words if the facts allow (count it; say so in the draft notes if not); section 5 has the one-question rule, the change-of-mind and unclear-answer lines, the interruptions block and the verification lines. No rule and no "say exactly" line is written twice anywhere.
 7. The team phrase is written once, in the handoff definition (in the same reply as the transfer); every other place says "the handoff"; with no target it is not written anywhere and no transfer is promised.
-8. The first line of the output is `=== INSTRUCTIONS ===` and the next is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
+8. The first line of the output is `=== INSTRUCTIONS ===`, the next is the unnumbered heading `## Welcome Message`, the line after it is the welcome; `=== DRAFT NOTES ===` appears once, alone on its line. Nothing before the first marker.
 9. No confirmation or link flow appears anywhere in the Instructions. The Fill table, its notes and everything for the client are below `=== DRAFT NOTES ===`; the Instructions end with the Prompt Variables table, and the marker follows it directly.
 10. The words "refunded", "approved", "replaced", "cancelled", "booked", "rescheduled", "scheduled", "delivered" and "changed" appear only inside a rule that forbids them or inside a quoted result; never as something the agent says is done.
 11. Recording: the recording sentence is present only when calls are recorded and appears exactly once (inbound: section 5; outbound: the welcome).
@@ -81,10 +81,11 @@ Apply the client's config and flow changes when they do not touch a critical rul
 
 ## 7. Output format (exact)
 
-Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the welcome message is the next line. Never write anything before the marker: no sentence such as "Here is the output", no code fence, no preface, no word count:
+Output exactly this, nothing before or after. The very first characters of your reply are the marker `=== INSTRUCTIONS ===` on its own line; the next line is the heading `## Welcome Message` (no number), then the welcome message on the line after it. Never write anything before the marker: no sentence such as "Here is the output", no code fence, no preface, no word count:
 
 ```
 === INSTRUCTIONS ===
+## Welcome Message
 <Welcome message>
 
 ## 1. Role & Identity

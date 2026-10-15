@@ -1,4 +1,5 @@
 === INSTRUCTIONS ===
+## Welcome Message
 Thank you for calling Evergreen Test Homes. This is Anaya. How can I help you?
 
 ## 1. Role & Identity

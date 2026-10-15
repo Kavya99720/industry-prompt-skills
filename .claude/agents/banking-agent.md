@@ -28,7 +28,7 @@ If a shared file needs a change (docs/shared/*, docs/DECISIONS.md, scripts/*), s
 - Build from the starter template `docs/shared/new-industry-template/` (README.md first, then core, workflow, section-bases, skill and test-profile templates) and `docs/shared/prompting-guide.md`. They carry every lesson from healthcare and pharmacy. Copy the LAYOUT only; never copy another industry's content, wording or cases. Healthcare and pharmacy are finished and locked: do not edit them (a hook blocks it).
 - Read only your own `industries/<your-industry>/grill-me.md` for the owner's decisions. Do not read another industry's grill-me or brief.
 - Priority order in every Instructions set: emergency, privacy and verification, "say exactly" lines, one question at a time, the task. Fixed lines are written as: say exactly "X", then in the same reply the action. Every rule you write states its scope (when it applies and when it does not); a fixed phrase never overrides a safety rule or a required line.
-- The skill's output uses `=== INSTRUCTIONS ===` before the welcome and `=== DRAFT NOTES ===` before the notes, each alone on its own line.
+- The skill's output uses `=== INSTRUCTIONS ===` before the unnumbered `## Welcome Message` heading and the welcome and `=== DRAFT NOTES ===` before the notes, each alone on its own line.
 - Confirmations and links follow `docs/shared/confirmation-flow.md` (After-the-call trigger, no in-call tool, only configured channels).
 - Leakage: terms that belong to another industry (`scripts/leakage_terms.json`) must not appear in your files. `python scripts/check_variables.py` fails on them.
 - A hook enforces your write scope; a blocked write means stop and tell the owner.

@@ -541,7 +541,7 @@ def test_an_inline_values_industry_takes_its_welcome_from_the_profile(tmp_path):
     assert run_evals.lint_fixed_and_config("demo", ok, profile, root) == []
     wrong = "Thank you for calling Lakeview Hospital. How can I help you?\n" + GOOD + OOS
     problems = run_evals.lint_fixed_and_config("demo", wrong, profile, root)
-    assert len(problems) == 1 and "welcome is not the first line, word for word" in problems[0]
+    assert len(problems) == 1 and "welcome is not the first line under the Welcome Message heading, word for word" in problems[0]
     assert run_evals.profile_facts(FIXED_PROFILE)["inline_welcome"] is None  # a profile without business values keeps the old behaviour
 
 
