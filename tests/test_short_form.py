@@ -11,7 +11,7 @@ cfl = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(cfl)
 
 CHANGE_MIND = "If the caller changes their mind, follow the new request without starting over."
-UNCLEAR = "confirm the part you recognised, like '<name>, is that right?' If nothing is clear, ask them to say it again."
+UNCLEAR = "confirm the part you recognised, like 'the name you heard, is that right?' If nothing is clear, ask them to say it again."
 FIXED_LANG = 'A "say exactly" line keeps its exact meaning, not its English words'
 TOOL_CALL = 'Before any tool call'
 SWITCH = 'Switch when the caller\'s last sentence has Indian-language words, in Indian script or in English letters'
@@ -40,7 +40,8 @@ def test_every_section_bases_and_the_template_carry_the_new_section_2_3_5_text()
         assert CHANGE_MIND in t and UNCLEAR in t, name
         assert FIXED_LANG in t and TOOL_CALL in t, name
         assert "सुबह नौ बजे" in t and "ಬೆಳಿಗ್ಗೆ ಒಂಬತ್ತು ಗಂಟೆ" in t, name  # language examples, supported languages only
-        assert 'Dr. is "Doctor"' in t, name
+        if name != "logistics":  # logistics has no doctors: the reading rule is not printed there
+            assert 'Dr. is "Doctor"' in t, name
         assert "never AM or PM" in t and "weekdays and months" in t, name
         assert '"next Monday"' in t and "find the exact date" in t, name
 

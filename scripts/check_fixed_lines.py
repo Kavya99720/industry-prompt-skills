@@ -40,6 +40,11 @@ match (case-insensitive, punctuation ignored), so a longer sentence that contain
                    required only for the matching method (none for in_store or not_set). Without this option every marked
                    row is required, as before.
 
+  --off confirmation  a confirmation channel is given but nothing can trigger it (no link given AND booking off): its
+                   channel lines are not required. Refused when booking_tool is on. The draft notes must say so.
+  --off FEATURE    a feature the business turned off: its rule's lines are not required. A rule id (R-52) or a name
+                   (cancel = R-52, the cancellation-request line of healthcare workflow 03). Comma list, repeatable.
+
   --translated     the Instructions are written in another language (DECISIONS 125: a "say exactly" line keeps its meaning, not its
                    English words). A missing quoted line is then accepted when every digit group in it (helpline and emergency
                    digits such as "1 1 2") is in the output; a line with no digits is listed as a NOTE ("check the translation by
@@ -203,6 +208,19 @@ def workflow_files(refs, numbers, direction):
     return files
 
 
+SKIP_RULES = "skip_rules"  # --off: rule ids of a feature the business turned off; their lines are not required
+NO_TRIGGER = "no_channel_trigger"  # --off confirmation: a channel is given but nothing can trigger it (no link given AND booking off)
+FEATURE_RULES = {"cancel": ("R-52",)}  # --off cancel (healthcare: the cancellation-request line of workflow 03)
+
+
+def row_skipped(row, tools):
+    skip = (tools or {}).get(SKIP_RULES)
+    if not skip:
+        return False
+    m = re.match(r"\|\s*(R-\d+)\s*\|", row)
+    return bool(m and m.group(1) in skip)
+
+
 def with_defaults(tools):
     """confirmation_channels is OFF unless the client configured a channel: its lines are then required.
     package_offer is OFF unless the business facts or the client name a package or offer (--tool package_offer=on).
@@ -251,6 +269,8 @@ def quote_needed(row, quote, tools):
         needed = False  # the business gave lead-source wording: the not-known line never fires (DECISIONS 111)
     if quote.startswith(" "):
         needed = False  # a stray fragment between two quoted lines of a prose sentence, not a spoken line (pharmacy core.md)
+    if tools.get(NO_TRIGGER) and "confirmation_channels" in row:
+        needed = False
     channels = tools.get(CHANNELS)
     if needed and isinstance(channels, (set, frozenset)) and "confirmation_channels" in row:
         needed = channel_needed(quote, channels)
@@ -261,10 +281,14 @@ def required_lines(refs, numbers, direction, tools, slots=None):
     """Quotes that must be present, as a list of (source file name, quote)."""
     files = [refs / "core.md"] + workflow_files(refs, numbers, direction)
     found = {}
+    excluded = set()
     for f in files:
         if not f.is_file():
             continue
         for row in f.read_text(encoding="utf-8").splitlines():
+            if row_skipped(row, tools):
+                excluded.update(norm(q) for q in SAY_EXACTLY.findall(row))  # the same line may be repeated in a step or a main line
+                continue
             for q in SAY_EXACTLY.findall(row):
                 if q.strip() == "X":
                     continue  # the format example, not a real line
@@ -277,17 +301,21 @@ def required_lines(refs, numbers, direction, tools, slots=None):
                     found[key] = [f.name, q, needed]
                 elif needed:
                     found[key][2] = True
-    return [(v[0], v[1]) for v in found.values() if v[2]]
+    return [(v[0], v[1]) for k, v in found.items() if v[2] and k not in excluded]
 
 
 def required_text(refs, numbers, direction, tools):
     """Quotes marked must include, as a list of (source file name, quote)."""
     files = [refs / "core.md"] + workflow_files(refs, numbers, direction)
     found = {}
+    excluded = set()
     for f in files:
         if not f.is_file():
             continue
         for row in f.read_text(encoding="utf-8").splitlines():
+            if row_skipped(row, tools):
+                excluded.update(norm_text(q) for q in MUST_INCLUDE.findall(row))
+                continue
             for q in MUST_INCLUDE.findall(row):
                 mentioned = [t for t in tools if t in row and isinstance(tools[t], bool)]
                 needed = (not mentioned) or all(tools[t] for t in mentioned)
@@ -296,7 +324,7 @@ def required_text(refs, numbers, direction, tools):
                     found[key] = [f.name, q, needed]
                 elif needed:
                     found[key][2] = True
-    return [(v[0], v[1]) for v in found.values() if v[2]]
+    return [(v[0], v[1]) for k, v in found.items() if v[2] and k not in excluded]
 
 
 def check(output_text, refs, numbers=(), direction=None, tools=None, welcome=None, slots=None):
@@ -350,6 +378,7 @@ def main(argv=None):
     ap.add_argument("--workflows", nargs="*", default=[])
     ap.add_argument("--direction", choices=("inbound", "outbound"))
     ap.add_argument("--tool", action="append", default=[], help="name=on|off")
+    ap.add_argument("--off", action="append", default=[], help="a feature or rule id the business turned off, e.g. cancel or R-52: its lines are not required (comma list, repeatable)")
     ap.add_argument("--industry", default="banking")
     ap.add_argument("--references")
     ap.add_argument("--profile")
@@ -375,6 +404,20 @@ def main(argv=None):
             print(f"--tool needs name=on or name=off, got {item}", file=sys.stderr)
             return 2
         tools[name] = state.lower() == "on"
+    skip = set()
+    for item in args.off:
+        for name in item.split(","):
+            name = name.strip()
+            if name.lower() == "confirmation":
+                if tools.get("booking_tool"):
+                    print("--off confirmation is only valid when booking is off (and no link is given)", file=sys.stderr)
+                    return 2
+                tools[NO_TRIGGER] = True
+                continue
+            if name:
+                skip.update(FEATURE_RULES.get(name.lower(), (name.upper(),)))
+    if skip:
+        tools[SKIP_RULES] = skip
     profile_text = Path(args.profile).read_text(encoding="utf-8") if args.profile else None
     if profile_text is not None and args.industry in ("retail", "education", "logistics", "real-estate"):
         # retail and education read every setting its profile states (tools, recording, channels, transfer targets, source wording);

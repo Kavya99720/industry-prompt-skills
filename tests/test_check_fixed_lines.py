@@ -685,3 +685,27 @@ def test_logistics_outbound_only_lines_and_the_source_and_recording_settings():
     out05 = logistics_lines("05-outbound-pickup-cod-no-assistant-name.md", ["07", "09"], "outbound")
     assert wrong_person in out05 and not_known in out05 and recorded not in out05
     assert not_known not in logistics_lines("04-outbound-delivery-update-named-recorded.md", ["07", "08"], "outbound")
+
+
+def test_off_skips_a_rule_and_its_repeats_in_other_rows(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text('| R-01 | say exactly "Keep me." |\n', encoding="utf-8")
+    (refs / "workflows" / "01-a.md").write_text(
+        '| R-52 | On a cancel request say exactly "I have noted your request." |\n'
+        'Step 3: say exactly "I have noted your request." then ask the day.\n', encoding="utf-8")
+    out = "Keep me."
+    assert [q for _, q in cfl.check(out, refs, numbers=["01"])] == ["I have noted your request."]
+    assert cfl.check(out, refs, numbers=["01"], tools={cfl.SKIP_RULES: {"R-52"}}) == []
+    assert cfl.main([str(tmp_path / "o.md"), "--references", str(refs), "--workflows", "01", "--off", "cancel,R-52"]) == 2  # no such file
+
+
+def test_off_confirmation_skips_channel_lines_only_when_booking_is_off(tmp_path):
+    refs = tmp_path / "references"
+    (refs / "workflows").mkdir(parents=True)
+    (refs / "core.md").write_text('| R-18 | Flow in {{var.confirmation_channels}}: say exactly "Is this number on WhatsApp?" |\n| R-01 | say exactly "Keep me." |\n', encoding="utf-8")
+    out = tmp_path / "o.md"
+    out.write_text("Keep me.", encoding="utf-8")
+    assert cfl.main([str(out), "--references", str(refs), "--tool", "confirmation_channels=whatsapp"]) == 1
+    assert cfl.main([str(out), "--references", str(refs), "--tool", "confirmation_channels=whatsapp", "--off", "confirmation"]) == 0
+    assert cfl.main([str(out), "--references", str(refs), "--tool", "booking_tool=on", "--off", "confirmation"]) == 2

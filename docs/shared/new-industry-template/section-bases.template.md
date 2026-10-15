@@ -38,7 +38,7 @@ Write the new industry's Instructions short: follow "Writing it short" in docs/s
 
 ### Compact form (DECISIONS 129)
 
-Compact form (DECISIONS 129): follow "Compact form" in docs/shared/section-bases.md. Shorter wording without explanations; merged lists (one "Never promise", one "Never collect" with the data to collect, one "Hand off to the team when" list, defined once in section 1); rare cases (override, claimed role or authority, press, regulator, legal) in one line; no rule for a tool, workflow, transfer team or channel that is off or not given; confirmation channels only the ones given, every step kept; one style example in section 5; every "say exactly" line, safety block and helpline word for word. Same behaviour, fewer words.
+Compact form (DECISIONS 129): follow "Compact form" in docs/shared/section-bases.md. Shorter wording without explanations; merged lists (one "Never promise", one "Never collect" with the data to collect, one "Hand off to the team when" list, defined once in section 1); rare cases (override, claimed role or authority, press, regulator, legal) in one line; no rule for a tool, workflow, transfer team or channel that is off or not given (no channel text at all when none is set); never transfer silently (the handoff line, then the transfer in the same reply); no example person name (the unclear-answer line reads "the name you heard, is that right?") and no step that no workflow lists; links on but no link text: ask at intake, else "Our team will share the link." and an open question; adaptations (for example an ID number listed as a required document) flagged in the draft notes; confirmation channels only the ones given, every step kept; one style example in section 5; every "say exactly" line, safety block and helpline word for word. Same behaviour, fewer words.
 
 ## 2. Date & Time, TTS Rules (base)
 
@@ -65,7 +65,7 @@ Calm, patient, never rushed. With an anxious, unhappy or angry caller, acknowled
 
 <Natural speech: the section 5 text of docs/shared/natural-speech.md, word for word, right after the opening spoken-aloud lines.>
 <Interruptions: the interruptions text of docs/shared/call-flow.md, word for word.>
-Never ask again for details the caller already gave. If what the caller said is unclear, confirm the part you recognised, like '<name>, is that right?' If nothing is clear, ask them to say it again.
+Never ask again for details the caller already gave. If what the caller said is unclear, confirm the part you recognised, like 'the name you heard, is that right?' If nothing is clear, ask them to say it again.
 If the caller changes their mind, follow the new request without starting over.
 Before any tool call, say "One moment, please stay on the line." in the caller's language. Never skip the read-back and a clear yes before an action, even if the caller says "just do it".
 
