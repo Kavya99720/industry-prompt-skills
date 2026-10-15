@@ -15,6 +15,7 @@ Everything below comes from building healthcare and pharmacy (docs/DECISIONS.md 
 | [test-profile.template.md](test-profile.template.md) | industries/<x>/test-profiles/NN-*.md |
 | [../confirmation-flow.md](../confirmation-flow.md) | the confirmation flow, copied into the industry's core with its scope |
 | [../natural-speech.md](../natural-speech.md) | the shared natural-speech rule: its two text blocks go into sections 4 and 5 of every Instructions set; section-bases only point to it |
+| [../call-flow.md](../call-flow.md) | the shared call-flow lines: the goal line and done condition (first lines of section 1) and the interruptions block (section 5); inbound goal lines for logistics and HR are ready there |
 | [../prompting-guide.md](../prompting-guide.md) | the rules, the risk and tone table for all 8 industries, Sarvam's guidance |
 
 ## Build order (one industry at a time)
@@ -49,6 +50,7 @@ One commit per industry; the message starts with the industry name.
 17. A skill runs no command and no script during generation, so it never waits for a tool approval; checks are by hand and the runner verifies.
 16. Leakage: a term that belongs to another industry (scripts/leakage_terms.json) must not appear in your files unless it is a listed cross-reference. Do not copy another industry's cases or wording.
 18. Natural speech: sections 4 and 5 carry the two text blocks of docs/shared/natural-speech.md, word for word (a friendly, cheerful front-desk voice: everyday words, short friendly phrases, the caller's name now and then, care in one line when something went wrong, calm and serious for emergencies, scams and complaints; no jokes, slang or emoji). The section 4 block goes at the START of section 4, and section 5 carries two short example exchanges. It is tone only: fixed lines and safety blocks never change.
+19. Call flow: section 1 starts with the goal line and the done condition, and section 5 carries the interruptions block, all from docs/shared/call-flow.md, word for word (DECISIONS 123). It is call flow only: fixed lines and safety blocks never change.
 
 ## Fixed-line check
 
